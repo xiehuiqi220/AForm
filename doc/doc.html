@@ -1,0 +1,1606 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.9" />
+<title>AForm使用指南</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+  padding: 0;
+  margin: 0;
+}
+pre {
+  white-space: pre-wrap;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; vertical-align: text-bottom; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install(2);
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>AForm使用指南</h1>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_1_aform介绍">1. AForm介绍</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>AForm是一个可以把json数据转换成表单输入项的javascript组件，并可以轻松把输入的数据又还原成json，您仅需输入几行配置即可轻松生成各式各样的标准表单；在web系统中，只要您使用表单收集数据，相信您一定可以通过AForm来大大提高开发表单的效率。</p></div>
+<div class="olist arabic"><div class="title">主要特点：</div><ol class="arabic">
+<li>
+<p>
+使用和配置简单，仅包含3个函数，可快速上手
+</p>
+</li>
+<li>
+<p>
+表单标准化，支持文本框、文本区域、单选框、复选框、下拉列表等各种输入控件
+</p>
+</li>
+<li>
+<p>
+支持对数组元素的增删改操作
+</p>
+</li>
+<li>
+<p>
+支持html5的新特性
+</p>
+</li>
+<li>
+<p>
+支持输入验证，输入提示
+</p>
+</li>
+<li>
+<p>
+可高度定制，支持自定义样式、界面以及各种验证处理函数
+</p>
+</li>
+</ol></div>
+<div class="olist arabic"><div class="title">适用场景：</div><ol class="arabic">
+<li>
+<p>
+各种WEB后台管理系统
+</p>
+</li>
+<li>
+<p>
+可由用户自定义表单的WEB前台系统
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><div class="title">支持浏览器：</div><p>ie7+、firefox 3.5+、chrome 1.5+</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_快速上手">2. 快速上手</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>使用AForm极其简单，您首先需在调用页面的head部分引入如下js文件和样式文件（样式文件是可选的）：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>&lt;link href="AForm.css" rel="stylesheet" /&gt;
+&lt;script src="AForm.js"&gt;&lt;/script&gt;</code></pre>
+</div></div>
+<div class="paragraph"><p>然后，准备好需要渲染的json数据和针对该数据的一些配置（同样也是json格式），以及用于显示表单的DOM容器（比如一个form或者div，假设命名为“divOutput”），最后像下面这样使用：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>&lt;script&gt;
+var jf = new JsonForm("divOutput",{
+        title : "我的表单",
+        fields:{
+                Name:{label:"姓名",readonly:true},
+                Sexy:{label:"性别",type:"radio",datalist:[{value:0,text:"男"},{value:1,text:"女"}]},
+                Country:{label:"国家",readonly:true,type:"select",datalist:['USA','CHINA','KOREA']}
+        }
+});
+jf.render({
+  "Name": "John Smith",
+  "Sexy": 1,
+  "Country":"CHINA"
+});
+&lt;/script&gt;</code></pre>
+</div></div>
+<div class="paragraph"><p>这样就会在指定的容器中生成一组输入项，当您想收集用户数据时，执行getJsonString函数即可，该函数返回一个符合json标准的字符串：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>&lt;script&gt;
+var data;
+//一定要使用try，catch来捕获异常，因若收集到的字段值不合您定义的规则将直接抛出异常
+//字段不合法的情况下，将弹出提示，同时抛出异常
+try {
+        data = jf.getJsonString();// 或者 data = jf.getJson();
+}catch(ex){
+        console.log(ex);
+}
+&lt;/script&gt;</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_api指引">3. API指引</h2>
+<div class="sectionbody">
+<div class="ulist"><div class="title">AForm(container,config)</div><ul>
+<li>
+<p>
+构造函数
+</p>
+</li>
+<li>
+<p>
+无返回值
+</p>
+</li>
+<li>
+<p>
+生成AForm的一个实例，但此时尚未在页面中生成表单
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+container: 字符串类型，生成的表单置于何个容器，该容器的id
+</p>
+</li>
+<li>
+<p>
+config: json对象，表单的配置项，包含全局配置以及对字段的配置
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="title">举例：</div>
+<div class="content">
+<pre><code>var jf = new AForm("divTest");
+var jf = new AForm("divTest",{"fields":{"age":{"label":"年龄"}}});</code></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">config的配置，请参见第4节“表单配置项”</td>
+</tr></table>
+</div>
+<div class="ulist"><div class="title">.render(json)</div><ul>
+<li>
+<p>
+生成
+</p>
+</li>
+<li>
+<p>
+无返回值
+</p>
+</li>
+<li>
+<p>
+生成表单，在构造函数给定的container中生成对传入json数据的输入项集合
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="title">举例：</div>
+<div class="content">
+<pre><code>jf.render({"a":1,"b":2});</code></pre>
+</div></div>
+<div class="ulist"><div class="title">.getJsonString()</div><ul>
+<li>
+<p>
+获取输入控件集合的值
+</p>
+</li>
+<li>
+<p>
+返回与render中传入的json格式一致的字符串
+</p>
+</li>
+<li>
+<p>
+该函数递归遍历容器下所有元素，收集所有输入项的值，返回一个字符串，该字符串的格式与用户渲染表单时传入的json数据一致
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="title">举例：</div>
+<div class="content">
+<pre><code>try
+{
+     var strJson = jf.getJsonString();
+}
+catch(ex)
+{
+      console.log("输入数据格式不对，请按提示进行更正");//不要再使用alert，抛出异常前会alert
+}</code></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">该函数返回符合json格式的字符串，而不是object，当数据有异常时，会throw一个error，因此您需要捕获该异常</td>
+</tr></table>
+</div>
+<div class="ulist"><div class="title">.getJson ()</div><ul>
+<li>
+<p>
+获取输入控件集合的值
+</p>
+</li>
+<li>
+<p>
+返回与render中传入的json格式一致的json对象
+</p>
+</li>
+<li>
+<p>
+与getJsonString方法的区别是多了一次解析操作，亦即把字符串转换为json对象
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="title">举例：</div>
+<div class="content">
+<pre><code>try
+{
+     var json = jf.getJson();
+}
+catch(ex)
+{
+      console.log("输入数据格式不对，请按提示进行更正");
+}</code></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">该函数返回json对象，当数据有异常时，会throw一个error，因此您需要捕获该异常</td>
+</tr></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_表单配置项">4. 表单配置项</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>配置项指定表单的创建细节，位于构造函数的第二个参数中，配置项包含了表单的全局设置以及json数据各个字段的配置，配置项的结构以及其属性默认值如下：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>{
+        title : "" , //表单的标题
+        showArrayNO : true,//是否显示数组元素序号，从1开始
+        hideCollapser : false,
+        hideColon :false,//不隐藏冒号
+        addRowText : "添加",
+        rowAction : ['＋','×'],
+        tipsTpl : '&amp;nbsp;&lt;a title="{tips}" href="#nolink"&gt;[?]&lt;/a&gt;',
+        thTipsTpl : "&lt;sup title='{tips}'&gt;[?]&lt;/sup&gt;",
+        fields : {} //字段配置，字段名为key
+}</code></pre>
+</div></div>
+<div class="dlist"><div class="title">表单全局配置</div><dl>
+<dt class="hdlist1">
+<strong>title</strong>
+</dt>
+<dd>
+<p>
+表单的标题
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>showArrayNO</strong>
+</dt>
+<dd>
+<p>
+是否显示数组表格序号列，true或false.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>hideCollapser</strong>
+</dt>
+<dd>
+<p>
+隐藏fieldset开头的展示复选框，默认显示.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>hideColon</strong>
+</dt>
+<dd>
+<p>
+字段的label是否显示冒号，默认显示.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>addRowText</strong>
+</dt>
+<dd>
+<p>
+添加数组元素/表格行按钮文本，默认是“+”.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>rowAction</strong>
+</dt>
+<dd>
+<p>
+数组操作列的按钮集合.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>tipsTpl</strong>
+</dt>
+<dd>
+<p>
+输入框右侧的输入tips模板字符串，模板中的"{tips}"将自动替换为字段的tips属性，默认值"{tips}".
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>thTipsTpl</strong>
+</dt>
+<dd>
+<p>
+表格表头标题的tips模板字符串，模板中的"{tips}"将自动替换为字段的tips属性，默认值"{tips}".
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>fields</strong>
+</dt>
+<dd>
+<p>
+字段配置，以json数据中的字段名为key的json对象，字段配置明细请参见下面的表格.
+</p>
+</dd>
+</dl></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 1. 字段配置项</caption>
+<col width="12%" />
+<col width="37%" />
+<col width="12%" />
+<col width="12%" />
+<col width="25%" />
+<thead>
+<tr>
+<th align="left" valign="top">配置名              </th>
+<th align="left" valign="top">释义 </th>
+<th align="left" valign="top">类型 </th>
+<th align="left" valign="top">默认值      </th>
+<th align="left" valign="top">范例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">ctrlId</p></td>
+<td align="left" valign="top"><p class="table">输入控件的id，当该字段的输入在界面中唯一的话，设置该id便于您之后获取该输入控件，不设置该项，会使用组件自动生成的id</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">ctrlId:"txt_name"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">ctrlAttr</p></td>
+<td align="left" valign="top"><p class="table">输入控件的属性集合，用于设置额外或个性化的属性</p></td>
+<td align="left" valign="top"><p class="table">json对象</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">ctrlAttr:{max:200,min:100,step:5,onchange:"alert(this.value)"}</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">hidden</p></td>
+<td align="left" valign="top"><p class="table">是否隐藏该字段的输入界面，若true在html5下将为容器生成hidden属性</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">hidden:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">label</p></td>
+<td align="left" valign="top"><p class="table">生成的label中的内容，不设置则使用字段名</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">空字符串</p></td>
+<td align="left" valign="top"><p class="table">label:"年龄"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">dfaultValue</p></td>
+<td align="left" valign="top"><p class="table">默认值</p></td>
+<td align="left" valign="top"><p class="table">any</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">dfaultValue:"Y"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">hideLabel</p></td>
+<td align="left" valign="top"><p class="table">隐藏label</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">hideLabel:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">hideColon</p></td>
+<td align="left" valign="top"><p class="table">隐藏字段标签名后面的冒号</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">hideColon:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">noRender</p></td>
+<td align="left" valign="top"><p class="table">不渲染该字段，则获取到的数据同样没有该字段，相当于删除了该字段</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">noRender:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">order</p></td>
+<td align="left" valign="top"><p class="table">序号，越大越排前，用于调节字段的顺序</p></td>
+<td align="left" valign="top"><p class="table">数字</p></td>
+<td align="left" valign="top"><p class="table">0</p></td>
+<td align="left" valign="top"><p class="table">order:999</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">break</p></td>
+<td align="left" valign="top"><p class="table">换行，仅当inline为true时有效</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">break:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">hideCollapser</p></td>
+<td align="left" valign="top"><p class="table">是否隐藏折叠器，针对object和array有效，若不设置或设置为false，则会在输入控件集合外层添加一个复选框用于折叠或展开子项</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">hideCollapser:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">collapse</p></td>
+<td align="left" valign="top"><p class="table">是否折叠容器，针对object和array有效，</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">collapse:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">tips</p></td>
+<td align="left" valign="top"><p class="table">输入控件右侧生成的tips内容，需配合tipsTpl使用</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">tips:"填写您常使用的邮箱"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">tipsTpl</p></td>
+<td align="left" valign="top"><p class="table">输入控件右侧生成的tips容器html模板，需配合tips属性使用，若该项未设置，则使用全局配置</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">全局配置项中的tipsTpl</p></td>
+<td align="left" valign="top"><p class="table">tipsTpl:"&lt;a&gt;{tips}&lt;/a&gt;"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">ctrlCssText</p></td>
+<td align="left" valign="top"><p class="table">输入控件的样式</p></td>
+<td align="left" valign="top"><p class="table">字符串或函数</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">ctrlCssText:"color:red"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">labelCssText</p></td>
+<td align="left" valign="top"><p class="table">空间前面标签的样式</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">labelCssText:"color:red"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">cssText</p></td>
+<td align="left" valign="top"><p class="table">输入控件外层容器的样式</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">cssText:"border:1px solid gray"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">placeholder</p></td>
+<td align="left" valign="top"><p class="table">输入框为空时显示的提示文字，同html5的对应属性</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">placeholder:"please input your address"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">extHtml</p></td>
+<td align="left" valign="top"><p class="table">输入框后的附加内容，勿放置任何input控件，否则会影响表单的取值</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">extHtml:"&lt;input type=<em>button</em> value=<em>选择</em> /&gt;"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">frontalHtml</p></td>
+<td align="left" valign="top"><p class="table">输入框前的附加内容，勿放置任何input控件，否则会影响表单的取值</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">frontalHtml:"/data/web/template/"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">inline</p></td>
+<td align="left" valign="top"><p class="table">输入控件外层容器是否行内布局，相当于设置display为inline-block</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">inline:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">width</p></td>
+<td align="left" valign="top"><p class="table">输入控件外层容器的宽度，取值和css的width属性一致</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">width:"300px"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">type</p></td>
+<td align="left" valign="top"><p class="table">输入控件类型，可选的值为：text、textarea、radio、checkbox、select、hidden或其他浏览器支持的类型，如html5新增的number、date等类型，额外属性需配合ctrlAttr使用</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">text</p></td>
+<td align="left" valign="top"><p class="table">type:"select"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">maxlength</p></td>
+<td align="left" valign="top"><p class="table">输入控件的输入值最大长度，仅针对文本框和文本区域有效</p></td>
+<td align="left" valign="top"><p class="table">数字</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">maxlength:20</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">readonly</p></td>
+<td align="left" valign="top"><p class="table">输入控件是否只读，仅针对文本框和文本区域有效</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">readonly:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">disabled</p></td>
+<td align="left" valign="top"><p class="table">输入控件是否禁用，效果同html元素的disabled属性</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">disabled:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">required</p></td>
+<td align="left" valign="top"><p class="table">输入控件是否必填，用value是否为空字符串判断</p></td>
+<td align="left" valign="top"><p class="table">布尔型</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">required:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">pattern</p></td>
+<td align="left" valign="top"><p class="table">输入值的校验正则表达式，格式同html5的表单元素的pattern属性</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">pattern:"\\d+"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">validator</p></td>
+<td align="left" valign="top"><p class="table">输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法</p></td>
+<td align="left" valign="top"><p class="table">字符串或函数</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">validator:"{value}&gt;5"</p>
+<p class="table">validator:function(v){return v &gt; 5;}</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">title</p></td>
+<td align="left" valign="top"><p class="table">鼠标移到输入控件上时显示的提示内容，也是当字段输入不合法时的提示内容</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">title:"请填写数字"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">datalist</p></td>
+<td align="left" valign="top"><p class="table">输入控件的可选项目列表，针对select、checkbox、radio有效，当浏览器支持html5的datalist且输入控件是text时，会生成datalist标签辅助输入。</p></td>
+<td align="left" valign="top"><p class="table">数组</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">datalist:[{value:0,text:"男"},{value:1,text:"女"}]</p>
+<p class="table">datalist:["office","photoshop","vbscript","c#","arcgis"]</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">multiple</p></td>
+<td align="left" valign="top"><p class="table">是否多选，仅针对select和checkbox有效</p></td>
+<td align="left" valign="top"><p class="table">布尔类型</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">multiple:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">delimiter</p></td>
+<td align="left" valign="top"><p class="table">多选时，数据值的分隔符</p></td>
+<td align="left" valign="top"><p class="table">字符串</p></td>
+<td align="left" valign="top"><p class="table">半角逗号","</p></td>
+<td align="left" valign="top"><p class="table">delimiter:";"</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">size</p></td>
+<td align="left" valign="top"><p class="table">输入控件的size属性，表现为文本框的长度或多选下拉列表的高度等效果</p></td>
+<td align="left" valign="top"><p class="table">数字</p></td>
+<td align="left" valign="top"><p class="table">不设置</p></td>
+<td align="left" valign="top"><p class="table">size:5</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">noCreate</p></td>
+<td align="left" valign="top"><p class="table">是否禁用数组表格的添加行功能</p></td>
+<td align="left" valign="top"><p class="table">布尔</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">noCreate:true</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">noDelete</p></td>
+<td align="left" valign="top"><p class="table">是否禁用数组表格的删除行功能</p></td>
+<td align="left" valign="top"><p class="table">布尔</p></td>
+<td align="left" valign="top"><p class="table">false</p></td>
+<td align="left" valign="top"><p class="table">noCreate:true</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_样式编写指南">5. 样式编写指南</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>AForm对任何合法的数据都生成一个DOM容器，该容器的样式名包含“json_form_element”，因此如果您需对所有数据容器设置样式，则使用“json_form_element”选择器即可，另外容器的样式名还包括生成该容器的数据类型，比如若输入的数据是object，则容器包含样式名“json_Object”，若输入的数据是数组，则容器样式名包含“json_Array”，若输入的数据是字符串、布尔值或数字类型，则样式名除分别包含“json_String”、“json_Boolean”或“json_Number”之外，还会包含“json_basic_element”，例如，对于输入如下数据：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>{"Name":"John Smith","Age":32,"Employed":true}</code></pre>
+</div></div>
+<div class="paragraph"><p>其生成的HTML如下所示（为方便查看DOM结构，以下代码有适当删减）：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>&lt;fieldset class="json_form_element json_Object"&gt;
+        &lt;legend style="display:"&gt;
+                &lt;label&gt;&lt;input checked type="checkbox"&gt;&lt;/label&gt;
+        &lt;/legend&gt;
+        &lt;div class="json_form_element json_basic_element json_String"&gt;
+                &lt;label class="json_field_label label_Name" style="display:" for="ele_json_2"&gt;Name:&lt;/label&gt;
+                &lt;input class="json_field_input" id="ele_json_2" type="text" name="Name" value="John Smith"&gt;
+        &lt;/div&gt;
+        &lt;div class="json_form_element json_basic_element json_Number"&gt;
+                &lt;label class="json_field_label label_Age" style="display:" for="ele_json_3"&gt;Age:&lt;/label&gt;
+                &lt;input class="json_field_input" id="ele_json_3" type="text" name="Age" value="32"&gt;
+        &lt;/div&gt;
+        &lt;div class="json_form_element json_basic_element json_Boolean"&gt;
+                &lt;label class="json_field_label label_Employed" style="display:" for="ele_json_4"&gt;Employed:&lt;/label&gt;
+                &lt;input class="json_field_input" id="ele_json_4" type="checkbox" checked="" name="Employed"&gt;
+        &lt;/div&gt;
+&lt;/fieldset&gt;</code></pre>
+</div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+若数据是键值对，且值是字符串、布尔值或数字类型的一种，则数据的键将生成一个label元素，该label的样式名包含“json_field_label”以及“label_{键名}”。
+</p>
+</li>
+<li>
+<p>
+任何生成的输入控件，如文本框、下拉列表、复选框等容器，都包含样式名“json_field_input”。
+</p>
+</li>
+<li>
+<p>
+文本框和文本区域，在值改变后，会增加样式“json_form_dirty”，因此您可以通过此选择器设定被修改过的输入框的样式。
+</p>
+</li>
+<li>
+<p>
+数组生成的表格，数据行每行的第一列—编号列，其样式名是“json_form_rowNumber”，数据航每行的最后一列—操作列，其样式名是“json_form_actionCell”。
+</p>
+</li>
+<li>
+<p>
+若数据是必填项，则其输入框左侧的label（若有）后会生成一个带星号的span，该span的样式名为“json_form_required”。
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="title">以下是一个AForm表单样式范例：</div>
+<div class="content">
+<pre><code>&lt;style&gt;
+
+/* 输入控件样式 */
+
+.json_basic_element     /* 输入控件外层容器样式 */
+{
+        padding:5px;
+}
+label.json_field_label  /* 输入控件左侧label样式 */
+{
+        display:inline-block;
+        width:100px;
+        font-size:15px;
+}
+.json_basic_element input[readonly]     /* 只读输入框的样式 */
+{
+        border:none;
+}
+textarea.json_field_input       /* 文本区域的样式 */
+{
+        width:100%;
+        margin-top:5px;
+}
+.json_Boolean label             /* 布尔类型控件左侧label样式 */
+{
+        display:inline-block!important;
+}
+input.json_form_dirty   /* 被修改过值的输入框的样式 */
+{
+        border-right:3px solid green;
+}
+span.json_form_required /* 必填提示容器span的样式 */
+{
+        color:red;
+        padding-left:4px;
+}
+
+/* 字段组合容器样式 */
+
+fieldset.json_Object    /* fieldset的样式，该fieldset是一个Object的编辑容器 */
+{
+        margin-top:5px;
+        padding:8px;
+        border:1px solid #000;
+}
+
+/* 数组表格样式 */
+
+table.json_Array        /* 数组表格的样式 */
+{
+        border:1px solid gray;
+        border-collapse:collapse;
+        margin-top:5px;
+        width:100%;
+}
+table.json_Array caption        /* 数组表格标题caption的样式 */
+{
+        text-align:left;
+        padding:5px;
+}
+table.json_Array th     /* 数组表格表头的样式 */
+{
+        padding:5px;
+        font-weight:normal;
+}
+td.json_form_rowNumber  /* 数组表格序号列单元格的样式 */
+{
+        text-align:center;
+}
+table.json_Array td.json_form_actionCell        /* 数组表格操作列单元格的样式 */
+{
+        text-align:center;
+}
+table.json_Array td     /* 数组表格单元格的样式 */
+{
+        text-align:center;
+}
+table.json_Array a.json_form_action     /* 数组表格操作列单元格下删除链接的样式 */
+{
+        text-decoration:none;
+}
+
+&lt;/style&gt;</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_二次开发指南">6. 二次开发指南</h2>
+<div class="sectionbody">
+<div class="paragraph"><div class="title">AForm生成表单的过程.</div><p>AForm根据您传入的对象生成一个表单，注意该表单并未包含form标签，而只是一批输入控件集合。默认情况下，string和number类型生成文本框，boolean类型生成一个复选框，array类型生成表格，每行代表数组的一个元素，object类型生成一个fieldset，其中每个一级子元素代表一组key-value，AForm根据您输入数据的复杂度递归地做上述过程。</p></div>
+<div class="paragraph"><div class="title">修改文本框输入值为空时的处理函数.</div><p>引入AForm的js之后，修改AFormHelper.handlerEmpty函数，该函数的原内容是：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>handlerEmpty : function(input,conf)//处理输入值为空的函数，可改写
+{
+        var errMsg = conf ? ("字段["+(conf.label)+"]不能为空") : input.title;
+        if(errMsg)alert(errMsg);
+
+        if(typeof input.focus == "function" || typeof input.focus == "object")
+        {
+                input.focus();
+        }
+}</code></pre>
+</div></div>
+<div class="paragraph"><div class="title">修改文本框输入值不合法时的处理函数.</div><p>引入AForm的js之后，修改AFormHelper. handlerInvalid函数，该函数的原内容是：</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>handlerInvalid : function(input,conf)//处理输入值不合法的函数，可改写
+{
+        var errMsg = conf ? ("字段["+(conf.label)+"]的值非法") : input.title;
+        if(errMsg)alert(errMsg);
+        if(typeof input.focus == "function" || typeof input.focus == "object")
+        {
+                input.focus();
+        }
+}</code></pre>
+</div></div>
+<div class="listingblock">
+<div class="title">使用css3选择器获获取名为"abc"的输入控件.</div>
+<div class="content">
+<pre><code>json_basic_element input[name=abc]</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_faq">7. FAQ</h2>
+<div class="sectionbody">
+<div class="qlist qanda"><ol>
+<li>
+<p><em>
+AForm有什么作用，为何开发它？
+</em></p>
+<p>
+        在WEB系统中，表单是收集用户输入的不二之选，但是一直以来，创建表单是一项繁琐、耗时且容易出错的工作，尤其是当您的系统使用了很多表单的时候，如何快速创建简洁可用的表单，且使得这些表单风格和交互一致并非一件容易的事情，因此我编写了这么一个组件，它可直接分析json数据生成符合语义的表单，并且可高度定制，它集成了表单最核心的功能，如各种输入控件的快速生成，以及输入验证和用户提示，而且提供了对数组的支持。
+AForm在生产中的实践显示，相比于人工编写表单，其创建表单的效率可以提高10倍以上，而且在功能上足以全面应付，除非您的表单非常个性化，否则AForm将使得您的开发效率事半功倍。
+</p>
+</li>
+<li>
+<p><em>
+AForm是否支持html5的类型，如number、date等？
+</em></p>
+<p>
+        支持！在字段配置中，设置type的值为number、date等类型即可，针对这些类型的独有属性可通过ctrlAttr设置，比如定义身高为number输入框，可按如下配置：
+        Height: { label: "身高", required: true, type:"number" , ctrlAttr : {min:100,max:200,step:1} }
+</p>
+</li>
+<li>
+<p><em>
+我想编写js控制某个输入框，如设置事件，如何实现？
+</em></p>
+<p>
+        可使用css选择器选取该输入框，如若该输入框对应的字段名为abc，则使用如下css选择器可选取到：json_basic_element input[name=abc]，如果您还是觉得麻烦，可设置该字段的ctrlId为abc，此后可通过getElementById得到该组件，再绑定事件即可。
+</p>
+</li>
+<li>
+<p><em>
+对某个数组，我不想用户添加和删除行，怎么实现？
+</em></p>
+<p>
+        AForm针对数组会生成一个表格，如果您不想用户添加和删除行，可设置针对该字段的属性“noCreate”和“noDelete”为true，这样就不会针对该数组生成“添加”和“删除”按钮。
+</p>
+</li>
+<li>
+<p><em>
+我想对字段A下的字段B进行偏好设置，怎么实现？
+</em></p>
+<p>
+        直接设置针对B的配置即可，如果json数据其他层级也存在字段B，则也会使用该配置，AForm假定您的数据中，不同语义的字段名是不重复的，如果有这种重复的字段名，但其意义又不同，则建议您修改字段名。
+</p>
+</li>
+<li>
+<p><em>
+是否可以直接提交AForm生成的表单，会不会有什么问题？
+</em></p>
+<p>
+        您完全可以直接通过表单的提交按钮提交AForm的表单，而不需调用getJson函数获取数据，AForm生成的输入项是符合语义的，比如针对如下数据生成的表单：
+        {"Name":"John Smith","Age":32,"Employed":true}，
+        对该表单进行get提交后，查询参数将为：
+        Name=John+Smith&amp;Age=32&amp;Employed=on，
+        如果数据有嵌套，或者数据中有数组，那么提交的查询参数也不会有问题，关键是服务器程序要正确地去读取这些提交过来的数据。
+</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2014-07-11 16:40:09 中国标准时间
+</div>
+</div>
+</body>
+</html>
