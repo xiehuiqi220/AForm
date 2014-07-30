@@ -13,6 +13,8 @@
 13、fieldset的disabled属性应该生效
 14、校验器，最基本的是正则以及必填校验器
 15、演示开发一个bool插件（on、off，绿色红色仿制电源开关）
-16、value中有双引号的话无法渲染
+16、value中有双引号的话无法渲染 √
 17、指令directive的自定义，字段配置自定义属性，定义对输入元素的操作
 18、schema模式，client、server、或者merge模式
+19、null类型应该照样返回null类型
+20、字段的onRenderComplete，字段渲染完毕的处理程序
