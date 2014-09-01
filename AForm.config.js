@@ -13,9 +13,14 @@ var AFormConfig = {};
 AFormConfig.defaultDelimiter = ",";//默认字符串分隔符，用于处理复选框的逗号隔开的值
 //表格行操作
 AFormConfig.defaultAction = {
-	"＋" : "<a class='json_form_action' href='javascript:void(0)' title='增加' onclick='var row = this.parentNode.parentNode;AFormHelper.addRow(row.parentNode.parentNode);'>＋<a>",
-	"×" : "<a class='json_form_action' href='javascript:void(0)' title='删除' onclick='if(!confirm(\"确定删除该行吗？\"))return false;var row = this.parentNode.parentNode;AFormHelper.removeRow(row);'>×<a>"
+    "aform_array_add_row": {
+        html: "<a href='javascript:void(null)' title='增加'>＋</a>"
+    },
+    "aform_array_delete_row": {
+        html: "<a href='javascript:void(null)' title='删除'>×</a>"
+    }
 };
+
 //标签
 AFormConfig.tags = {
 	"basicContainer" : "div",//div
@@ -26,8 +31,10 @@ AFormConfig.tags = {
 //额外样式名
 AFormConfig.extClassName = {
 	"basicContainer" : "form-group",
+    "label" : "",
 	"table" : "table table-bordered",
-	"control" : "form-control"
+	"control" : "form-control",
+    "controlContainer" : ""
 };
 //模板
 AFormConfig.tpl = {
@@ -36,32 +43,40 @@ AFormConfig.tpl = {
 };
 //术语
 AFormConfig.wording = {
-	"numText" : "序号",
-	"addRowText" : "增加"
+	"numText" : "NO.",
+    "addRowText" : "增加",
+    "oprText" : "操作",
+    "labelColon" : "："
 };
 
 //处理函数
 AFormConfig.fn = {
-	"onEmpty" : function(input,conf){
-		var errMsg = conf ? ("字段["+(conf.label)+"]不能为空") : input.title;
-		if(!errMsg) errMsg = "字段["+(input.getAttribute("name"))+"]不能为空";
-		
-		alert(errMsg);
-		if(typeof input.focus == "function" || typeof input.focus == "object")
-		{
-			input.focus();
-		}
-	},
-	"onInvalid" : function(input,conf){
-		var errMsg = conf ? ("字段["+(conf.label)+"]的值非法") : input.title;
-		if(!errMsg) errMsg = "字段["+(input.getAttribute("name"))+"]非法";
+    "showTips" : function(input , errMsg){
+        alert(errMsg);
+    },
+    "onEmpty": function (input, conf) {
+        var name = input.getAttribute("name");
 
-		alert(errMsg);
-		if(typeof input.focus == "function" || typeof input.focus == "object")
-		{
-			input.focus();
-		}
-	}
+        var errMsg = conf ? ("字段[" + (conf.label) + "]不能为空") : input.title;
+        if (!errMsg) errMsg = "字段[" + (input.getAttribute("name")) + "]不能为空";
+
+        AFormConfig.fn.showTips(input , errMsg);
+        if (typeof input.focus == "function" || typeof input.focus == "object") {
+            input.focus();
+        }
+    },
+    "onInvalid": function (input, conf, errorMsg) {
+        var errMsg = errorMsg ? errorMsg : (conf ? ("字段[" + (conf.label) + "]的值非法") : input.title);
+        if (!errMsg) errMsg = "字段[" + (input.getAttribute("name")) + "]非法";
+
+        AFormConfig.fn.showTips(input , errMsg);
+        if (typeof input.focus == "function" || typeof input.focus == "object") {
+            input.focus();
+        }
+    },
+    "onGlobalInvalid" : function(msg){
+        alert(msg);
+    }
 };
 
 

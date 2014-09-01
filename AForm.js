@@ -12,33 +12,54 @@
         };
     }
 
+    //已渲染单元数量，静态成员初始化
+    AForm.renderCount = 0;
+    var _valueSetter = {};//dom value赋值队列，生命周期为一次render过程，每次render前要reset为空对象
+    var _onchangeSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
+    var _onclickSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
+
     //helper
-    var AFormHelper = {
+    var _formHelper = {
+        $: function (id) {
+            return document.getElementById(id);
+        },
+        hasClass: function (ele, clsName) {
+            return ele.className.indexOf(clsName) > -1;
+        },
         addClass: function (ele, clsName) {
             if (!ele.className) {
                 ele.className = clsName;
             }
-            else if (ele.className.indexOf(clsName) == -1) {
+            else if (!_formHelper.hasClass(ele,clsName)) {
                 ele.className += " " + clsName;
             }
         },
-        onValueChane: function (input) {
-            this.addClass(input, "json_form_dirty");
-            this.validateInput(input);
+        onValueChange: function (input, conf) {
+            this.addClass(input, "json-form-dirty");
+            this.validateInput(input, conf);
         },
-        validateInput: function (input)//用于验证输入控件的value
+        validateInput: function (input, conf)//用于验证输入控件的value
         {
             var v = input.value;
             if (v == "" && input.getAttribute("required") != null) {
-                AFormConfig.fn.onEmpty(input);
+                AFormConfig.fn.onEmpty(input, conf);
                 return false;
             }
             if (v != "" && input.getAttribute("pattern") && !new RegExp("^" + input.getAttribute("pattern") + "$", "i").test(input.value)) {
-                AFormConfig.fn.onInvalid(input);
+                AFormConfig.fn.onInvalid(input, conf);
                 return false;
             }
 
             return true;
+        },
+        getParent: function (ele , ptag) {
+            ptag = ptag.toUpperCase();
+            var p = ele.parentNode;
+            while (p && p.tagName != ptag) {
+                p = p.parentNode;
+            }
+
+            return p;
         },
         getNextSibling: function (n) {
             var x = n.nextSibling;
@@ -54,6 +75,63 @@
                 n.style.display = isHidden ? "none" : (visible ? "" : "none");
                 n = this.getNextSibling(n);
             }
+        },
+        exeCmd: function (e, tbid, rowAction) {
+            e = e || event;
+            var ele = e.srcElement ? e.srcElement : e.target;
+            var cmd = ele.getAttribute("cmd");
+            var table = _formHelper.getParent(ele , "table");
+
+            //重要，如果事件源table存在事件绑定，但当前触发的事件函数源却不是该table，则是冒泡带上的事件，忽略之，防止触发两次
+            if(table && table.onclick && table.id != tbid){
+                return false;
+            }
+            var row = _formHelper.getParent(ele , "tr");
+
+            if (cmd == "aform_array_collapse_table") {//隐藏table
+                var show = true;
+
+                if(_formHelper.hasClass(ele,"json-form-ctrl-un-collapse")){
+                    ele.className = ele.className.replace("json-form-ctrl-un-collapse","json-form-ctrl-collapse");
+                    show = false;//需要折叠
+                }else if(_formHelper.hasClass(ele,"json-form-ctrl-collapse")){
+                    ele.className = ele.className.replace("json-form-ctrl-collapse","json-form-ctrl-un-collapse");
+                }
+
+                _formHelper.showNextSibling(_formHelper.getParent(ele,"caption"), show);
+                _formHelper.showNextSibling(ele , show);
+            } else if (cmd == "aform_array_collapse_fieldset") {
+                var show = true;
+
+                if(_formHelper.hasClass(ele,"json-form-ctrl-un-collapse")){
+                    ele.className = ele.className.replace("json-form-ctrl-un-collapse","json-form-ctrl-collapse");
+                    show = false;
+                }else if(_formHelper.hasClass(ele,"json-form-ctrl-collapse")){
+                    ele.className = ele.className.replace("json-form-ctrl-collapse","json-form-ctrl-un-collapse");
+                }
+
+                _formHelper.showNextSibling(_formHelper.getParent(ele,"legend"), show);
+            } else if (cmd == "aform_array_add_row") {//默认添加行为
+                _formHelper.addRow(table);
+            } else if (cmd == "aform_array_delete_row") {//默认删除行的行为
+                if (!confirm("确定删除该行吗？"))return false;
+                _formHelper.removeRow(row);
+            } else {//执行自定义的
+                for (var icmd in rowAction) {
+                    var item = rowAction[icmd];
+                    if (icmd == cmd && typeof item.handler == "function") {
+                        item.handler(row, table, icmd);
+                        break;
+                    }
+                }
+            }
+        },
+        isObjEmpty: function (obj) {
+            if (!obj || obj.length)return true;//数组不合法，认为是空
+            for (var p in obj) {
+                return false;
+            }
+            return true;
         },
         isInArray: function (key, array) {
             var i = array.length;
@@ -89,14 +167,17 @@
 
             while (len--) {
                 var lb = labels[len];
-                var forId = lb.htmlFor;
                 var newId = "ele_json_new_" + len + "_" + (new Date().getTime() % 1000000);
-                lb.htmlFor = newId;
+                if(lb.htmlFor) {//如果此前有for，才修改for为新值
+                    lb.htmlFor = newId;
+                }
 
                 var ip = this.getNextSibling(lb);//找到label的input
-                ip.readOnly = false;
-                ip.id = newId;//input
-                ip.value = "";//clear
+                if (ip) {
+                    ip.readOnly = false;
+                    ip.id = newId;//input
+                    ip.value = "";//clear
+                }
             }
 
             table.tBodies[0].appendChild(newRow);
@@ -106,7 +187,8 @@
         each: function (array, fn) {
             var len = array.length;
             for (var i = 0; i < len; i++) {
-                fn(array[i], i);
+                var ret = fn(array[i], i);
+                if (ret === false)break;
             }
         },
         getObjType: function (obj) {
@@ -119,19 +201,8 @@
         }
     };
 
-    function replaceBadControl(v) {
-        //过滤不合法的bad control char
-        v = v.replace(/\\/g, "\\\\");//反斜杠
-        v = v.replace(/"/g, "\\\"");//双引号
-        v = v.replace(/\n/g, "\\n");//回车符
-        v = v.replace(/\t/g, "\\t");//tab符
-
-        return v;
-    }
-
-    var valueSetter = {};//dom value赋值队列，生命周期为一次render过程，每次render前要reset为空对象
     //表单元素工厂
-    var FormElementFactory = {
+    var _FormElementFactory = {
         //获取字段的标签名
         getLabelText: function (fieldConfig, name_or_index) {
             if (fieldConfig && fieldConfig.label) {
@@ -175,12 +246,15 @@
                         html.push(" list='" + listId + "'");
                     }
                     html.push(param.attrHtml);
-                    html.push(" onchange='AFormHelper.onValueChane(this)' id='");
+                    html.push(" id='");
                     html.push(param.id + "' type='" + param.type + "' ");//这里是用户传入的type，而不是text，这样可支持html5的类型
                     html.push(param.attrName);
                     html.push(" value=\"" + "" + "\" />");
 
-                    valueSetter[param.id] = param.value;//使用dom赋值，而不使用字符串拼接方式，避免单引号、双引号等字符转义出问题
+                    _onchangeSetter[param.id] = function () {
+                        _formHelper.onValueChange(this, param)
+                    };
+                    param.value != "" && (_valueSetter[param.id] = param.value);//使用dom赋值，而不使用字符串拼接方式，避免单引号、双引号等字符转义出问题
                     html.push(listHtml);
 
                     break;
@@ -188,10 +262,14 @@
 
                     html.push("<textarea ");
                     html.push(param.attrHtml);
-                    html.push(" onchange='AFormHelper.addClass(this,\"json_form_dirty\")' id='");
+                    html.push(" id='");
                     html.push(param.id + "'");
                     html.push(param.attrName);
                     html.push(">" + param.value + "</textarea>");
+
+                    _onchangeSetter[param.id] = function () {
+                        _formHelper.onValueChange(this, param)
+                    };
 
                     break;
                 case "hidden":
@@ -212,16 +290,21 @@
                     html.push(param.attrName);
                     html.push(">");
 
-                    var list = param.datalist;
+                    var list = param.datalist || [];
                     var len = list.length;
-                    var isTextValue = len > 0 && typeof list[0] == 'object';
 
                     var valueArr = param.multiple ? param.value.toString().split(param.delimiter || AFormConfig.defaultDelimiter) : [param.value];
 
                     for (var i = 0; i < len; i++) {
-                        var v = isTextValue ? list[i].value : list[i];
-                        var t = isTextValue ? list[i].text : list[i];
-                        html.push("<option " + (AFormHelper.isInArray(v.toString(), valueArr) ? "selected" : "") + " value=\"" + v + "\">" + t + "</option>");
+                        var v = list[i].value == undefined ? list[i] : list[i].value;
+                        var t = list[i].text == undefined ? list[i] : list[i].text;
+
+                        if(list[i].group) {
+                            html.push("<optgroup label='" + t + "'></optgroup>");
+                        }
+                        else {
+                            html.push("<option " + (_formHelper.isInArray(v.toString(), valueArr) ? "selected" : "") + " value=\"" + v + "\">" + t + "</option>");
+                        }
                     }
 
                     html.push("</select>");
@@ -263,7 +346,7 @@
                     for (var i = 0; i < len; i++) {
                         var v = isTextValue ? list[i].value : list[i];
                         var t = isTextValue ? list[i].text : list[i];
-                        html.push("<label><input " + param.attrName + " type='checkbox' " + (AFormHelper.isInArray(v.toString(), valueArr) ? "checked" : "") + " value=\"" + v + "\" />" + t + "</label>");
+                        html.push("<label><input " + param.attrName + " type='checkbox' " + (_formHelper.isInArray(v.toString(), valueArr) ? "checked" : "") + " value=\"" + v + "\" />" + t + "</label>");
                     }
 
                     html.push("</span>");
@@ -278,33 +361,32 @@
             if (!param.fieldConfig)param.fieldConfig = {};
 
             var strAttrName = (typeof param.name_or_index == "string" ? ("name=" + param.name_or_index + "") : "");
-            var elementId = param.fieldConfig.ctrlId || ("ele_json_" + AForm.renderCount);//若给定控件id，则用给定的控件id
-            var labelHtml = "<" + AFormConfig.tags.label + " class='json_field_label " + AFormConfig.extClassName.label + " label_" + param.name_or_index + "' style='" + (param.fieldConfig.labelCssText || "") + ";display:" + ((strAttrName == "" || param.hideLabel || param.fieldConfig.hideLabel) ? "none" : "") + "' for='" + elementId + "'>";
+            var elementId = param.fieldConfig.ctrlId || ("ele_json_" + AForm.renderCount);
+            var labelHtml = "<" + AFormConfig.tags.label + " class='json-field-label " + AFormConfig.extClassName.label + " label_" + param.name_or_index + "' style='" + (param.fieldConfig.labelCssText || "") + ";display:" + ((strAttrName == "" || param.hideLabel || param.fieldConfig.hideLabel) ? "none" : "") + "' for='" + elementId + "'>";
             labelHtml += this.getLabelText(param.fieldConfig, param.name_or_index);
-            labelHtml += param.fieldConfig.hideColon ? "" : ":";
+            labelHtml += param.fieldConfig.hideColon ? "" : AFormConfig.wording.labelColon;
             if (param.fieldConfig.required) {
-                labelHtml += "<span class='json_form_required'>*</span>";
+                labelHtml += "<span class='json-form-required'>*</span>";
             }
             labelHtml += "</" + AFormConfig.tags.label + ">";
 
             var cssText = (param.fieldConfig.cssText || "");
             var attr = (param.fieldConfig.attr || "");
+            var className = "json-form-element json-basic-element json-" + param.dataType + " " + AFormConfig.extClassName.basicContainer;
 
             if (param.fieldConfig.inline) {
-                cssText += ";display:inline-block;*display:inline;*zoom:1";
-                /* ie 6、7 hack */
+                cssText += ";display:inline-block;*display:inline;*zoom:1";//* ie 6、7 hack
+                className += " json-form-inline";
             }
             if (param.fieldConfig.hidden) {
                 attr += " hidden='hidden'";
                 cssText += ";display:none";
-                /* ie 6、7 hack */
             }
             if (param.fieldConfig.width) {
                 cssText += ";width:" + param.fieldConfig.width;
-                /* ie 6、7 hack */
             }
 
-            var html = ["<" + AFormConfig.tags.basicContainer + " " + attr + " style='" + cssText + "' class='json_form_element json_basic_element json_" + param.dataType + " " + AFormConfig.extClassName.basicContainer + "'>"];
+            var html = ["<" + AFormConfig.tags.basicContainer + " " + attr + " style='" + cssText + "' class='"+className+"'>"];
             html.push(labelHtml);
 
             if (param.fieldConfig.frontalHtml)//输入控件前的html
@@ -348,7 +430,7 @@
             if (param.fieldConfig.placeholder) {
                 attrHtml.push("placeholder='" + param.fieldConfig.placeholder + "'");
             }
-            attrHtml.push("class='json_field_input " + AFormConfig.extClassName.control + "'");
+            attrHtml.push("class='json-field-input " + AFormConfig.extClassName.control + "'");
             attrHtml = attrHtml.join(' ');
             //end 公共属性
 
@@ -361,19 +443,20 @@
                 //先判断是否有插件，有则用插件托管渲染
                 if (param.fieldConfig.type in AFormPlugin.control) {
                     //插件用固定样式包裹
-                    html.push("<span type=\"" + param.fieldConfig.type + "\" class=\"json_field_plugin\">");
-                    html.push(AFormPlugin.control[param.fieldConfig.type].render(param.name_or_index, param.inputData, param.fieldConfig));
+                    html.push("<span type=\"" + param.fieldConfig.type + "\" class=\"json-field-plugin\">");
+                    html.push(AFormPlugin.control[param.fieldConfig.type].render(param.name_or_index, param.inputData, param.fieldConfig, AForm.renderCount));
                     html.push("</span>");
                 }
                 else {
                     if (AFormConfig.tags.controlContainer)html.push("<" + AFormConfig.tags.controlContainer + " class='" + (AFormConfig.extClassName.controlContainer || '') + "'>");
-                    html.push(FormElementFactory.generateInputHtml({
+                    html.push(_FormElementFactory.generateInputHtml({
                         "type": param.fieldConfig.type,//text,textarea,select,checkbox,radio,hidden 或者其他无法预期的类型，如type、mail、date等html5新增属性
                         "datalist": param.fieldConfig.datalist,
                         "attrHtml": attrHtml,
                         "multiple": param.fieldConfig.multiple,
                         "delimiter": param.fieldConfig.delimiter,
                         "id": elementId,
+                        "label": param.fieldConfig.label,
                         "attrName": strAttrName,
                         "value": param.inputData
                     }));
@@ -385,7 +468,7 @@
             {
                 html.push(param.fieldConfig.extHtml);
             }
-            if (!param.hiddenTips && param.fieldConfig.tips)//若未隐藏帮助tips，且tips不为空
+            if (!param.fieldConfig.noTips && param.fieldConfig.tips)//若未隐藏帮助tips，且tips不为空
             {
                 var tipsTpl = param.fieldConfig.tipsTpl || param.globalConfig.tipsTpl;//字段优先
                 html.push(tipsTpl.replace(/\{tips\}/g, param.fieldConfig.tips));
@@ -394,43 +477,37 @@
 
             return html.join('');
         },
-        createString: function (inputStr, name_or_index, globalConfig, fieldConfig, hideLabel, hiddenTips) {
+        createString: function (inputStr, name_or_index, globalConfig, fieldConfig, hideLabel) {
             return this.createInputRow({
                 inputData: inputStr,
                 dataType: "String",
                 name_or_index: name_or_index,
                 globalConfig: globalConfig,
                 fieldConfig: fieldConfig,
-                hideLabel: hideLabel,
-                hiddenTips: hiddenTips
+                hideLabel: hideLabel
             });
         },
-        createNumber: function (inputNumber, name_or_index, globalConfig, fieldConfig, hideLabel, hiddenTips) {
+        createNumber: function (inputNumber, name_or_index, globalConfig, fieldConfig, hideLabel) {
             return this.createInputRow({
                 inputData: inputNumber,
                 dataType: "Number",
                 name_or_index: name_or_index,
                 globalConfig: globalConfig,
                 fieldConfig: fieldConfig,
-                hideLabel: hideLabel,
-                hiddenTips: hiddenTips
+                hideLabel: hideLabel
             });
         },
-        createBoolean: function (inputBool, name_or_index, globalConfig, fieldConfig, hideLabel, hiddenTips) {
+        createBoolean: function (inputBool, name_or_index, globalConfig, fieldConfig, hideLabel) {
             return this.createInputRow({
                 inputData: inputBool,
                 dataType: "Boolean",
                 name_or_index: name_or_index,
                 globalConfig: globalConfig,
                 fieldConfig: fieldConfig,
-                hideLabel: hideLabel,
-                hiddenTips: hiddenTips
+                hideLabel: hideLabel
             });
         }
     };
-
-    //已渲染单元数量，静态成员初始化
-    AForm.renderCount = 0;
 
     //构造函数
     //param container dom元素或其id
@@ -438,7 +515,7 @@
     //return void
     function AForm(container, config) {
 
-        this.container = typeof container == "string" ? document.getElementById(container) : container;
+        this.container = typeof container == "string" ? _formHelper.$(container) : container;
 
         //初始化默认配置
         this.config = {
@@ -449,11 +526,12 @@
             // merge - 把user定义的schema合并到数据生成的schema，亦即若schema有、data无的字段，合并后会有该字段
             schemaMode: "reomte",//默认是remote，亦即根据data自动生成
             showArrayNO: true,//是否显示数组元素序号，从1开始
-            showArrayOpr: true,//是否显示数组操作列？
             hideCollapser: false,
+            validators: false,//全局验证器
+            readonly: false,//只读模式，若为true，则默认其下所有控件均为只读
             hideColon: false,//不隐藏冒号
             addRowText: AFormConfig.wording.addRowText,
-            rowAction: ['＋', '×'],
+            rowAction: AFormConfig.defaultAction,
             tipsTpl: AFormConfig.tpl.tips,
             thTipsTpl: AFormConfig.tpl.thTips,
             fields: {}				//字段配置，字段名为key
@@ -465,11 +543,24 @@
                 this.config[p] = config[p];
             }
         }
+
+        //全局验证器加工
+        if (typeof this.config.validators == "object" && "rule" in this.config.validators) {
+            this.config.validators = [this.config.validators];
+        }
+
+        for (var i = 0; i < this.config.validators.length; i++) {
+            var item = this.config.validators[i];
+            if (typeof item.rule == "string" && item.rule.length > 2) {
+                item.rule = new Function("$v", "$ctrl", "return " + item.rule);
+            }
+        }
     }
 
     //当渲染完毕做什么
     AForm.prototype.onRenderComplete = function () {
-    }
+        //no nothing
+    };
 
     //渲染json数据
     //input 输入的json数据
@@ -512,12 +603,29 @@
                 break;
         }
 
-        valueSetter = {};//渲染前reset
+        _valueSetter = {};//渲染前reset
+        _onchangeSetter = {};
+        _onclickSetter = {};
+
         this.container.innerHTML = this.renderData(input);
 
         //赋值器
-        for (var id in valueSetter) {
-            document.getElementById(id).value = valueSetter[id];
+        for (var id in _valueSetter) {
+            if (id && _formHelper.$(id)) {
+                _formHelper.$(id).value = _valueSetter[id];
+            }
+        }
+        //事件onchange赋值器
+        for (var id in _onchangeSetter) {
+            if (id && _formHelper.$(id)) {
+                _formHelper.$(id).onchange = _onchangeSetter[id];
+            }
+        }
+        //事件onclick赋值器
+        for (var id in _onclickSetter) {
+            if (id && _formHelper.$(id)) {
+                _formHelper.$(id).onclick = _onclickSetter[id];
+            }
         }
 
         //渲染标题
@@ -538,9 +646,11 @@
             titleEle && (titleEle.style.display = "none");
         }
 
-        this.onRenderComplete();
+        if (typeof this.onRenderComplete == "function") {
+            this.onRenderComplete();
+        }
         return this;
-    }
+    };
 
 
     //获取输入空间集合的value，返回json
@@ -550,30 +660,73 @@
         return eval("(" + result + ")");
     };
 
-    //获取输入空间集合的value，返回形如json的字符串
+    //获取输入空间集合的value，返回json
+    AForm.prototype.tryGetJson = function (domEle)//遍历具有
+    {
+        var result = false;
+        try{
+            result = eval("(" + this.getJsonString() + ")");
+        }
+        catch (ex) {
+            ;
+        }
+        finally{
+            return result;
+        }
+    };
+
+    //获取输入空间集合的value，返回json
     AForm.prototype.getJsonString = function (domEle)//遍历具有
+    {
+        var result = _getJsonString.call(this);
+        if (this.config.validators) {
+            var json = eval("(" + result + ")");
+            for (var i = 0; i < this.config.validators.length; i++) {
+                var item = this.config.validators[i];
+                if (typeof item.rule == "function" && item.rule(json, this.container) !== true) {
+                    if (item.errorMsg !== false) {
+                        AFormConfig.fn.onGlobalInvalid(item.errorMsg);
+                    }
+                    throw new Error("invalid value , not match global rule " + item.errorMsg);
+                }
+            }
+        }
+        return result;
+    };
+
+    //全局静态函数
+    // 注册一个输入控件
+    //obj {render  , getJsonPartString}
+    AForm.registerControl = function (name, obj) {
+        AFormPlugin.control[name] = obj;
+    };
+
+    //获取输入控件集合的value，返回形如json的字符串
+    function _getJsonString(domEle)//遍历
     {
         domEle = domEle || this.container.childNodes[0];//若未传，则默认为根元素
         var result = [];
 
-        if (domEle.className.indexOf("json_field_plugin") > -1)//插件优先
+        if (domEle.className.indexOf("json-field-plugin") > -1)//插件优先
         {
             var pluginName = domEle.getAttribute("type");
             var pluginInstance = AFormPlugin.control[pluginName];
             return pluginInstance.getJsonPartString(domEle);
         }
 
-        if (domEle.className.indexOf('json_Object') > -1) {
+        if (domEle.className.indexOf('json-Object') > -1) {
             domEleName = domEle.getAttribute("name");//ie9需使用getAttribute
+            var conf = {};
             if (domEleName) {
                 result.push("\"" + domEleName + "\":");
+                conf = this.config.fields[domEleName];
             }
             result.push("{");
 
             var childNodes = [];
             if (domEle.nodeName == 'TR') {
-                AFormHelper.each(domEle.cells, function (cell) {
-                    if (cell.firstChild.nodeType == 1 && cell.firstChild.className.indexOf("json_form_element") > -1) {
+                _formHelper.each(domEle.cells, function (cell) {
+                    if (cell.firstChild.nodeType == 1 && cell.firstChild.className.indexOf("json-form-element") > -1) {
                         childNodes.push(cell.firstChild);
                     }
                 });
@@ -585,14 +738,14 @@
             var len = childNodes.length;
             for (var i = 0; i < len; i++) {
                 var node = childNodes[i];
-                if (node.className.indexOf('json_form_element') > -1) {
-                    result.push(this.getJsonString(node));
+                if (node.className.indexOf('json-form-element') > -1) {
+                    result.push(_getJsonString.call(this, node));
                     if (i < len - 1)result.push(",");
                 }
             }
             result.push("}");
         }
-        else if (domEle.className.indexOf('json_Array') > -1) {
+        else if (domEle.className.indexOf('json-Array') > -1) {
             domEleName = domEle.getAttribute("name");
             if (domEleName) {
                 result.push("\"" + domEleName + "\":");
@@ -604,17 +757,17 @@
             for (var i = 0; i < len; i++)//
             {
                 var row = rows[i];
-                result.push(this.getJsonString(row));
+                result.push(_getJsonString.call(this, row));
                 if (i < len - 1)result.push(",");
             }
             result.push("]");
         }
-        else if (domEle.className.indexOf("json_basic_element") > -1) {
+        else if (domEle.className.indexOf("json-basic-element") > -1) {
             //先找插件
             var nodes = domEle.childNodes;
             var i = nodes.length;
             while (i--) {
-                if (nodes[i].className && nodes[i].className.indexOf("json_field_plugin") > -1) {
+                if (nodes[i].className && nodes[i].className.indexOf("json-field-plugin") > -1) {
                     var pluginName = nodes[i].getAttribute("type");
                     var pluginInstance = AFormPlugin.control[pluginName];
                     return pluginInstance.getJsonPartString(nodes[i]);
@@ -683,46 +836,69 @@
             //处理非法情形
             if (tmpValue != "" && conf.pattern && !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
                 AFormConfig.fn.onInvalid(input, conf);
-                throw new Error("invalid value");
+                throw new Error("invalid value , not match pattern");
+            }
+            //处理规则校验
+            if (tmpValue != "" && conf.validators) {
+                for (var i = 0; i < conf.validators.length; i++) {
+                    var item = conf.validators[i];
+                    if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
+                        if (item.errotMsg !== false) {
+                            AFormConfig.fn.onInvalid(input, conf, item.errorMsg);
+                        }
+                        throw new Error("invalid value , not match rule");
+                    }
+                }
+            }
+
+            //值适配器处理
+            var fn = function (v) {
+                return v;
+            };
+            if (conf.valueAdapter && typeof conf.valueAdapter.beforeGet == "function") {
+                fn = conf.valueAdapter.beforeGet;
             }
 
             //把处理后的值推入result
-            if (domEle.className.indexOf("json_Boolean") > -1) {
-                result.push(values.length > 0);//若勾选即为true
+            if (domEle.className.indexOf("json-Boolean") > -1) {
+                var tmp = fn(values.length > 0);
+                if (typeof tmp == "string") {
+                    tmp = "\"" + tmp + "\"";
+                }
+                result.push(tmp);//若勾选即为true
             }
-            else if (domEle.className.indexOf("json_Number") > -1) {
+            else if (domEle.className.indexOf("json-Number") > -1) {
                 var len = values.length;
                 for (var i = 0; i < len; i++) {
                     values[i] -= 0;//转换为数字
                 }
-                result.push(values.join(','));
+                result.push(fn(values.join(conf.delimiter || ',')));
             }
-            else if (domEle.className.indexOf("json_String") > -1) {
+            else if (domEle.className.indexOf("json-String") > -1) {
                 var len = values.length;
                 for (var i = 0; i < len; i++) {
                     //过滤不合法的bad control char
-                    values[i] = replaceBadControl(values[i]);
+                    values[i] = _replaceBadControl(values[i]);
                 }
 
                 result.push('"');
-                result.push(values.join(conf.delimiter || ","));
+                result.push(fn(values.join(conf.delimiter || ",")));
                 result.push('"');
             }
         }
 
         result = result.join('');
-
         return  result;
-
-    };
+    }
 
     //渲染一项数据
     //@input 输入的数据
     //@name_or_index 数据的key名
     //@hideLabel 隐藏label
-    //@hiddenTips 隐藏tips
-    AForm.prototype.renderData = function (input, name_or_index, hideLabel, hiddenTips) {
-        if (input == null)input = 'null';
+    AForm.prototype.renderData = function (input, name_or_index, hideLabel) {
+        if (input == null) {
+            return "";//忽略null
+        }
         if (input == undefined)input = 'undefined';
 
         var strAttrName = (typeof name_or_index == "string" ? ("name='" + name_or_index + "'") : "");
@@ -745,17 +921,39 @@
         fieldConfig.hideColon = "hideColon" in fieldConfig ? fieldConfig.hideColon : this.config.hideColon;
         fieldConfig.showArrayNO = "showArrayNO" in fieldConfig ? fieldConfig.showArrayNO : this.config.showArrayNO;
         fieldConfig.label = fieldConfig.label || this.config.label || name_or_index;//没有则取name or index
+        fieldConfig.hideHeader = "hideHeader" in fieldConfig ? fieldConfig.hideHeader : this.config.hideHeader;
+        fieldConfig.readonly = "readonly" in fieldConfig ? fieldConfig.readonly : this.config.readonly;
+        fieldConfig.validators = fieldConfig.validators || [];
 
+
+        //处理校验表达式
+        if (typeof fieldConfig.validators == "object" && "rule" in fieldConfig.validators) {
+            fieldConfig.validators = [fieldConfig.validators];
+        }
+
+        for (var i = 0; i < fieldConfig.validators.length; i++) {
+            var item = fieldConfig.validators[i];
+            if (typeof item.rule == "string" && item.rule.length > 2) {
+                item.rule = new Function("$v", "$ctrl", "return " + item.rule);
+            }
+        }
+
+        //值适配器处理
+        if (fieldConfig.valueAdapter && typeof fieldConfig.valueAdapter.beforeRender == "function") {
+            var tmp = fieldConfig.valueAdapter.beforeRender(input, name_or_index);
+            //仅支持基本类型，若返回对象，则get适配器无法生效
+            input = tmp;
+        }
         AForm.renderCount++;
         switch (input.constructor) {
             case Number:
-                return FormElementFactory.createNumber(input, name_or_index, this.config, fieldConfig, hideLabel, hiddenTips);
+                return _FormElementFactory.createNumber(input, name_or_index, this.config, fieldConfig, hideLabel);
                 break;
             case String:
-                return FormElementFactory.createString(input, name_or_index, this.config, fieldConfig, hideLabel, hiddenTips);
+                return _FormElementFactory.createString(input, name_or_index, this.config, fieldConfig, hideLabel);
                 break;
             case Boolean:
-                return FormElementFactory.createBoolean(input, name_or_index, this.config, fieldConfig, hideLabel, hiddenTips);
+                return _FormElementFactory.createBoolean(input, name_or_index, this.config, fieldConfig, hideLabel);
                 break;
             case Object:
                 var fdStyle = cssText;
@@ -764,16 +962,22 @@
                     fdStyle = "border:none";
                 }
 
-                var fieldsetBegin = ("<" + AFormConfig.tags.objectContainer + " " + strAttrName + " " + attr + " style='" + fdStyle + "' class='json_form_element json_Object'>");
+                var fieldsetBegin = ("<" + AFormConfig.tags.objectContainer + " " + strAttrName + " " + attr + " style='" + fdStyle + "' class='json-form-element json-Object'>");
                 fieldsetBegin += "<legend " + (strAttrName == "" ? "style='display:'" : "") + ">";
-                fieldsetBegin += "<label>";
+                fieldsetBegin += "<label  cmd='aform_array_collapse_fieldset' class='json-form-collapser ";
                 if (!fieldConfig.hideCollapser)//若不隐藏折叠器，则展示
                 {
-                    //判断默认是否折叠，折叠的话，则不勾选
-                    fieldsetBegin += "<input " + (fieldConfig.collapse ? "" : "checked") + " onclick='AFormHelper.showNextSibling(this.parentNode.parentNode,this.checked)' type='checkbox' />";
+                    var colId = "json_form_collapser_" + AForm.renderCount;
+                    fieldsetBegin += (fieldConfig.collapse ? "json-form-ctrl-collapse" : "json-form-ctrl-un-collapse") + "'";
+                    fieldsetBegin += "id='" + colId + "' >";
+                    _onclickSetter[colId] = function (e) {
+                        _formHelper.exeCmd(e, tbId, fieldConfig.rowAction);
+                    };
+                }else {
+                    fieldsetBegin += "' >";
                 }
-                fieldsetBegin += FormElementFactory.getLabelText(fieldConfig, name_or_index);
-                fieldsetBegin += "</label></legend><div style='display:" + (fieldConfig.collapse ? "none" : "") + "'>";//折叠隐藏
+                fieldsetBegin += _FormElementFactory.getLabelText(fieldConfig, name_or_index);
+                fieldsetBegin += "</label></legend><div class='json-form-fdset' style='display:" + (fieldConfig.collapse ? "none" : "") + "'>";//折叠隐藏
                 var fieldsetEnd = "</div></" + AFormConfig.tags.objectContainer + ">";
                 var temp = [fieldsetBegin];
 
@@ -788,29 +992,36 @@
                 return temp.join('');
                 break;
             case Array:
+                fieldConfig.rowAction = fieldConfig.rowAction || this.config.rowAction;
+
                 //检测插件，插件优先
                 if (fieldConfig.type in AFormPlugin.control) {
                     //插件用固定样式包裹
                     var html = [];
-                    html.push("<span type=\"" + fieldConfig.type + "\" class=\"json_form_element json_field_plugin\">");
-                    html.push(AFormPlugin.control[fieldConfig.type].render(name_or_index, input, fieldConfig));
+                    html.push("<span type=\"" + fieldConfig.type + "\" class=\"json-form-element json-field-plugin\">");
+                    html.push(AFormPlugin.control[fieldConfig.type].render(name_or_index, input, fieldConfig, AForm.renderCount));
                     html.push("</span>");
                     return html.join("");
                 }
 
-                var temp = ["<table border='1' " + strAttrName + " " + attr + " style=\"" + cssText + "\" class=\"json_form_element json_Array " + AFormConfig.extClassName.table + "\">"];
+                var tbId = "ele_json_tb_" + AForm.renderCount;
+                _onclickSetter[tbId] = function (e) {
+                    _formHelper.exeCmd(e, tbId, fieldConfig.rowAction);
+                };
+
+                var temp = ["<table id='" + tbId + "' border='1' " + strAttrName + " " + attr + " style=\"" + cssText + "\" class=\"json-form-element json-Array " + AFormConfig.extClassName.table + "\">"];
                 temp.push("<caption>");
-                temp.push("<label>");
+                temp.push("<label cmd='aform_array_collapse_table' class='json-form-collapser " + (fieldConfig.collapse ? "json-form-ctrl-collapse" : "json-form-ctrl-un-collapse") + "'>");
                 if (!fieldConfig.hideCollapser)//若不隐藏折叠器，则展示
                 {
-                    temp.push("<input " + (fieldConfig.collapse ? "" : "checked") + " onclick='AFormHelper.showNextSibling(this.parentNode.parentNode,this.checked);AFormHelper.showNextSibling(this.parentNode,this.checked)' type='checkbox' />");
+                    //temp.push("<input cmd='aform_array_collapse_table' " + (fieldConfig.collapse ? "" : "checked") + " type='checkbox' />");
                 }
-                temp.push(" " + FormElementFactory.getLabelText(fieldConfig, name_or_index) + "</label>");
+                temp.push(" " + _FormElementFactory.getLabelText(fieldConfig, name_or_index) + "</label>");
 
                 if (!fieldConfig.noCreate)//若没禁止添加
                 {
                     var addRowText = this.config.addRowText || "＋";
-                    temp.push(" <a style='display:" + (fieldConfig.collapse ? "none" : "") + "' class='json_form_action' href='javascript:void(null)' onclick='AFormHelper.addRow(this.parentNode.parentNode)' title='增加一行'>" + addRowText + "</a> ");
+                    temp.push(" <a cmd='aform_array_add_row' style='display:" + (fieldConfig.collapse ? "none" : "") + "' class='json-form-array-add' href='javascript:void(null)'  title='增加一行'>" + addRowText + "</a> ");
                 }
                 temp.push("</caption>");
 
@@ -819,19 +1030,18 @@
                 //当子元素是object时附加表格标题行
                 //若行数大于0且数组元素整齐，则提取标题
                 var isRegular = (len > 0 && input[0].constructor == Object);//若第一个元素是Object，则当成元素是统一对象的规则数组
-                var attrIndexDisplay = fieldConfig.showArrayNO ? "width:4em" : "display:none";
+                var attrIndexDisplay = fieldConfig.showArrayNO ? "" : "display:none";
 
-                fieldConfig.rowAction = fieldConfig.rowAction || this.config.rowAction;
                 if (fieldConfig.noDelete) {
-                    delete fieldConfig.rowAction["×"];
+                    delete fieldConfig.rowAction["aform_array_delete_row"];
                 }
                 if (fieldConfig.noCreate) {
-                    delete fieldConfig.rowAction["+"];
+                    delete fieldConfig.rowAction["aform_array_add_row"];
                 }
 
-                //仅数组元素为对象时才生成表头
+                //仅数组元素为对象且没隐藏表头时才生成表头
                 if (isRegular) {
-                    temp.push("<thead style='display:" + (fieldConfig.collapse ? "none" : "") + "'><tr>");
+                    temp.push("<thead style='display:" + (fieldConfig.collapse || fieldConfig.hideHeader ? "none" : "") + "'><tr>");
                     temp.push("<th style='" + attrIndexDisplay + "'>" + AFormConfig.wording.numText + "</th>");
                     var firstEle = input[0];
 
@@ -848,18 +1058,21 @@
                         if (fieldConf.hidden) {
                             temp.push(" style='display:none'");
                         }
-                        temp.push(">")
-                        temp.push(FormElementFactory.getLabelText(fieldConf, k));
+                        if (fieldConf.required) {
+                            temp.push(" class='json-form-required'");
+                        }
+                        temp.push(">");
+                        temp.push(_FormElementFactory.getLabelText(fieldConf, k));
                         if (fieldConf && fieldConf.tips) {
-                            var tipsTpl = this.config.thTipsTpl;//字段优先
+                            var tipsTpl = this.config.thTipsTpl;//表头的提示
                             temp.push(tipsTpl.replace(/\{tips\}/g, fieldConf.tips));
                         }
                         temp.push("</th>");
                     }
 
                     //若操作行为大于0，则建立操作列
-                    if (fieldConfig.rowAction.length > 0) {
-                        temp.push("<th style='width:4em'>操作</th>");
+                    if (!_formHelper.isObjEmpty(fieldConfig.rowAction)) {
+                        temp.push("<th class='json-form-action'>" + AFormConfig.wording.oprText + "</th>");
                     }
                     temp.push("</tr></thead>");
                 }
@@ -868,12 +1081,12 @@
                 //生成表格的行
                 for (var i = 0; i < len; i++) {
                     var curEle = input[i];
-                    var eleType = AFormHelper.getObjType(curEle);
-                    var basicClass = AFormHelper.isInArray(eleType, ['String', 'Number', 'Boolean']) ? " json_basic_element" : "";
-                    temp.push("<tr class='" + basicClass + "json_" + eleType + "'>");
+                    var eleType = _formHelper.getObjType(curEle);
+                    var basicClass = _formHelper.isInArray(eleType, ['String', 'Number', 'Boolean']) ? " json-basic-element" : "";
+                    temp.push("<tr class='" + basicClass + "json-" + eleType + "'>");
 
                     if (isRegular && curEle.constructor == Object) {
-                        temp.push("<td style='" + attrIndexDisplay + "' class='json_form_rowNumber'>" + (i + 1) + "</td>");
+                        temp.push("<td style='" + attrIndexDisplay + "' class='json-form-rowNumber'>" + (i + 1) + "</td>");
                         //对字段排序
                         var keyArray = _sortObject(firstEle, this.config.fields);
                         //遍历排好序的字段
@@ -888,27 +1101,25 @@
                                 temp.push(" style='display:none'");
                             }
                             temp.push(">")
-                            temp.push(this.renderData(curEle[p], p, true, true));//隐藏label和tips
+                            temp.push(this.renderData(curEle[p], p, true));//隐藏label和tips
                             temp.push("</td>");
                         }
                     }
                     else {
-                        temp.push("<td class='json_form_rowNumber'>" + (i + 1) + "</td><td>");
+                        temp.push("<td class='json-form-rowNumber'>" + (i + 1) + "</td><td>");
                         temp.push(this.renderData(curEle, i));
                         temp.push("</td>");
                     }
 
                     //末尾的操作列
-                    if (fieldConfig.rowAction.length > 0) {
-                        temp.push("<td class='json_form_actionCell'>");
+                    if (!_formHelper.isObjEmpty(fieldConfig.rowAction)) {
+                        temp.push("<td class='json-form-actionCell'>");
 
-                        for (var j = 0 , l = fieldConfig.rowAction.length; j < l; j++) {
-                            var actionHtml = fieldConfig.rowAction[j];
-                            //若属于预定义的行为，则使用AForm默认提供的
-                            if (actionHtml in AFormConfig.defaultAction) {
-                                actionHtml = AFormConfig.defaultAction[actionHtml];
-                            }
-                            temp.push(actionHtml);
+                        for (var cmd in fieldConfig.rowAction) {
+                            var btn = fieldConfig.rowAction[cmd];
+                            temp.push("<span class='json-form-action-wrapper' cmd='" + cmd + "'>");
+                            temp.push(btn.html.replace(/<(\w)+\s*/g, "<$1 cmd='" + cmd + "' "));
+                            temp.push("</span>");
                         }
                         temp.push("</td>");
                     }
@@ -917,6 +1128,7 @@
 
                 temp.push("</tbody>");
                 temp.push("</table>");
+
                 return temp.join('');
                 break;
         }
@@ -928,7 +1140,12 @@
 
         var obj = {};
         for (var p in fields) {
-            obj[p] = typeof fields[p].defaultValue == "undefined" ? "" : fields[p].defaultValue;
+            //检测是否有子字段
+            if (typeof fields[p].fields == "object") {
+                obj[p] = _genDefaultData(fields[p].fields);
+            } else {
+                obj[p] = typeof fields[p].defaultValue == "undefined" ? "" : fields[p].defaultValue;
+            }
         }
 
         var result = {};
@@ -967,7 +1184,22 @@
         return arr;
     }
 
-    window.AForm = AForm;
-    window.AFormHelper = AFormHelper;
+    //过滤不合法的bad control char
+    function _replaceBadControl(v) {
+        v = v.replace(/\\/g, "\\\\");//反斜杠
+        v = v.replace(/"/g, "\\\"");//双引号
+        v = v.replace(/\n/g, "\\n");//回车符
+        v = v.replace(/\t/g, "\\t");//tab符
+
+        return v;
+    }
+
+    //导出
+    if (typeof window !== "undefined") {
+        window.AForm = AForm;
+    }
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = AForm;
+    }
 
 })();

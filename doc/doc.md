@@ -75,7 +75,9 @@ try {
 3. API指引
 -----------
 
-.AForm(container,config)
+#### 对象函数
+
+**AForm(container,config)**
 
 - 构造函数
 - 无返回值
@@ -93,7 +95,8 @@ try {
 [NOTE]
 config的配置，请参见第4节“表单配置项”
 
-..render(json)
+
+**.render(json)**
 
 - 生成
 - 无返回值
@@ -106,14 +109,14 @@ config的配置，请参见第4节“表单配置项”
 
 
 
-..getJsonString()
+**.getJsonString()**
+
 - 获取输入控件集合的值
 - 返回与render中传入的json格式一致的字符串	
 - 该函数递归遍历容器下所有元素，收集所有输入项的值，返回一个字符串，该字符串的格式与用户渲染表单时传入的json数据一致
 
 .举例：
 
-	```javascript
 	try
 	{
 	     var strJson = jf.getJsonString();
@@ -122,12 +125,11 @@ config的配置，请参见第4节“表单配置项”
 	{
 	      console.log("输入数据格式不对，请按提示进行更正");//不要再使用alert，抛出异常前会alert
 	}
-	```
 
 [NOTE]
 该函数返回符合json格式的字符串，而不是object，当数据有异常时，会throw一个error，因此您需要捕获该异常
 
-..getJson ()
+**.getJson ()**
 - 获取输入控件集合的值
 - 返回与render中传入的json格式一致的json对象
 - 与getJsonString方法的区别是多了一次解析操作，亦即把字符串转换为json对象
@@ -145,8 +147,12 @@ config的配置，请参见第4节“表单配置项”
 	}
 
 
-[NOTE]
-该函数返回json对象，当数据有异常时，会throw一个error，因此您需要捕获该异常
+>注意：该函数返回json对象，当数据有异常时，会throw一个error，因此您需要捕获该异常
+
+#### 静态函数
+
+.config
+.registerPlugin
 
 4. 表单配置项
 -------------
@@ -157,10 +163,13 @@ config的配置，请参见第4节“表单配置项”
 
 
 *title*
-:	表单的标题
+:	表单的标题，可不设置
+
+*schemaMode*
+:	表单结构模式，local | merge | auto ，默认为auto，即自动根据传入的数据生成结构，local，根据fields定义生成结构，merge，fields定义和传入的数据生成的结构取并集
 
 *readonly*
-:	是否只读
+:	是否只读，若只读，则后续的字段，除非有自己的定义，否则都会只读
 
 *showArrayNO*
 :	是否显示数组表格序号列，true或false.
@@ -219,7 +228,7 @@ config的配置，请参见第4节“表单配置项”
 |disabled	|输入控件是否禁用，效果同html元素的disabled属性 |布尔型 |不设置 |disabled:true
 |required	|输入控件是否必填，用value是否为空字符串判断 |布尔型 |不设置 |required:true
 |pattern	|输入值的校验正则表达式，格式同html5的表单元素的pattern属性 |字符串 |不设置 |pattern:"\\d+"
-|validator	|输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法 |字符串或函数 |不设置 |    validator:"\{value\}>5" validator:function(v){return v > 5;}
+|validators	|输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法；为对象时，下设两个属性rule和errorMsg，rule是一个函数；为数组时，其元素是上述任何类型 |字符串或函数 |不设置 |    validator:"$v > 5" validator:function(v){return v > 5;}
 |title		|鼠标移到输入控件上时显示的提示内容，也是当字段输入不合法时的提示内容 |字符串 |不设置 | title:"请填写数字"
 |datalist	|输入控件的可选项目列表，针对select、checkbox、radio有效，当浏览器支持html5的datalist且输入控件是text时，会生成datalist标签辅助输入。 |数组 |不设置 |datalist:[\{value:0,text:"男"\},\{value:1,text:"女"\}] datalist:["office","photoshop","vbscript","c#","arcgis"]
 |multiple	|是否多选，仅针对select和checkbox有效 |布尔类型 |false |multiple:true
@@ -228,7 +237,7 @@ config的配置，请参见第4节“表单配置项”
 |noCreate	|是否禁用数组表格的添加行功能 |布尔 |false |noCreate:true
 |noDelete	|是否禁用数组表格的删除行功能 |布尔 |false |noCreate:true
 |onRenderComplete	|当前字段渲染完毕后的处理函数 |函数 |不设置 |`onRenderComplete:function(ctrlId , con){alert(ctrlId);}`
-
+|valueAdapter|值适配器，可在渲染或获取值前修改值，为一个对象，包含两个属性beforeRender和beforeGet，皆为传入旧值且返回新值的函数 |对象 |不设置 |`valueAdapter:{beforeRender:function(v){return v+1},beforeGet:function(v){return v-1}}`
 
 
 5. 样式编写指南
