@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* 输入控件的样式 */
+=======
+
+/* 输入控件的样式 */
+
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
 .json-basic-element	/* 输入控件外层容器样式 */
 {
 	padding:5px;
@@ -11,9 +17,12 @@ label.json-field-label	/* 输入控件左侧label样式 */
 	font-size:13px;
 	color:#666;
 }
+<<<<<<< HEAD
 .json-Object {
 	margin-bottom:5px;
 }
+=======
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
 .json-Object legend	/* fieldset legend */
 {
 	font-weight:bold;

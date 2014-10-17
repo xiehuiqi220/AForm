@@ -638,7 +638,12 @@
             titleEle = rootEle.getElementsByTagName("caption")[0];
         }
 
+<<<<<<< HEAD
         if (this.config.title) {//若设置了标题，则显示，否则隐藏
+=======
+        if (this.config.title)//若设置了标题，则显示，否则隐藏
+        {
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
             titleEle && (titleEle.innerHTML = this.config.title);
         }
         else {
@@ -890,6 +895,7 @@
         return  result;
     }
 
+<<<<<<< HEAD
     //根据path获取字段配置
     AForm.prototype.getConfigByPath = function(path){
         if(!path)return {};
@@ -917,13 +923,24 @@
     AForm.prototype.renderData = function (input, name_or_index , jpath, hideLabel) {
         jpath = jpath || "";
         _debug(name_or_index , jpath);
+=======
+    //渲染一项数据
+    //@input 输入的数据
+    //@name_or_index 数据的key名
+    //@hideLabel 隐藏label
+    AForm.prototype.renderData = function (input, name_or_index, hideLabel) {
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
         if (input == null) {
             return "";//忽略null
         }
         if (input == undefined)input = 'undefined';
 
         var strAttrName = (typeof name_or_index == "string" ? ("name='" + name_or_index + "'") : "");
+<<<<<<< HEAD
         var fieldConfig = this.getConfigByPath(jpath);
+=======
+        var fieldConfig = this.config.fields[name_or_index] || {};
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
 
         //若不渲染，则忽略之
         if (fieldConfig.noRender) {
@@ -946,6 +963,10 @@
         fieldConfig.readonly = "readonly" in fieldConfig ? fieldConfig.readonly : this.config.readonly;
         fieldConfig.validators = fieldConfig.validators || [];
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
         //处理校验表达式
         if (typeof fieldConfig.validators == "object" && "rule" in fieldConfig.validators) {
             fieldConfig.validators = [fieldConfig.validators];
@@ -1002,11 +1023,19 @@
                 var temp = [fieldsetBegin];
 
                 //对字段排序
+<<<<<<< HEAD
                 var keyArray = _sortObject(input, fieldConfig.fields || {});
                 //遍历排好序的字段
                 for (var i = 0; i < keyArray.length; i++) {
                     var key = keyArray[i];
                     temp.push(this.renderData(input[key], key , jpath+"."+key));
+=======
+                var keyArray = _sortObject(input, this.config.fields);
+                //遍历排好序的字段
+                for (var i = 0; i < keyArray.length; i++) {
+                    var key = keyArray[i];
+                    temp.push(this.renderData(input[key], key));
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
                 }
                 temp.push(fieldsetEnd);
                 return temp.join('');
@@ -1120,14 +1149,23 @@
                             if (fieldConf.hidden) {
                                 temp.push(" style='display:none'");
                             }
+<<<<<<< HEAD
                             temp.push(">");
                             temp.push(this.renderData(curEle[p], p , jpath+"["+i+"]."+p, true));//隐藏label和tips
+=======
+                            temp.push(">")
+                            temp.push(this.renderData(curEle[p], p, true));//隐藏label和tips
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
                             temp.push("</td>");
                         }
                     }
                     else {
                         temp.push("<td class='json-form-rowNumber'>" + (i + 1) + "</td><td>");
+<<<<<<< HEAD
                         temp.push(this.renderData(curEle, i , jpath+"["+i+"]"));
+=======
+                        temp.push(this.renderData(curEle, i));
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
                         temp.push("</td>");
                     }
 
@@ -1189,7 +1227,11 @@
                 fconf[k] = {};
             }
 
+<<<<<<< HEAD
            fconf[k].oOrder = oo;//保存原顺序，防止不稳定排序
+=======
+            fconf[k].oOrder = oo;//保存原顺序，防止不稳定排序
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
         }
 
         arr.sort(function (x, y) {
@@ -1204,6 +1246,7 @@
         return arr;
     }
 
+<<<<<<< HEAD
     //输出
     function _debug(msg){
         if(!console)return false;
@@ -1212,6 +1255,8 @@
             else console.log.apply(console,arguments);
         }
     }
+=======
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
     //过滤不合法的bad control char
     function _replaceBadControl(v) {
         v = v.replace(/\\/g, "\\\\");//反斜杠
