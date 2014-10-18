@@ -47,9 +47,8 @@ input.json-form-dirty	/* 被修改过值的输入框的样式 */
 span.json-form-required	/* 必填提示容器span的样式 */
 {
 	color:red;
-	padding-right:4px;
+	padding-left:4px;
 }
-
 
 /* 字段组合容器样式 */
 
@@ -107,7 +106,7 @@ label.json-form-collapser input{
 label.json-form-collapser:before{
 }
 
-th.json-form-required:after{
+th.json-form-required :before{
     content: "*";
     color: red;
 }

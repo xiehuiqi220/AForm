@@ -112,20 +112,10 @@
 
                 _formHelper.showNextSibling(_formHelper.getParent(ele,"legend"), show);
             } else if (cmd == "aform_array_add_row") {//默认添加行为
-                if(typeof fnBefore == "function") {
-                    fnBefore("aform_array_add_row" , table) && _formHelper.addRow(table);
-                }else {
-                    _formHelper.addRow(table);
-                }
+                _formHelper.addRow(table);
             } else if (cmd == "aform_array_delete_row") {//默认删除行的行为
-                if(!table)return false;
-                if(typeof fnBefore == "function") {
-                    fnBefore("aform_array_delete_row" , row) && _formHelper.removeRow(row);
-                }
-                else {
-                    if (!confirm("确定删除该行吗？"))return false;
-                    _formHelper.removeRow(row);
-                }
+                if (!confirm("确定删除该行吗？"))return false;
+                _formHelper.removeRow(row);
             } else {//执行自定义的
                 for (var icmd in rowAction) {
                     var item = rowAction[icmd];
@@ -537,7 +527,7 @@
             // remote - 根据render函数中的数据参数自动生成
             // local - 完全用户定义，由fields决定
             // merge - 把user定义的schema合并到数据生成的schema，亦即若schema有、data无的字段，合并后会有该字段
-            schemaMode: "reomte",//默认是remote，亦即根据data自动生成
+            schemaMode: "remote",//默认是remote，亦即根据data自动生成
             showArrayNO: true,//是否显示数组元素序号，从1开始
             hideCollapser: false,
             validators: false,//全局验证器
@@ -550,24 +540,10 @@
             fields: {}				//字段配置，字段名为key
         };
 
-        var eveFn = {
-            //当渲染完毕做什么
-            "onRenderComplete" : null,
-            //当回车时做什么
-            "onEnter" : null,
-            //执行命令前的动作
-            "onBeforeExeCmd" : null
-        };
-
         //合并配置项
         if (typeof config == "object") {
             for (var p in config) {
-                if(p in eveFn && typeof config[p] == "function"){
-                    this[p] = config[p];
-                }
-                else {
-                    this.config[p] = config[p];
-                }
+                this.config[p] = config[p];
             }
         }
 
@@ -584,9 +560,10 @@
         }
     }
 
-    AForm.prototype.onRenderComplete = null;
-    AForm.prototype.onBeforeExeCmd = null;
-    AForm.prototype.onEnter = null
+    //当渲染完毕做什么
+    AForm.prototype.onRenderComplete = function () {
+        //no nothing
+    };
 
     //渲染json数据
     //input 输入的json数据
@@ -661,29 +638,19 @@
             titleEle = rootEle.getElementsByTagName("legend")[0];
         }
         else if (rootEle.tagName.toLowerCase() == "table") {
-            titleEle = rootEle.getElementsByTagName("caption")[0].getElementsByTagName("label")[0];
+            titleEle = rootEle.getElementsByTagName("caption")[0];
         }
 
         if (this.config.title)//若设置了标题，则显示，否则隐藏
         {
-            titleEle && (titleEle.innerHTML = this.config.title +" "+ titleEle.innerHTML);
+            titleEle && (titleEle.innerHTML = this.config.title);
         }
         else {
             titleEle && (titleEle.style.display = "none");
         }
 
-        //事件渲染
         if (typeof this.onRenderComplete == "function") {
             this.onRenderComplete();
-        }
-        if (typeof this.onEnter == "function") {
-            var me = this;
-            this.container.onkeyup = function(evt){
-                evt = evt || window.event;
-                if(evt.keyCode == 13) {
-                    me.onEnter();
-                }
-            }
         }
         return this;
     };
@@ -699,7 +666,7 @@
     //获取输入空间集合的value，返回json
     AForm.prototype.tryGetJson = function (domEle)//遍历具有
     {
-        var result = null;
+        var result = false;
         try{
             result = eval("(" + this.getJsonString() + ")");
         }
@@ -1066,19 +1033,18 @@
                 }
 
                 var tbId = "ele_json_tb_" + AForm.renderCount;
-                var me = this;
                 _onclickSetter[tbId] = function (e) {
-                    _formHelper.exeCmd(e, tbId, fieldConfig.rowAction , me.onBeforeExeCmd);
+                    _formHelper.exeCmd(e, tbId, fieldConfig.rowAction);
                 };
 
                 var temp = ["<table id='" + tbId + "' border='1' " + strAttrName + " " + attr + " style=\"" + cssText + "\" class=\"json-form-element json-Array " + AFormConfig.extClassName.table + "\">"];
                 temp.push("<caption>");
-                temp.push("<label cmd='aform_array_collapse_table' ");
+                temp.push("<label cmd='aform_array_collapse_table' class='json-form-collapser " + (fieldConfig.collapse ? "json-form-ctrl-collapse" : "json-form-ctrl-un-collapse") + "'>");
                 if (!fieldConfig.hideCollapser)//若不隐藏折叠器，则展示
                 {
-                    temp.push(" class='json-form-collapser " + (fieldConfig.collapse ? "json-form-ctrl-collapse" : "json-form-ctrl-un-collapse") + "'");
+                    //temp.push("<input cmd='aform_array_collapse_table' " + (fieldConfig.collapse ? "" : "checked") + " type='checkbox' />");
                 }
-                temp.push(">" + _FormElementFactory.getLabelText(fieldConfig, name_or_index) + "</label>");
+                temp.push(" " + _FormElementFactory.getLabelText(fieldConfig, name_or_index) + "</label>");
 
                 if (!fieldConfig.noCreate)//若没禁止添加
                 {

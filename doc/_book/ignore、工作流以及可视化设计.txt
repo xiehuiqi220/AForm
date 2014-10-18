@@ -1,0 +1,26 @@
+1、ignore属性，用于自定义html中忽略input标签 √
+2、可视化表单设计工具
+3、数组表格最大添加项和最小添加项
+4、数组表格支持上移和下移，表格插件实现
+5、组合开关允许自定义、删除按钮允许自定义
+6、输入控件前允许定义html √
+7、type插件开发，type=html，则编写名为html的插件，render方法、setValue和getHtml方法
+8、selector插件开发，数据选择器，chosen
+9、控件额外css配置
+10、radiowithother
+11、数组元素若是基本类型，则用list ul，除非指定使用table
+12、系统内置插件，如布尔、list
+13、fieldset的disabled属性应该生效
+14、校验器，最基本的是正则以及必填校验器 √
+15、演示开发一个bool插件（on、off，绿色红色仿制电源开关）
+16、value中有双引号的话无法渲染 √
+17、指令directive的自定义，字段配置自定义属性，定义对输入元素的操作
+18、schema模式，client、server、或者merge模式
+19、null类型应该照样返回null类型
+20、字段的onRenderComplete，字段渲染完毕的处理程序 √
+21、左右>> <<选择器，上下顺序调整
+22、插件，可输入的select
+23、表格列必填也要显示星号
+24、item的显示随另外的item选定变化
+25、trim与xss过滤
+26、方向键取代tab，上下切换输入控件
