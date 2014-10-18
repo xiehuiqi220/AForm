@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.2" data-basepath=".." data-revision="1413550324540">
+    <div class="book"  data-level="2.2" data-basepath=".." data-revision="1413605019739">
     
 
 <div class="book-summary">
@@ -192,7 +192,7 @@
                         
                             <b>2.5.</b>
                         
-                         样式定义
+                         样式与属性定义
                     </a>
                 
             
@@ -551,16 +551,31 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_3936">
+                    <section class="normal" id="section-gitbook_5834">
                     
                         <h1 id="schema">表单的结构（schema）</h1>
-<p>有三种方式来定义表单的结构，该选项为schemaMode，有3个值：</p>
-<p> <strong>local</strong>： 根据本地schema生成表单</p>
-<p> <strong>remote</strong>：默认是remote，即根据render方法传入的json数据生成表单，通常是ajax或jsonp获取到的远程数据，若render方法没传入参数，则改为local模式</p>
-<p> <strong>merge</strong>：在local定义的schema的基础上，发现了json数据中有schema没定义的字段，该字段也会生成</p>
+<p>表单的结构即表单由哪些元素组成、元素的类型以及元素之间的关系；AForm有三种方式来决定表单的结构，该选项为schemaMode，有3个可选值：</p>
+<table>
+<thead>
+<tr>
+<th><strong>remote</strong></th>
+<th>默认是remote，即根据render方法传入的json数据生成表单，通常是ajax或jsonp获取到的远程数据，若render方法没传入参数，则改为local模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>local</strong></td>
+<td>根据本地schema生成表单，此时fields中定义的字段决定了表单的元素</td>
+</tr>
+<tr>
+<td><strong>merge</strong></td>
+<td>在local定义的schema的基础上，发现了json数据中有schema没定义的字段，该字段也会生成</td>
+</tr>
+</tbody>
+</table>
 <p>schemaMode设定后，需要设置fields选项来增强表单或定义字段</p>
 <ol>
-<li><strong>根据json数据自动生成</strong></li>
+<li><strong>remote模式，根据json数据自动生成表单</strong></li>
 </ol>
 <p>此时fields中的字段配置起点缀的作用，也不需要包含json数据中的所有字段；支持嵌套</p>
 <pre><code>var jf = new AForm(&quot;divOutput&quot;,{
@@ -578,7 +593,7 @@ jf.render({
     }
 })
 </code></pre><ol>
-<li><p><strong>通过预先定义的schema生成表单</strong>，支持嵌套，默认值使用 <strong>defaultValue</strong> 选项来定义</p>
+<li><p><strong>local模式，通过本地定义的schema生成表单</strong>，支持嵌套，默认值使用 <strong>defaultValue</strong> 选项来定义</p>
 <p> var jf = new AForm(&quot;divOutput&quot;,{
  schemaMode:&quot;local&quot;,
  fields:{</p>
@@ -593,7 +608,7 @@ jf.render({
  });</p>
 <p> jf.render()</p>
 </li>
-<li><p><strong>混合式，即 local 和 remote 生成的结构进行合并</strong></p>
+<li><p><strong>merge，混合式，即 local 和 remote 生成的结构进行合并</strong></p>
 <p> var jf = new AForm(&quot;divOutput&quot;,{
  schemaMode:&quot;merge&quot;,
  fields:{</p>

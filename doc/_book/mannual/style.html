@@ -4,7 +4,7 @@
     <head>
         
         <meta charset="UTF-8">
-        <title>样式定义 | 介绍</title>
+        <title>样式与属性定义 | 介绍</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.0.3">
@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.5" data-basepath=".." data-revision="1413550324540">
+    <div class="book"  data-level="2.5" data-basepath=".." data-revision="1413605019739">
     
 
 <div class="book-summary">
@@ -192,7 +192,7 @@
                         
                             <b>2.5.</b>
                         
-                         样式定义
+                         样式与属性定义
                     </a>
                 
             
@@ -551,9 +551,67 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_3939">
+                    <section class="normal" id="section-gitbook_5828">
                     
-                        <h1 id="">样式定义</h1>
+                        <h1 id="">样式与属性定义</h1>
+<h2 id="">样式</h2>
+<p>尽管如下选项可以设置单个元素的各个区域的样式，但建议您编写样式表单统一定义表单风格，请参见“样式编写指引”一节</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>释义</th>
+<th>类型</th>
+<th>默认值</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ctrlCssText</td>
+<td>输入控件的样式</td>
+<td>字符串或函数</td>
+<td>不设置</td>
+<td>ctrlCssText:&quot;color:red&quot;</td>
+</tr>
+<tr>
+<td>labelCssText</td>
+<td>控件前面标签的样式</td>
+<td>字符串</td>
+<td>不设置</td>
+<td>labelCssText:&quot;color:red&quot;</td>
+</tr>
+<tr>
+<td>cssText</td>
+<td>输入控件外层容器的样式</td>
+<td>字符串</td>
+<td>不设置</td>
+<td>cssText:&quot;border:1px solid gray&quot;</td>
+</tr>
+</tbody>
+</table>
+<h2 id="">属性</h2>
+<p>大部分属性可直接作为选项名设置，如maxlength、size、readonly属性，请参见“配置列表”一节，如果配置项支持的属性不能满足您的需求，则可自定义属性，ctrlAttr是一个对象，包含了属性的键值对</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>释义</th>
+<th>类型</th>
+<th>默认值</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ctrlAttr</td>
+<td>输入控件的属性集合，用于设置额外或个性化的属性</td>
+<td>json对象</td>
+<td>不设置</td>
+<td>ctrlAttr:{max:200,min:100,step:5,onchange:&quot;alert(this.value)&quot;}</td>
+</tr>
+</tbody>
+</table>
 
                     
                     </section>

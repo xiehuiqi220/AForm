@@ -8,7 +8,7 @@
    * [表单的结构](mannual/structure.md)
    * [表单的布局](mannual/layout.md)
    * [输入控件的类型](mannual/control.md)
-   * [样式定义](mannual/style.md)
+   * [样式与属性定义](mannual/style.md)
    * [表单验证](mannual/validate.md)
    * [输入提示](mannual/tips.md)
    * [交互](mannual/interaction.md)

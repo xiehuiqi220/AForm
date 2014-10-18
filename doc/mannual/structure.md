@@ -1,16 +1,17 @@
 # 表单的结构（schema）
 
-有三种方式来定义表单的结构，该选项为schemaMode，有3个值：
+表单的结构即表单由哪些元素组成、元素的类型以及元素之间的关系；AForm有三种方式来决定表单的结构，该选项为schemaMode，有3个可选值：
 
- **local**： 根据本地schema生成表单
 
- **remote**：默认是remote，即根据render方法传入的json数据生成表单，通常是ajax或jsonp获取到的远程数据，若render方法没传入参数，则改为local模式
-
- **merge**：在local定义的schema的基础上，发现了json数据中有schema没定义的字段，该字段也会生成
+| **remote** | 默认是remote，即根据render方法传入的json数据生成表单，通常是ajax或jsonp获取到的远程数据，若render方法没传入参数，则改为local模式 |
+|--|--|
+| **local** | 根据本地schema生成表单，此时fields中定义的字段决定了表单的元素 |
+| **merge** | 在local定义的schema的基础上，发现了json数据中有schema没定义的字段，该字段也会生成 |
 
 schemaMode设定后，需要设置fields选项来增强表单或定义字段
 
-1. **根据json数据自动生成**
+
+1. **remote模式，根据json数据自动生成表单**
 
 此时fields中的字段配置起点缀的作用，也不需要包含json数据中的所有字段；支持嵌套
 
@@ -29,7 +30,7 @@ schemaMode设定后，需要设置fields选项来增强表单或定义字段
         }
     })
 
-2. **通过预先定义的schema生成表单**，支持嵌套，默认值使用 **defaultValue** 选项来定义
+2. **local模式，通过本地定义的schema生成表单**，支持嵌套，默认值使用 **defaultValue** 选项来定义
 
     var jf = new AForm("divOutput",{
     schemaMode:"local",
@@ -46,7 +47,7 @@ schemaMode设定后，需要设置fields选项来增强表单或定义字段
 
     jf.render()
 
-3. **混合式，即 local 和 remote 生成的结构进行合并**
+3. **merge，混合式，即 local 和 remote 生成的结构进行合并**
 
     var jf = new AForm("divOutput",{
     schemaMode:"merge",

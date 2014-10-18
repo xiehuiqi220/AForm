@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.4" data-basepath=".." data-revision="1413550324540">
+    <div class="book"  data-level="2.4" data-basepath=".." data-revision="1413605019739">
     
 
 <div class="book-summary">
@@ -192,7 +192,7 @@
                         
                             <b>2.5.</b>
                         
-                         样式定义
+                         样式与属性定义
                     </a>
                 
             
@@ -551,12 +551,35 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_3933">
+                    <section class="normal" id="section-gitbook_5823">
                     
                         <h1 id="">输入控件的类型</h1>
-<p>字段的type选项定义了该字段的输入控件，并将原封不动地渲染成最终的html标签的type属性，因此，该字段的可选值与html input的type属性是一致的，如text、textarea、select、radio、checkbox，如果您使用较新支持html5的浏览器，那么date、number、range、email、url也是恰当的值。</p>
-<p>值得一提的是，如果type的值在插件中注册了，则将使用插件的渲染方法渲染输入控件，详细信息请参见“插件与增强”一章。</p>
-<p>type的示例：</p>
+<p>字段的 type 选项决定了该字段的输入控件，并将原封不动地渲染成最终的html标签的type属性，因此，该字段的可选值与html input的type属性是一致的，如：</p>
+<ul>
+<li>text</li>
+<li>textarea</li>
+<li>select</li>
+<li>radio</li>
+<li>checkbox</li>
+</ul>
+<p>如果您使用较新支持html5的浏览器，那么</p>
+<ul>
+<li>date</li>
+<li>number</li>
+<li>range</li>
+<li>email</li>
+<li>url</li>
+</ul>
+<p>也是恰当的值。</p>
+<p><strong>注意</strong>：当你未设置type时，AForm会根据输入数据的类型自动设置控件类型，如:</p>
+<ol>
+<li>布尔类型的值将自动生成一个复选框</li>
+<li>对象类型将生成一个fieldset</li>
+<li>数组类型将生成一个table</li>
+<li>数值、字符串类型将生成单个文本输入框</li>
+</ol>
+<p>值得一提的是，如果type的值在插件中注册了（通常是你想自定义输入控件时），则将使用插件的渲染方法渲染输入控件，详细信息请参见“插件与增强”一章。</p>
+<h2 id="type">type的示例：</h2>
 <pre><code>var jf = new AForm(&quot;divOutput&quot;,{
 schemaMode:&quot;local&quot;,
 fields:{
@@ -580,7 +603,7 @@ fields:{
         <a href="../mannual/layout.html" class="navigation navigation-prev " aria-label="Previous page: 表单的布局"><i class="fa fa-angle-left"></i></a>
         
         
-        <a href="../mannual/style.html" class="navigation navigation-next " aria-label="Next page: 样式定义"><i class="fa fa-angle-right"></i></a>
+        <a href="../mannual/style.html" class="navigation navigation-next " aria-label="Next page: 样式与属性定义"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>

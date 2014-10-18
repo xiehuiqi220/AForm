@@ -1,3 +1,78 @@
+<<<<<<< HEAD
+=======
+AForm使用指南
+=============
+>Author 伐薪
+
+
+1. AForm介绍
+------------
+AForm是一个可以把json数据转换成表单输入项的javascript组件，并可以轻松把输入的数据又还原成json，您仅需输入几行配置即可轻松生成各式各样的标准表单；在web系统中，只要您使用表单收集数据，相信您一定可以通过AForm来大大提高开发表单的效率。
+
+### 主要特点
+
+1. 使用和配置简单，仅包含3个函数，可快速上手
+2. 表单标准化，支持文本框、文本区域、单选框、复选框、下拉列表等各种输入控件
+3. 支持对数组元素的增删改操作
+4. 支持html5的新特性
+5. 支持输入验证，输入提示
+6. 可高度定制，支持自定义样式、界面以及各种验证处理函数
+
+### 适用场景：
+
+1. 各种WEB后台管理系统的数据录入表单
+2. 基于json的配置编辑
+3. 工作流系统的自定义表单
+
+### 支持浏览器：
+
+ie6+、firefox 3.5+、chrome 1.5+
+
+2. 快速上手
+-----------
+使用AForm极其简单，您首先需在调用页面的head部分引入如下js文件和样式文件（样式文件是可选的）：
+
+
+	<link href="AForm.css" rel="stylesheet" />
+	<script src="AForm.js"></script>
+
+
+然后，准备好需要渲染的json数据和针对该数据的一些配置（同样也是json格式），以及用于显示表单的DOM容器（比如一个form或者div，假设命名为“divOutput”），最后像下面这样使用：
+	
+		
+	<script>
+	var jf = new JsonForm("divOutput",{
+	title : "我的表单",
+	fields:{
+		Name:{label:"姓名",readonly:true},
+		Sexy:{label:"性别",type:"radio",datalist:[{value:0,text:"男"},{value:1,text:"女"}]},
+		Country:{label:"国家",readonly:true,type:"select",datalist:['USA','CHINA','KOREA']}
+	}
+	});
+	jf.render({
+		  "Name": "John Smith",
+	  "Sexy": 1,
+	  "Country":"CHINA"
+	});
+	</script>
+
+
+
+这样就会在指定的容器中生成一组输入项，当您想收集用户数据时，执行getJsonString函数即可，该函数返回一个符合json标准的字符串：
+
+---------------------
+<script>
+var data;
+//一定要使用try，catch来捕获异常，因若收集到的字段值不合您定义的规则将直接抛出异常
+//字段不合法的情况下，将弹出提示，同时抛出异常
+try {
+	data = jf.getJsonString();// 或者 data = jf.getJson();
+}catch(ex){
+	console.log(ex);
+}
+</script>
+
+>>>>>>> c72bafb30a89d808d8d6b0f9909ea29981cb33ed
 
 
 3. API指引

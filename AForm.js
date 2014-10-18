@@ -524,7 +524,7 @@
             // remote - 根据render函数中的数据参数自动生成
             // local - 完全用户定义，由fields决定
             // merge - 把user定义的schema合并到数据生成的schema，亦即若schema有、data无的字段，合并后会有该字段
-            schemaMode: "reomte",//默认是remote，亦即根据data自动生成
+            schemaMode: "remote",//默认是remote，亦即根据data自动生成
             showArrayNO: true,//是否显示数组元素序号，从1开始
             hideCollapser: false,
             validators: false,//全局验证器
