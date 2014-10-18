@@ -24,7 +24,7 @@
             return document.getElementById(id);
         },
         hasClass: function (ele, clsName) {
-            return ele.className.indexOf(clsName) > -1;
+            return (" "+ele.className).indexOf(" " + clsName) > -1;
         },
         addClass: function (ele, clsName) {
             if (!ele.className) {
@@ -381,6 +381,9 @@
             if (param.fieldConfig.hidden) {
                 attr += " hidden='hidden'";
                 cssText += ";display:none";
+            }
+            if (param.fieldConfig.jpath) {
+                attr += " jpath='"+param.fieldConfig.jpath+"'";
             }
             if (param.fieldConfig.width) {
                 cssText += ";width:" + param.fieldConfig.width;
@@ -796,7 +799,8 @@
 
             var l = controlList.length;
             var fieldName = controlList[0].name;
-            var conf = this.config.fields[fieldName] || {};
+			var jpath = controlList[0].getAttribute("jpath") || domEle.getAttribute("jpath");
+            var conf = this.getConfigByPath(jpath);
 
             if (fieldName)//若存在字段名，则设为key
             {
@@ -947,6 +951,9 @@
         fieldConfig.hideHeader = "hideHeader" in fieldConfig ? fieldConfig.hideHeader : this.config.hideHeader;
         fieldConfig.readonly = "readonly" in fieldConfig ? fieldConfig.readonly : this.config.readonly;
         fieldConfig.validators = fieldConfig.validators || [];
+		fieldConfig.ctrlAttr = fieldConfig.ctrlAttr || {};
+		fieldConfig.ctrlAttr.jpath = jpath;
+		fieldConfig.jpath = jpath;
 
         if (typeof fieldConfig.validators == "object" && "rule" in fieldConfig.validators) {
             fieldConfig.validators = [fieldConfig.validators];
