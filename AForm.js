@@ -929,6 +929,7 @@
     }
 
     //根据path获取字段配置
+
     AForm.prototype.getConfigByPath = function (path) {
         if (!path)return {};
         if (path.indexOf(".") == -1)return {};
@@ -950,6 +951,7 @@
         if(_formHelper.isObjEmpty(conf) && (this.config.schemaMode == "remote" || !this.config.schemaMode)){
             conf = this.config.fields[p];
         }
+
         return conf || {};
     };
 
@@ -993,6 +995,7 @@
         fieldConfig.ctrlAttr = fieldConfig.ctrlAttr || {};
         fieldConfig.ctrlAttr.jpath = jpath;
         fieldConfig.jpath = jpath;
+
 
         if (typeof fieldConfig.validators == "object" && "rule" in fieldConfig.validators) {
             fieldConfig.validators = [fieldConfig.validators];
@@ -1054,6 +1057,7 @@
                 for (var i = 0; i < keyArray.length; i++) {
                     var key = keyArray[i];
                     temp.push(this.renderData(input[key], key, jpath + "." + key));
+
                 }
                 temp.push(fieldsetEnd);
                 return temp.join('');
@@ -1177,6 +1181,7 @@
                     else {
                         temp.push("<td class='json-form-rowNumber'>" + (i + 1) + "</td><td>");
                         temp.push(this.renderData(curEle, i, jpath + "[" + i + "]"));
+
 
                         temp.push("</td>");
                     }
