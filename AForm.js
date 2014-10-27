@@ -762,7 +762,7 @@
             var childNodes = [];
             if (domEle.nodeName == 'TR') {
                 _formHelper.each(domEle.cells, function (cell) {
-                    if (cell.firstChild.nodeType == 1 && cell.firstChild.className.indexOf("json-form-element") > -1) {
+                    if (cell.firstChild && cell.firstChild.nodeType == 1 && cell.firstChild.className.indexOf("json-form-element") > -1) {
                         childNodes.push(cell.firstChild);
                     }
                 });
