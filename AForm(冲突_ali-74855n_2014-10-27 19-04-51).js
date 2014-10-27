@@ -939,16 +939,14 @@
         for (var i = 0, l = arr.length; i < l; i++) {
             var p = arr[i];
             if (!p)continue;
-            if (conf && conf.fields) {
-                conf = conf.fields[p];
-            }else {
-                conf = null;
-            }
+            if (!conf.fields)continue;
+
+            conf = conf.fields[p];
         }
 
         //如果无该路径的配置且为自动生成schema，则用第一层的字段作为配置
         if(_formHelper.isObjEmpty(conf) && (this.config.schemaMode == "remote" || !this.config.schemaMode)){
-            conf = this.config.fields[p];
+            conf = this.config[p];
         }
         return conf || {};
     };
