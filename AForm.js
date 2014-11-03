@@ -771,13 +771,18 @@
                 childNodes = domEle.getElementsByTagName("div")[0].childNodes;//fieldset下第一个div的子元素
             }
 
-            var len = childNodes.length;
-            for (var i = 0; i < len; i++) {
+            var realNodes = [];
+            for (var i = 0; i < childNodes.length; i++) {
                 var node = childNodes[i];
-                if (node.className.indexOf('json-form-element') > -1) {
-                    result.push(_getJsonString.call(this, node));
-                    if (i < len - 1)result.push(",");
+                if (node.nodeType == 1 && node.className && node.className.indexOf('json-form-element') > -1) {
+                    realNodes.push(node);
                 }
+            }
+            var len = realNodes.length;
+            for (var i = 0; i < len; i++) {
+                var node = realNodes[i];
+                result.push(_getJsonString.call(this, node));
+                if (i < len - 1)result.push(",");
             }
             result.push("}");
         }
