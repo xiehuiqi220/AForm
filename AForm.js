@@ -76,10 +76,11 @@
                 n = this.getNextSibling(n);
             }
         },
-        exeCmd: function (e, tbid, rowAction) {
+        exeCmd: function (e, tbid, rowAction, fnBefore) {
             e = e || event;
             var ele = e.srcElement ? e.srcElement : e.target;
             var cmd = ele.getAttribute("cmd");
+            if (!cmd)return false;
             var table = _formHelper.getParent(ele, "table");
 
             //重要，如果事件源table存在事件绑定，但当前触发的事件函数源却不是该table，则是冒泡带上的事件，忽略之，防止触发两次
@@ -947,13 +948,13 @@
             if (!p)continue;
             if (conf && conf.fields) {
                 conf = conf.fields[p];
-            }else {
+            } else {
                 conf = null;
             }
         }
 
         //如果无该路径的配置且为自动生成schema，则用第一层的字段作为配置
-        if(_formHelper.isObjEmpty(conf) && (this.config.schemaMode == "remote" || !this.config.schemaMode)){
+        if (_formHelper.isObjEmpty(conf) && (this.config.schemaMode == "remote" || !this.config.schemaMode)) {
             conf = this.config.fields[p];
         }
 
@@ -995,6 +996,7 @@
         fieldConfig.showArrayNO = "showArrayNO" in fieldConfig ? fieldConfig.showArrayNO : this.config.showArrayNO;
         fieldConfig.label = fieldConfig.label || this.config.label || name_or_index;//没有则取name or index
         fieldConfig.hideHeader = "hideHeader" in fieldConfig ? fieldConfig.hideHeader : this.config.hideHeader;
+        fieldConfig.noCreate = "noCreate" in fieldConfig ? fieldConfig.noCreate : this.config.noCreate;
         fieldConfig.readonly = "readonly" in fieldConfig ? fieldConfig.readonly : this.config.readonly;
         fieldConfig.validators = fieldConfig.validators || [];
         fieldConfig.ctrlAttr = fieldConfig.ctrlAttr || {};
@@ -1002,6 +1004,7 @@
         fieldConfig.jpath = jpath;
 
 
+        //处理校验表达式
         if (typeof fieldConfig.validators == "object" && "rule" in fieldConfig.validators) {
             fieldConfig.validators = [fieldConfig.validators];
         }
