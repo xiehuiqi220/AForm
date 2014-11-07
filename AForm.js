@@ -712,6 +712,21 @@
         }
     };
 
+    //获取输入空间集合的value，返回json字符串
+    AForm.prototype.tryGetJsonString = function (domEle)//遍历具有
+    {
+        var result = null;
+        try {
+            result = this.getJsonString();
+        }
+        catch (ex) {
+            ;
+        }
+        finally {
+            return result;
+        }
+    };
+
     //获取输入空间集合的value，返回json
     AForm.prototype.getJsonString = function (domEle)//遍历具有
     {
@@ -939,6 +954,8 @@
     AForm.prototype.getConfigByPath = function (path) {
         if (!path)return {};
         if (path.indexOf(".") == -1)return {};
+
+        path = path.replace(/\[.+?\]/g,"");//替换掉数组 a[0].b[1] 替换为 a.b
 
         var arr = path.split('.');
         var conf = this.config || {};
