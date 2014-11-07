@@ -21,7 +21,7 @@ AForm是一个一站式表单解决方案，它基于模型驱动，并且做到
 ### 文档
 
 1. [demo](http://xiehuiqi220.github.io/AForm/)
-2. [文档](http://xiehuiqi220.github.io/AForm/doc/_book/index.html)，持续完善中
+2. [文档](http://xiehuiqi220.github.io/AForm/doc/book/)，持续完善中
 
 ###联系
 

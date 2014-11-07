@@ -592,7 +592,7 @@
     //渲染json数据
     //input 输入的json数据
     AForm.prototype.render = function (input) {
-        if (input == undefined) {
+        if (input == undefined || input == null) {
             this.config.schemaMode = "local";//若不传数据，则强制使用本地schema
         }
 
@@ -617,7 +617,7 @@
 
                         tmpArr.push(tmp);
                     }
-                } else {
+                } else if(!_formHelper.isObjEmpty(input)) {
                     for (var p in localData) {
                         if (p in input) {
                             localData[p] = input[p];
@@ -950,7 +950,6 @@
     }
 
     //根据path获取字段配置
-
     AForm.prototype.getConfigByPath = function (path) {
         if (!path)return {};
         if (path.indexOf(".") == -1)return {};
@@ -1033,8 +1032,8 @@
             }
         }
 
-        //值适配器处理
-        if (fieldConfig.valueAdapter && typeof fieldConfig.valueAdapter.beforeRender == "function") {
+        //值适配器处理，仅当name_or_index是字符串，即为对象的属性时才可适配，否则返回数组导致无线循环
+        if (typeof name_or_index == "string" && fieldConfig.valueAdapter && typeof fieldConfig.valueAdapter.beforeRender == "function") {
             var tmp = fieldConfig.valueAdapter.beforeRender(input, name_or_index);
             //仅支持基本类型，若返回对象，则get适配器无法生效
             input = tmp;
@@ -1242,7 +1241,11 @@
         for (var p in fields) {
             //检测是否有子字段
             if (typeof fields[p].fields == "object") {
-                obj[p] = _genDefaultData(fields[p].fields);
+                if(fields[p].jtype && typeof fields[p].jtype.toLowerCase() == "array") {
+                    obj[p] = [_genDefaultData(fields[p].fields)];//数组
+                }else {
+                    obj[p] = _genDefaultData(fields[p].fields);//对象
+                }
             } else {
                 obj[p] = typeof fields[p].defaultValue == "undefined" ? "" : fields[p].defaultValue;
             }

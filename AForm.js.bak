@@ -712,6 +712,21 @@
         }
     };
 
+    //获取输入空间集合的value，返回json字符串
+    AForm.prototype.tryGetJsonString = function (domEle)//遍历具有
+    {
+        var result = null;
+        try {
+            result = this.getJsonString();
+        }
+        catch (ex) {
+            ;
+        }
+        finally {
+            return result;
+        }
+    };
+
     //获取输入空间集合的value，返回json
     AForm.prototype.getJsonString = function (domEle)//遍历具有
     {
@@ -940,6 +955,8 @@
         if (!path)return {};
         if (path.indexOf(".") == -1)return {};
 
+        path = path.replace(/\[.+?\]/g,"");//替换掉数组 a[0].b[1] 替换为 a.b
+
         var arr = path.split('.');
         var conf = this.config || {};
 
@@ -996,6 +1013,7 @@
         fieldConfig.showArrayNO = "showArrayNO" in fieldConfig ? fieldConfig.showArrayNO : this.config.showArrayNO;
         fieldConfig.label = fieldConfig.label || this.config.label || name_or_index;//没有则取name or index
         fieldConfig.hideHeader = "hideHeader" in fieldConfig ? fieldConfig.hideHeader : this.config.hideHeader;
+        fieldConfig.noCreate = "noCreate" in fieldConfig ? fieldConfig.noCreate : this.config.noCreate;
         fieldConfig.readonly = "readonly" in fieldConfig ? fieldConfig.readonly : this.config.readonly;
         fieldConfig.validators = fieldConfig.validators || [];
         fieldConfig.ctrlAttr = fieldConfig.ctrlAttr || {};
@@ -1003,6 +1021,7 @@
         fieldConfig.jpath = jpath;
 
 
+        //处理校验表达式
         if (typeof fieldConfig.validators == "object" && "rule" in fieldConfig.validators) {
             fieldConfig.validators = [fieldConfig.validators];
         }
