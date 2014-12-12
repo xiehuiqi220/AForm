@@ -34,10 +34,10 @@
     };
     //额外样式名
     AForm.Config.extClassName = {
-        "basicContainer": "form-group",
+        "basicContainer": "",//form-group
         "label": "",
-        "table": "table table-bordered",
-        "control": "form-control",
+        "table": "",//table table-bordered
+        "control": "",//form-control
         "controlContainer": ""
     };
     //模板
