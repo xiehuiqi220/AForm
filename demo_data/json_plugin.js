@@ -1,14 +1,12 @@
 cbGenForm({
     "name": "tommy",
-    "age": "abcdef",
-    "hobby":["pingpang","reading"],
-    "color":"#fff456"
+    "color":"#fff456",
+    "range":"5,10"
 },{
     "fields": 
     {
-        "name": {type:"span"},
-        "age": {},
-    	"hobby":{},
-		"color":{"type":"color"}
+        "name": {"type":"span",label:"只读插件"},
+		"color":{"type":"color",label:"颜色"},
+		"range":{"type":"rangeInput",label:"范围"}
     }
 });
