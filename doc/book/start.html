@@ -4,7 +4,7 @@
     <head>
         
         <meta charset="UTF-8">
-        <title>快速上手 | 介绍</title>
+        <title>快速上手 | AForm — 模型驱动的自动化表单解决方案</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.0.2">
@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="1" data-basepath="." data-revision="1416452242177">
+    <div class="book"  data-level="1" data-basepath="." data-revision="1418394196579">
     
 
 <div class="book-summary">
@@ -543,7 +543,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="./" >介绍</a>
+        <a href="./" >AForm — 模型驱动的自动化表单解决方案</a>
     </h1>
 </div>
 
@@ -551,15 +551,15 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_22">
+                    <section class="normal" id="section-gitbook_18">
                     
                         <h1 id="">快速上手</h1>
 <p>使用AForm极其简单，您首先需在调用页面的head部分引入如下js文件和样式文件（样式文件是可选的，通常需要您自定义）：</p>
 <pre><code>&lt;link href=&quot;AForm.css&quot; rel=&quot;stylesheet&quot; /&gt;
 
-&lt;script src=&quot;AForm.config.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;AForm.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;AForm.plugin.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;AForm.config.js&quot;&gt;&lt;/script&gt; 全局配置，可选
+&lt;script src=&quot;AForm.plugin.js&quot;&gt;&lt;/script&gt; 插件范例，可选
 </code></pre><p>然后，准备好需要渲染的json数据和针对该数据的一些配置（同样也是json格式），以及用于显示表单的DOM容器（比如一个form或者div，假设其id为“divOutput”），最后像下面这样使用：</p>
 <pre><code>&lt;script&gt;
 var jf = new AForm(&quot;divOutput&quot;,{
