@@ -1,5 +1,8 @@
 # 表单验证
 
+
+## 验证方式
+
 AForm支持所有的表单验证方式：
 
 1. 必填项校验,required:true/false
@@ -27,3 +30,46 @@ AForm支持所有的表单验证方式：
         errorMsg:"字段a的值应该大于b的值"
     }
     });
+
+## 定义输入未通过验证的提示方式
+
+提示方式通过如下配置定义：
+
+```
+AForm.Config.fn = {
+        "showTips": function (input, errMsg) {
+            alert(errMsg);
+        },
+        "onEmpty": function (input, conf) {
+            var name = input.getAttribute("name");
+
+            var errMsg = conf ? ("字段[" + (conf.label) + "]不能为空") : input.title;
+            if (!errMsg) errMsg = "字段[" + (input.getAttribute("name")) + "]不能为空";
+
+            AForm.Config.fn.showTips(input, errMsg);
+            if (typeof input.focus == "function" || typeof input.focus == "object") {
+                input.focus();
+            }
+        },
+        "onInvalid": function (input, conf, errorMsg) {
+            var errMsg = errorMsg ? errorMsg : (conf ? ("字段[" + (conf.label) + "]的值非法") : input.title);
+            if (!errMsg) errMsg = "字段[" + (input.getAttribute("name")) + "]非法";
+
+            AForm.Config.fn.showTips(input, errMsg);
+            if (typeof input.focus == "function" || typeof input.focus == "object") {
+                input.focus();
+            }
+        },
+        "onGlobalInvalid": function (msg) {
+            alert(msg);
+        }
+    };
+
+```
+
+若您需要修改，可自行引入aform.config.js，并把上述代码拷贝至该文件，修改即可。
+
+**
+注意：目前AForm的机制是只要有一个字段校验未通过，则直接抛出异常，因此暂不支持一次性显示所有未通过校验字段的原因。**
+
+

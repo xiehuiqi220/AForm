@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1418394196579">
+    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1419940041901">
     
 
 <div class="book-summary">
@@ -364,7 +364,7 @@
                         
                             <b>4.1.</b>
                         
-                         接口列表
+                         接口与属性列表
                     </a>
                 
             
@@ -449,6 +449,60 @@
                         <i class="fa fa-check"></i>
                         
                             <b>5.2.</b>
+                        
+                         样式编写指引
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="6" data-path="best/readme.html">
+            
+                
+                    <a href="../best/readme.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.</b>
+                        
+                         最佳实践
+                    </a>
+                
+            
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="6.1" data-path="custom/configjs.html">
+            
+                
+                    <a href="../custom/configjs.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                         bootstrap结合
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="6.2" data-path="custom/css.html">
+            
+                
+                    <a href="../custom/css.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.2.</b>
                         
                          样式编写指引
                     </a>
@@ -551,9 +605,10 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_22">
+                    <section class="normal" id="section-gitbook_17">
                     
                         <h1 id="">表单验证</h1>
+<h2 id="">验证方式</h2>
 <p>AForm支持所有的表单验证方式：</p>
 <ol>
 <li>必填项校验,required:true/false</li>
@@ -580,7 +635,40 @@ validators:{//全局校验器
     errorMsg:&quot;字段a的值应该大于b的值&quot;
 }
 });
-</code></pre>
+</code></pre><h2 id="">定义输入未通过验证的提示方式</h2>
+<p>提示方式通过如下配置定义：</p>
+<pre><code>AForm.Config.fn = {
+        &quot;showTips&quot;: function (input, errMsg) {
+            alert(errMsg);
+        },
+        &quot;onEmpty&quot;: function (input, conf) {
+            var name = input.getAttribute(&quot;name&quot;);
+
+            var errMsg = conf ? (&quot;字段[&quot; + (conf.label) + &quot;]不能为空&quot;) : input.title;
+            if (!errMsg) errMsg = &quot;字段[&quot; + (input.getAttribute(&quot;name&quot;)) + &quot;]不能为空&quot;;
+
+            AForm.Config.fn.showTips(input, errMsg);
+            if (typeof input.focus == &quot;function&quot; || typeof input.focus == &quot;object&quot;) {
+                input.focus();
+            }
+        },
+        &quot;onInvalid&quot;: function (input, conf, errorMsg) {
+            var errMsg = errorMsg ? errorMsg : (conf ? (&quot;字段[&quot; + (conf.label) + &quot;]的值非法&quot;) : input.title);
+            if (!errMsg) errMsg = &quot;字段[&quot; + (input.getAttribute(&quot;name&quot;)) + &quot;]非法&quot;;
+
+            AForm.Config.fn.showTips(input, errMsg);
+            if (typeof input.focus == &quot;function&quot; || typeof input.focus == &quot;object&quot;) {
+                input.focus();
+            }
+        },
+        &quot;onGlobalInvalid&quot;: function (msg) {
+            alert(msg);
+        }
+    };
+</code></pre><p>若您需要修改，可自行引入aform.config.js，并把上述代码拷贝至该文件，修改即可。</p>
+<p><strong>
+注意：目前AForm的机制是只要有一个字段校验未通过，则直接抛出异常，因此暂不支持一次性显示所有未通过校验字段的原因。</strong></p>
+
                     
                     </section>
                 

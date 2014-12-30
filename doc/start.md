@@ -4,9 +4,9 @@
 
 	<link href="AForm.css" rel="stylesheet" />
 
-	<script src="AForm.config.js"></script>
 	<script src="AForm.js"></script>
-	<script src="AForm.plugin.js"></script>
+	<script src="AForm.config.js"></script> 全局配置，可选
+	<script src="AForm.plugin.js"></script> 插件范例，可选
 
 
 然后，准备好需要渲染的json数据和针对该数据的一些配置（同样也是json格式），以及用于显示表单的DOM容器（比如一个form或者div，假设其id为“divOutput”），最后像下面这样使用：

@@ -35,7 +35,7 @@ required	|输入控件是否必填，用value是否为空字符串判断 |布尔
 pattern	|输入值的校验正则表达式，格式同html5的表单元素的pattern属性 |字符串 |不设置 |pattern:"\\d+"
 validators	|输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法；为对象时，下设两个属性rule和errorMsg，rule是一个函数；为数组时，其元素是上述任何类型 |字符串或函数 |不设置 |    validator:"$v > 5" validator:function(v){return v > 5;}
 title		|鼠标移到输入控件上时显示的提示内容，也是当字段输入不合法时的提示内容 |字符串 |不设置 | title:"请填写数字"
-datalist	|输入控件的可选项目列表，针对select、checkbox、radio有效，当浏览器支持html5的datalist且输入控件是text时，会生成datalist标签辅助输入。 |数组 |不设置 |datalist:[\{value:0,text:"男"\},\{value:1,text:"女"\}] datalist:["office","photoshop","vbscript","c#","arcgis"]
+datalist	|输入控件的可选项目列表，针对select、checkbox、radio有效，当浏览器支持html5的datalist且输入控件是text时，会生成datalist标签辅助输入。 |数组 |不设置 |datalist:[\{value:0,text:"男",group:"分组名",custom:"自定义数据"\},\{value:1,text:"女"\}] datalist:["office","photoshop","vbscript","c#","arcgis"]
 multiple	|是否多选，仅针对select和checkbox有效 |布尔类型 |false |multiple:true
 delimiter	|多选时，数据值的分隔符 |字符串 |半角逗号"," |delimiter:";"
 size		|输入控件的size属性，表现为文本框的长度或多选下拉列表的高度等效果 |数字 |不设置 |size:5

@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1418394196579">
+    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1419940041901">
     
 
 <div class="book-summary">
@@ -364,7 +364,7 @@
                         
                             <b>4.1.</b>
                         
-                         接口列表
+                         接口与属性列表
                     </a>
                 
             
@@ -449,6 +449,60 @@
                         <i class="fa fa-check"></i>
                         
                             <b>5.2.</b>
+                        
+                         样式编写指引
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="6" data-path="best/readme.html">
+            
+                
+                    <a href="../best/readme.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.</b>
+                        
+                         最佳实践
+                    </a>
+                
+            
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="6.1" data-path="custom/configjs.html">
+            
+                
+                    <a href="../custom/configjs.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                         bootstrap结合
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="6.2" data-path="custom/css.html">
+            
+                
+                    <a href="../custom/css.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.2.</b>
                         
                          样式编写指引
                     </a>
@@ -551,10 +605,41 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_16">
+                    <section class="normal" id="section-gitbook_19">
                     
                         <h1 id="">自定义输入控件</h1>
+<p>可以使用 <code>AForm.registerControl(&quot;控件名&quot;,实现)</code> 来注册一个输入控件。</p>
+<p>输入控件的实现包含两个方法：render和getJsonPartString，render用于渲染控件，返回渲染后的html，getJsonPartString用于获取控件的键值对（<strong>注意是键值对，而不仅仅是值</strong>）</p>
+<h2 id="1">范例1：注册一个区间输入控件</h2>
+<pre><code>AForm.registerControl(&quot;rangeInput&quot;: {
+            desc: &quot;范围输入框&quot;,
+            render: function (k, v, config,af) {
+                v = v.split(&quot;,&quot;);
+                var html = &quot;&quot;;
+                var itemType = config.itemType || &quot;text&quot;;
+                html += &quot;&lt;input style=&#39;&quot; + config.ctrlCssText + &quot;&#39; class=&#39;form-control&#39; name=\&quot;&quot; + k + &quot;_begin\&quot; type=&#39;text&#39; itemType=&#39;&quot; + itemType + &quot;&#39; value=&#39;&quot; + v[0] + &quot;&#39; /&gt;&quot;;
+                html += &quot; - &quot;;
+                html += &quot;&lt;input style=&#39;&quot; + config.ctrlCssText + &quot;&#39; class=&#39;form-control&#39; name=\&quot;&quot; + k + &quot;_end\&quot; type=&#39;text&#39; itemType=&#39;&quot; + itemType + &quot;&#39; value=&#39;&quot; + (v[1] || &quot;&quot;) + &quot;&#39; /&gt;&quot;;
 
+                return html;
+            },
+            &quot;getJsonPartString&quot;: function (ele,conf)//ele为插件的外层容器dom对象
+            {
+                var ips = ele.getElementsByTagName(&quot;input&quot;);
+                var k = ips[0].name.replace(&quot;_begin&quot;, &quot;&quot;);
+                return &quot;\&quot;&quot; + k + &quot;\&quot;:\&quot;&quot; + ips[0].value + &quot;,&quot; + ips[1].value + &quot;\&quot;&quot;;
+            }
+        });
+</code></pre><h2 id="">使用输入控件</h2>
+<pre><code>
+var jf = new AForm(&quot;divOutput&quot;,{
+        fields:{
+            range:{label:&quot;价格区间&quot;,type:&quot;rangeInput&quot;}//注意type的值即控件注册的名字
+        }
+        });
+
+        jf.render()
+</code></pre>
                     
                     </section>
                 

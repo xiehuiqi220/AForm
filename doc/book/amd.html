@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="1.1" data-basepath="." data-revision="1418394196579">
+    <div class="book"  data-level="1.1" data-basepath="." data-revision="1419940041901">
     
 
 <div class="book-summary">
@@ -364,7 +364,7 @@
                         
                             <b>4.1.</b>
                         
-                         接口列表
+                         接口与属性列表
                     </a>
                 
             
@@ -449,6 +449,60 @@
                         <i class="fa fa-check"></i>
                         
                             <b>5.2.</b>
+                        
+                         样式编写指引
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="6" data-path="best/readme.html">
+            
+                
+                    <a href="./best/readme.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.</b>
+                        
+                         最佳实践
+                    </a>
+                
+            
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="6.1" data-path="custom/configjs.html">
+            
+                
+                    <a href="./custom/configjs.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                         bootstrap结合
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="6.2" data-path="custom/css.html">
+            
+                
+                    <a href="./custom/css.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.2.</b>
                         
                          样式编写指引
                     </a>
@@ -554,7 +608,7 @@
                     <section class="normal" id="section-gitbook_2">
                     
                         <h1 id="">模块化加载模式</h1>
-<h2 id="amdrequirejs">AMD规范（requirejs）</h2>
+<h2 id="amdaform-requirejs">AMD规范加载AForm（如 requirejs）</h2>
 <pre><code>
 define([&quot;aform&quot;], function (AForm) {
         //建立一个表单
@@ -566,6 +620,14 @@ define([&quot;aform&quot;], function (AForm) {
         jf.render({
             a:1,
             b:2
+        });
+}
+</code></pre><h2 id="amd">AMD规范定义插件</h2>
+<pre><code>
+define(&quot;controlName&quot;,[&quot;aform&quot;], function (AForm) {
+        AForm.registerControl(&quot;controlName&quot;,{
+            render:function(){...}
+            getJsonPartString:function(){...}
         });
 }
 </code></pre>
