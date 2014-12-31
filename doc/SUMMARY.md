@@ -21,7 +21,7 @@
    * [接口与属性列表](api/function.md)
    * [配置列表](api/options.md)
    * [事件](api/event.md)
-* [个性化](custom/readme.md)
+* [个性化](custom/README.md)
    * [aform.config.js](custom/configjs.md)
    * [样式编写指引](custom/css.md)
 * [最佳实践](best/readme.md)

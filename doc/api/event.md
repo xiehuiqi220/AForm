@@ -9,6 +9,7 @@
 | afterExeCmd| 用户交互后的处理函数
 
 ## 示例：
+```
 
     //renderComplete
     var jf = new AForm(...);
@@ -28,4 +29,5 @@
         else return true;
     });
 
+```
 
