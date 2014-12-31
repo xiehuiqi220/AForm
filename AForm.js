@@ -87,17 +87,27 @@
     var _onchangeSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
     var _onclickSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
 
-
     //helper
     var _formHelper = {
         $: function (id) {
             return document.getElementById(id);
         },
+        toArray: function (s) {
+            try {
+                return Array.prototype.slice.call(s);//ie8报错，见https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice#Streamlining_cross-browser_behavior
+            } catch (e) {
+                var arr = [];
+                for (var i = 0, len = s.length; i < len; i++) {
+                    arr[i] = s[i];
+                }
+                return arr;
+            }
+        },
         hasClass: function (ele, clsName) {
             return (" " + ele.className).indexOf(" " + clsName) > -1;
         },
         addClass: function (ele, clsName) {
-            if(!ele || !clsName){
+            if (!ele || !clsName) {
                 return false;
             }
             if (!ele.className) {
@@ -197,13 +207,16 @@
                 else {
                     if (!confirm("确定删除该行吗？"))return false;
                     _formHelper.removeRow(row);
-                    _joinFunction(fnAfter, window, ["aform_array_delete_row"]);//after
                 }
+                _joinFunction(fnAfter, window, ["aform_array_delete_row", row, table]);//after
             } else {//执行自定义的
                 for (var icmd in rowAction) {
                     var item = rowAction[icmd];
                     if (icmd == cmd && typeof item.handler == "function") {
-                        item.handler(row, table, icmd);
+                        if (fnBefore.length) {
+                            _joinFunction(fnBefore, window, [icmd, row, table]) && item.handler(row, table, icmd);
+                        }
+                        _joinFunction(fnAfter, window, [icmd, row, table]);//after
                         break;
                     }
                 }
@@ -423,14 +436,16 @@
 
                     var list = param.datalist || [];
                     var len = list.length;
-                    var isTextValue = len > 0 && typeof list[0] == 'object';
 
                     var valueArr = param.value.toString().split(param.delimiter || AForm.Config.defaultDelimiter);
 
                     for (var i = 0; i < len; i++) {
+                        var isTextValue = typeof list[i] == 'object';
+
                         var v = (isTextValue ? list[i].value : list[i]) || "";
                         var t = (isTextValue ? list[i].text : list[i]) || "";
-                        html.push("<label><input " + param.attrName + " type='checkbox' " + (_formHelper.isInArray(v.toString(), valueArr) ? "checked" : "") + " value=\"" + v + "\" /> " + t + "</label>");
+                        var c = isTextValue ? list[i].custom : "";
+                        html.push("<label><input " + param.attrName + " type='checkbox' " + (_formHelper.isInArray(v.toString(), valueArr) ? "checked" : "") + " value=\"" + v + "\" data-custom=\"" + (c || "") + "\" /> " + t + "</label>");
                     }
 
                     html.push("</span>");
@@ -562,7 +577,7 @@
             }
             html.push("</" + AForm.Config.tags.basicContainer + ">");
 
-            if(param.fieldConfig.break){
+            if(param.fieldConfig["break"]){
                 html.push('<br style="clear:both">');
             }
             return html.join('');
@@ -608,7 +623,7 @@
     //return void
     function AForm(container, config) {
         this.container = typeof container == "string" ? _formHelper.$(container) : container;
-        if(!this.container){
+        if (!this.container) {
             _debug("no container");
             return false;
         }
@@ -658,8 +673,8 @@
             }
         }
 
-        _formHelper.addClass(this.container , "aform");
-        _formHelper.addClass(this.container , this.config.className);
+        _formHelper.addClass(this.container, "aform");
+        _formHelper.addClass(this.container, this.config.className);
 
         //全局验证器加工
         if (typeof this.config.validators == "object" && "rule" in this.config.validators) {
@@ -671,6 +686,11 @@
             if (typeof item.rule == "string" && item.rule.length > 2) {
                 item.rule = new Function("$v", "$ctrl", "return " + item.rule);
             }
+        }
+
+        //设置name属性
+        for (var p in this.config.fields) {
+            this.config.fields[p].name = p;
         }
     }
 
@@ -729,6 +749,7 @@
         _onchangeSetter = {};
         _onclickSetter = {};
 
+        this.originData = input;//最后一次渲染的原始数据
         this.container.innerHTML = this.renderData(input);
 
         //赋值器
@@ -773,7 +794,7 @@
         //renderComplete
         _joinFunction(this.eventArrr.renderComplete, this);
 
-        if (typeof this.eventArrr.enter == "function") {
+        if (this.eventArrr.enter.length > 0) {
             var me = this;
             this.container.onkeyup = function (evt) {
                 evt = evt || window.event;
@@ -862,7 +883,9 @@
         {
             var pluginName = domEle.getAttribute("type");
             var pluginInstance = AForm.Plugin.control[pluginName];
-            return pluginInstance.getJsonPartString(domEle);
+
+            var jpath = domEle.getAttribute("jpath");
+            return pluginInstance.getJsonPartString(domEle, this.getConfigByPath(jpath));
         }
 
         if (domEle.className.indexOf('json-Object') > -1) {
@@ -926,15 +949,17 @@
                 if (nodes[i].className && nodes[i].className.indexOf("json-field-plugin") > -1) {
                     var pluginName = nodes[i].getAttribute("type");
                     var pluginInstance = AForm.Plugin.control[pluginName];
-                    return pluginInstance.getJsonPartString(nodes[i]);
+
+                    var jpath = domEle.getAttribute("jpath");
+                    return pluginInstance.getJsonPartString(nodes[i], this.getConfigByPath(jpath));
                 }
             }
 
             //没有插件的话再遍历input
-            var controlList = [];
-            var ips = Array.prototype.slice.call(domEle.getElementsByTagName("input"));
-            var txts = Array.prototype.slice.call(domEle.getElementsByTagName("textarea"));
-            var sels = Array.prototype.slice.call(domEle.getElementsByTagName("select"));
+            controlList = [];
+            var ips = _formHelper.toArray(domEle.getElementsByTagName("input"));
+            var txts = _formHelper.toArray(domEle.getElementsByTagName("textarea"));
+            var sels = _formHelper.toArray(domEle.getElementsByTagName("select"));
 
             controlList = ips.concat(txts).concat(sels);
 
@@ -1000,7 +1025,7 @@
                 for (var i = 0; i < conf.validators.length; i++) {
                     var item = conf.validators[i];
                     if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
-                        if (item.errotMsg !== false) {
+                        if (item.errorMsg !== false) {
                             AForm.Config.fn.onInvalid(input, conf, item.errorMsg);
                         }
                         throw new Error("invalid value , not match rule");
@@ -1009,16 +1034,16 @@
             }
 
             //值适配器处理
-            var fn = function (v) {
+            var fnAdpt = function (v) {
                 return v;
             };
             if (conf.valueAdapter && typeof conf.valueAdapter.beforeGet == "function") {
-                fn = conf.valueAdapter.beforeGet;
+                fnAdpt = conf.valueAdapter.beforeGet;
             }
 
             //把处理后的值推入result
             if (domEle.className.indexOf("json-Boolean") > -1) {
-                var tmp = fn(values.length > 0);
+                var tmp = fnAdpt(values.length > 0);
                 if (typeof tmp == "string") {
                     tmp = "\"" + tmp + "\"";
                 }
@@ -1029,7 +1054,7 @@
                 for (var i = 0; i < len; i++) {
                     values[i] -= 0;//转换为数字
                 }
-                result.push(fn(values.join(conf.delimiter || ',')));
+                result.push(fnAdpt(values.join(conf.delimiter || ',')));
             }
             else if (domEle.className.indexOf("json-String") > -1) {
                 var len = values.length;
@@ -1039,7 +1064,7 @@
                 }
 
                 result.push('"');
-                result.push(fn(values.join(conf.delimiter || ",")));
+                result.push(fnAdpt(values.join(conf.delimiter || ",")));
                 result.push('"');
             }
         }
@@ -1316,7 +1341,6 @@
                         temp.push("<td class='json-form-rowNumber'>" + (i + 1) + "</td><td>");
                         temp.push(this.renderData(curEle, i, jpath + "[" + i + "]"));
 
-
                         temp.push("</td>");
                     }
 
@@ -1400,17 +1424,21 @@
     function _joinFunction(fnArr, caller, arg) {
         var ret = true;
         for (var i = 0; i < fnArr.length; i++) {
-            ret = fnArr[i].apply(caller, arg);
+            if (arg === undefined) {
+                ret = fnArr[i].apply(caller);
+            }
+            else {
+                ret = fnArr[i].apply(caller, arg);
+            }
         }
         return ret;
     }
 
     //输出
     function _debug(msg) {
-        if (!console)return false;
+        if (typeof console == "undefined")return false;
         else {
-            if (typeof msg == "object")console.dir(msg);
-            else console.log.apply(console, arguments);
+            console.log.apply(console, arguments);
         }
     }
 
