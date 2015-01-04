@@ -28,3 +28,6 @@ AForm是一个一站式表单解决方案，它基于模型驱动，并且做到
 ###联系
 
 任何问题，请联系我：xiehuiqi220@gmail.com，非休息时间一般可做到一小时内回复
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/xiehuiqi220/aform/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
