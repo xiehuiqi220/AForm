@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1419994189960">
+    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1420631176561">
     
 
 <div class="book-summary">
@@ -605,10 +605,115 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_5">
+                    <section class="normal" id="section-gitbook_6">
                     
                         <h1 id="">配置列表</h1>
-<h2 id="">字段配置列表</h2>
+<h2 id="">表单配置</h2>
+<table>
+<thead>
+<tr>
+<th>配置名</th>
+<th>释义</th>
+<th>类型</th>
+<th>默认值</th>
+<th>范例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>title</td>
+<td>表单标题</td>
+<td>字符串</td>
+<td>不设置</td>
+<td>title : &quot;新增页面&quot;</td>
+</tr>
+<tr>
+<td>schemaMode</td>
+<td>结构模式，remote/local/merge</td>
+<td>字符串</td>
+<td>remote</td>
+<td>schemaMode : &quot;local&quot;</td>
+</tr>
+<tr>
+<td>showArrayNO</td>
+<td>是否显示数组表格前的序号列</td>
+<td>布尔</td>
+<td>false</td>
+<td>showArrayNO : false</td>
+</tr>
+<tr>
+<td>hideCollapser</td>
+<td>隐藏折叠器</td>
+<td>布尔</td>
+<td>false</td>
+<td>hideCollapser : true</td>
+</tr>
+<tr>
+<td>className</td>
+<td>容器样式名</td>
+<td>字符串</td>
+<td>不设置</td>
+<td>className : &quot;compact vertical&quot;</td>
+</tr>
+<tr>
+<td>validators</td>
+<td>全局验证器</td>
+<td>对象或数组</td>
+<td>不设置</td>
+<td>请见&quot;表单验证一节&quot;</td>
+</tr>
+<tr>
+<td>readonly</td>
+<td>是否只读，若是则表单下所有字段为只读</td>
+<td>布尔</td>
+<td>false</td>
+<td>readonly : true</td>
+</tr>
+<tr>
+<td>hideColon</td>
+<td>隐藏label后的冒号</td>
+<td>布尔</td>
+<td>false</td>
+<td>hideColon : true</td>
+</tr>
+<tr>
+<td>addRowText</td>
+<td>数组表格添加新行的链接文本</td>
+<td>字符串</td>
+<td>AForm.Config.wording.addRowText</td>
+<td>addRowText : &quot;新增一行&quot;</td>
+</tr>
+<tr>
+<td>rowAction</td>
+<td>数组表单操作列的按钮列表</td>
+<td>对象</td>
+<td>AForm.Config.defaultAction</td>
+<td>请参见“表格增强”一节</td>
+</tr>
+<tr>
+<td>tipsTpl</td>
+<td>tips模板</td>
+<td>字符串</td>
+<td>AForm.Config.tpl.tips</td>
+<td>tipsTpl : &quot;<b>{tips}</b>&quot;</td>
+</tr>
+<tr>
+<td>thTipsTpl</td>
+<td>表格列tips模板</td>
+<td>字符串</td>
+<td>AForm.Config.tpl.thTips</td>
+<td>thTipsTpl : &quot;<b>{tips}</b>&quot;</td>
+</tr>
+<tr>
+<td>fields</td>
+<td>表单字段，详细配置见“字段配置”</td>
+<td>对象</td>
+<td>不设置</td>
+<td>fields : {}</td>
+</tr>
+</tbody>
+</table>
+<h2 id="">字段配置</h2>
 <table>
 <thead>
 <tr>
