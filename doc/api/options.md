@@ -1,6 +1,26 @@
 # 配置列表
 
-## 字段配置列表
+
+## 表单配置
+
+配置名		|释义	|类型	|默认值	|范例
+-----		|-----	|-----	|-----	|-----
+title		|表单标题|字符串	|不设置	|title : "新增页面"
+schemaMode		|结构模式，remote/local/merge|字符串	|remote	|schemaMode : "local"
+showArrayNO		|是否显示数组表格前的序号列|布尔	|false	|showArrayNO : false
+hideCollapser		|隐藏折叠器|布尔	|false	|hideCollapser : true
+className		|容器样式名|字符串	|不设置	|className : "compact vertical"
+validators		|全局验证器|对象或数组	|不设置	|请见"表单验证一节"
+readonly		|是否只读，若是则表单下所有字段为只读|布尔	|false	|readonly : true
+hideColon		|隐藏label后的冒号|布尔	|false	|hideColon : true
+addRowText		|数组表格添加新行的链接文本|字符串	|AForm.Config.wording.addRowText	|addRowText : "新增一行"
+rowAction		|数组表单操作列的按钮列表|对象	|AForm.Config.defaultAction	|请参见“表格增强”一节
+tipsTpl		|tips模板|字符串	|AForm.Config.tpl.tips	|tipsTpl : "<b>{tips}</b>"
+thTipsTpl		|表格列tips模板|字符串	|AForm.Config.tpl.thTips	|thTipsTpl : "<b>{tips}</b>"
+fields		|表单字段，详细配置见“字段配置”|对象	|不设置	|fields : {}
+
+
+## 字段配置
 
 配置名		|释义	|类型	|默认值	|范例
 -----		|-----	|-----	|-----	|-----
