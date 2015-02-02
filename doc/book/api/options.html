@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1422878166281">
+    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1422878519170">
     
 
 <div class="book-summary">
@@ -869,7 +869,8 @@
 <td>frontalHtml</td>
 <td>输入框前的附加内容，勿放置任何input控件，否则会影响表单的取值</td>
 <td>字符串</td>
-<td>不设置 <code>frontalHtml:&quot;/data/web/template/&quot;</code></td>
+<td>不设置</td>
+<td><code>frontalHtml:&quot;/data/web/template/&quot;</code></td>
 </tr>
 <tr>
 <td>inline</td>
@@ -939,7 +940,7 @@
 <td>输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法；为对象时，下设两个属性rule和errorMsg，rule是一个函数；为数组时，其元素是上述任何类型</td>
 <td>字符串或函数</td>
 <td>不设置</td>
-<td><code>validator:&quot;$v &gt; 5&quot; validator:function(v){return v &gt; 5;}</code></td>
+<td><code>validator:function(v){return v &gt; 5;}</code></td>
 </tr>
 <tr>
 <td>title</td>
@@ -953,7 +954,7 @@
 <td>输入控件的可选项目列表，针对select、checkbox、radio有效，当浏览器支持html5的datalist且输入控件是text时，会生成datalist标签辅助输入。</td>
 <td>数组</td>
 <td>不设置</td>
-<td><code>datalist:[{value:0,text:&quot;男&quot;,group:&quot;分组名&quot;,custom:&quot;自定义数据&quot;},{value:1,text:&quot;女&quot;}] datalist:[&quot;office&quot;,&quot;photoshop&quot;,&quot;vbscript&quot;,&quot;c#&quot;,&quot;arcgis&quot;]</code></td>
+<td><code>datalist:[{value:0,text:&quot;男&quot;,group:&quot;分组名&quot;,custom:&quot;自定义数据&quot;}]</code></td>
 </tr>
 <tr>
 <td>multiple</td>
@@ -995,14 +996,14 @@
 <td>当前字段渲染完毕后的处理函数</td>
 <td>函数</td>
 <td>不设置</td>
-<td><code>onRenderComplete:function(ctrlId , con){alert(ctrlId);}</code></td>
+<td><code>onRenderComplete:fn</code></td>
 </tr>
 <tr>
 <td>valueAdapter</td>
 <td>值适配器，可在渲染或获取值前修改值，为一个对象，包含两个属性beforeRender和beforeGet，皆为传入旧值且返回新值的函数</td>
 <td>对象</td>
 <td>不设置</td>
-<td><code>valueAdapter:{beforeRender:function(v){return v+1},beforeGet:function(v){return v-1}}</code></td>
+<td>请参见数据适配器一章</td>
 </tr>
 </tbody>
 </table>
