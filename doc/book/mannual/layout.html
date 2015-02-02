@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.3" data-basepath=".." data-revision="1422878519170">
+    <div class="book"  data-level="2.3" data-basepath=".." data-revision="1422879232942">
     
 
 <div class="book-summary">
@@ -608,27 +608,8 @@
                     <section class="normal" id="section-gitbook_14">
                     
                         <h1 id="">表单的布局</h1>
-<p>对于输入如下数据：</p>
-<pre><code>{&quot;Name&quot;:&quot;John Smith&quot;,&quot;Age&quot;:32,&quot;Employed&quot;:true}
-</code></pre><p>AForm生成的HTML如下所示（为方便查看DOM结构，以下代码有适当删减）：</p>
-<pre><code>&lt;fieldset class=&quot;json-form-element json-Object&quot;&gt;
-&lt;legend style=&quot;display:&quot;&gt;
-    &lt;label&gt;&lt;input checked type=&quot;checkbox&quot;&gt;&lt;/label&gt;
-&lt;/legend&gt;
-&lt;div class=&quot;json-form-element json-basic-element json-String&quot;&gt;
-    &lt;label class=&quot;json-field-label label-Name&quot; style=&quot;display:&quot; for=&quot;ele-json-2&quot;&gt;Name:&lt;/label&gt;
-    &lt;input class=&quot;json-field-input&quot; id=&quot;ele-json-2&quot; type=&quot;text&quot; name=&quot;Name&quot; value=&quot;John Smith&quot;&gt;
-&lt;/div&gt;
-&lt;div class=&quot;json-form-element json-basic-element json-Number&quot;&gt;
-    &lt;label class=&quot;json-field-label label-Age&quot; style=&quot;display:&quot; for=&quot;ele-json-3&quot;&gt;Age:&lt;/label&gt;
-    &lt;input class=&quot;json-field-input&quot; id=&quot;ele-json-3&quot; type=&quot;text&quot; name=&quot;Age&quot; value=&quot;32&quot;&gt;
-&lt;/div&gt;
-&lt;div class=&quot;json-form-element json-basic-element json-Boolean&quot;&gt;
-    &lt;label class=&quot;json-field-label label-Employed&quot; style=&quot;display:&quot; for=&quot;ele-json-4&quot;&gt;Employed:&lt;/label&gt;
-    &lt;input class=&quot;json-field-input&quot; id=&quot;ele-json-4&quot; type=&quot;checkbox&quot; checked=&quot;&quot; name=&quot;Employed&quot;&gt;
-&lt;/div&gt;
-&lt;/fieldset&gt;
-</code></pre><p>可以看到，每个键值对都会生成一个div块状元素包裹，里面通常包含一个label和输入控件，如果您想在一行显示多个输入项，此时可通过inline、width、break等选项来组合设置，您也可以自己编写样式表控制。</p>
+<p>AForm 规定一个控件要么是 block 类型，要么是 inline-block 类型，block 类型中，一个控件（包括其容器）占据一行，而inline 类型，多个控件会挤在一行。</p>
+<p>AForm通过如下属性的复合使用可以实现大部分的表单布局：</p>
 <table>
 <thead>
 <tr>
@@ -642,31 +623,38 @@
 <tbody>
 <tr>
 <td>inline</td>
-<td>输入控件外层容器是否行内布局，相当于设置display为inline-block</td>
+<td>输入控件外层容器是否行内布局，相当于设置 display 为 inline-block</td>
 <td>布尔型</td>
 <td>false</td>
-<td>inline:true</td>
+<td><code>inline:true</code></td>
 </tr>
 <tr>
 <td>width</td>
 <td>输入控件外层容器的宽度，取值和css的width属性一致</td>
 <td>字符串</td>
 <td>不设置</td>
-<td>width:&quot;300px&quot;</td>
+<td><code>width:&quot;300px&quot;</code></td>
 </tr>
 <tr>
 <td>break</td>
 <td>末尾换行，仅当inline为true时有效，相当于在控件后增加了一个清除浮动的元素</td>
 <td>布尔型</td>
 <td>false</td>
-<td>break:true</td>
+<td><code>break:true</code></td>
 </tr>
 <tr>
 <td>hideLabel</td>
 <td>隐藏输入框前的label</td>
 <td>布尔型</td>
 <td>false</td>
-<td>hideLabel:true</td>
+<td><code>hideLabel:true</code></td>
+</tr>
+<tr>
+<td>hideColon</td>
+<td>隐藏label后的冒号</td>
+<td>布尔型</td>
+<td>false</td>
+<td><code>hideColon:true</code></td>
 </tr>
 </tbody>
 </table>
