@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="4.1" data-basepath=".." data-revision="1420631176561">
+    <div class="book"  data-level="4.1" data-basepath=".." data-revision="1422878166281">
     
 
 <div class="book-summary">
@@ -488,7 +488,7 @@
                         
                             <b>6.1.</b>
                         
-                         bootstrap结合
+                         与 bootstrap 结合
                     </a>
                 
             
@@ -605,7 +605,7 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_4">
+                    <section class="normal" id="section-gitbook_5">
                     
                         <h1 id="">接口列表</h1>
 <table>
@@ -641,6 +641,11 @@
 <td>tryGetJsonString()</td>
 <td>获取为json字符串</td>
 <td>输入未通过校验时返回空字符串</td>
+</tr>
+<tr>
+<td>reset()</td>
+<td>重置表单</td>
+<td>将使用最后一次渲染的数据重新渲染表单，因此会清除上次渲染之后用户输入的痕迹，<strong>注意：由于aform的异步渲染机制，因此请避免在aform所处的容器中放置 <code>reset</code> 类型的按钮，或使用普通按钮执行该方法，否则可能导致表单数据被清空</strong></td>
 </tr>
 </tbody>
 </table>

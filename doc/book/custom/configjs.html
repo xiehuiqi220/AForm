@@ -4,7 +4,7 @@
     <head>
         
         <meta charset="UTF-8">
-        <title>bootstrap结合 | AForm — 模型驱动的自动化表单解决方案</title>
+        <title>与 bootstrap 结合 | AForm — 模型驱动的自动化表单解决方案</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.0.2">
@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="6.1" data-basepath=".." data-revision="1420631176561">
+    <div class="book"  data-level="6.1" data-basepath=".." data-revision="1422878166281">
     
 
 <div class="book-summary">
@@ -488,7 +488,7 @@
                         
                             <b>6.1.</b>
                         
-                         bootstrap结合
+                         与 bootstrap 结合
                     </a>
                 
             
@@ -605,9 +605,41 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_9">
+                    <section class="normal" id="section-gitbook_16">
                     
-                        <h1 id="aformconfigjs">aform.config.js</h1>
+                        <h1 id="bootstrap">与Bootstrap的结合</h1>
+<p>Bootstrap 3.2 支持3种布局方式：</p>
+<ol>
+<li>垂直（<code>form-vertical</code>），标签和输入框上下排列</li>
+<li>行内（<code>form-inline</code>），标签和输入框水平排列，一行显示多个域</li>
+<li>水平（<code>form-horizontal</code>），标签和输入框水平排列，但一行仅显示一个域</li>
+</ol>
+<p>另 Bootstrap 为表单容器以及输入控件定义了<code>form-group</code>、<code>form-control</code>，因此 AForm 与 Bootstrap 的结合，归根到底就是要把 AForm 配置为应用上述样式。</p>
+<h2 id="1aform">1、修改AForm全局配置增加额外样式名</h2>
+<p>在创建AForm表单实例之前，为AForm生成的DOM的添加 Bootstrap 对应的样式：</p>
+<pre><code class="lang-javascript">    AForm.Config.extClassName.basicContainer = <span class="hljs-string">"form-group"</span>;
+    AForm.Config.extClassName.table = <span class="hljs-string">"table table-bordered"</span>;
+    AForm.Config.extClassName.control = <span class="hljs-string">"form-control"</span>;
+</code></pre>
+<p>这段代码可以在创建某个AForm前直接使用，也可以放置在aform.config.js文件中作为全站默认配置</p>
+<h2 id="2-classname-aformbootstrap">2、通过 <code>className</code> 属性设置AForm实例的样式名为Bootstrap相应布局样式名</h2>
+<pre><code class="lang-javascript">
+    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>,{
+        className:<span class="hljs-string">"form-horizontal"</span>,<span class="hljs-comment">//注意该属性</span>
+        fields:{
+            a:{label:<span class="hljs-string">"a"</span>,defaultValue:<span class="hljs-number">1</span>},
+            b:{label:<span class="hljs-string">"b"</span>,defaultValue:<span class="hljs-number">2</span>}
+        }
+    });
+
+    jf.render();
+</code></pre>
+<p><strong>注意：由于 Bootstrap 的表单html规范和AForm的并不完全一致，因此在实现form-horizontal的时候需要您强制设置 <code>form-control</code> 的 <code>display</code> 属性为 <code>inline</code> 且宽度不为100% ，从而不占据一行的空间</strong>，像如下这样：</p>
+<pre><code class="lang-css"><span class="hljs-class">.aform</span><span class="hljs-class">.form-horizontal</span> <span class="hljs-tag">form-control</span> <span class="hljs-rules">{
+    <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value">inline</span></span>;
+    <span class="hljs-rule"><span class="hljs-attribute">width</span>:<span class="hljs-value">auto</span></span>;
+<span class="hljs-rule">}</span></span>
+</code></pre>
 
                     
                     </section>

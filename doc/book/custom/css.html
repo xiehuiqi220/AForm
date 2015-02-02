@@ -31,7 +31,7 @@
 
 
         
-    <div class="book"  data-level="6.2" data-basepath=".." data-revision="1420631176561">
+    <div class="book"  data-level="6.2" data-basepath=".." data-revision="1422878166281">
     
 
 <div class="book-summary">
@@ -486,7 +486,7 @@
                         
                             <b>6.1.</b>
                         
-                         bootstrap结合
+                         与 bootstrap 结合
                     </a>
                 
             
@@ -605,44 +605,53 @@
                 
                     <section class="normal" id="section-gitbook_8">
                     
-                        <h1 id="">样式编写</h1>
-<p>AForm对任何合法的数据都生成一个DOM容器，该容器的样式名包含“json-form-element”，因此如果您需对所有数据容器设置样式，则使用“json-form-element”选择器即可，另外容器的样式名还包括生成该容器的数据类型，比如若输入的数据是object，则容器包含样式名“json-Object”，若输入的数据是数组，则容器样式名包含“json-Array”，若输入的数据是字符串、布尔值或数字类型，则样式名除分别包含“json-String”、“json-Boolean”或“json-Number”之外，还会包含“json-basic-element”，例如，对于输入如下数据：</p>
-<pre><code>{&quot;Name&quot;:&quot;John Smith&quot;,&quot;Age&quot;:32,&quot;Employed&quot;:true}
-</code></pre><p>其生成的HTML如下所示（为方便查看DOM结构，以下代码有适当删减）：</p>
-<pre><code>&lt;fieldset class=&quot;json-form-element json-Object&quot;&gt;
-&lt;legend style=&quot;display:&quot;&gt;
-    &lt;label&gt;&lt;input checked type=&quot;checkbox&quot;&gt;&lt;/label&gt;
-&lt;/legend&gt;
-&lt;div class=&quot;json-form-element json-basic-element json-String&quot;&gt;
-    &lt;label class=&quot;json-field-label label-Name&quot; style=&quot;display:&quot; for=&quot;ele-json-2&quot;&gt;Name:&lt;/label&gt;
-    &lt;input class=&quot;json-field-input&quot; id=&quot;ele-json-2&quot; type=&quot;text&quot; name=&quot;Name&quot; value=&quot;John Smith&quot;&gt;
-&lt;/div&gt;
-&lt;div class=&quot;json-form-element json-basic-element json-Number&quot;&gt;
-    &lt;label class=&quot;json-field-label label-Age&quot; style=&quot;display:&quot; for=&quot;ele-json-3&quot;&gt;Age:&lt;/label&gt;
-    &lt;input class=&quot;json-field-input&quot; id=&quot;ele-json-3&quot; type=&quot;text&quot; name=&quot;Age&quot; value=&quot;32&quot;&gt;
-&lt;/div&gt;
-&lt;div class=&quot;json-form-element json-basic-element json-Boolean&quot;&gt;
-    &lt;label class=&quot;json-field-label label-Employed&quot; style=&quot;display:&quot; for=&quot;ele-json-4&quot;&gt;Employed:&lt;/label&gt;
-    &lt;input class=&quot;json-field-input&quot; id=&quot;ele-json-4&quot; type=&quot;checkbox&quot; checked=&quot;&quot; name=&quot;Employed&quot;&gt;
-&lt;/div&gt;
-&lt;/fieldset&gt;
-</code></pre><ul>
-<li>若数据是键值对，且值是字符串、布尔值或数字类型的一种，则数据的键将生成一个label元素，该label的样式名包含“json-field-label”以及“label-{键名}”。</li>
-<li>任何生成的输入控件，如文本框、下拉列表、复选框等容器，都包含样式名“json-field-input”。</li>
-<li>文本框和文本区域，在值改变后，会增加样式“json-form-dirty”，因此您可以通过此选择器设定被修改过的输入框的样式。</li>
-<li>数组生成的表格，数据行每行的第一列—编号列，其样式名是“json-form-rowNumber”，数据航每行的最后一列—操作列，其样式名是“json-form-actionCell”。</li>
-<li>若数据是必填项，则其输入框左侧的label（若有）后会生成一个带星号的span，该span的样式名为“json-form-required”。</li>
-</ul>
-<p>.以下是一个AForm表单样式范例：</p>
-<pre><code>&lt;style&gt;
-
-table.json-Array a.json-form-action    /* 数组表格操作列单元格下删除链接的样式 */
-{
-    text-decoration:none;
-}
-
-&lt;/style&gt;
+                        <h1 id="css">CSS文件编写指引</h1>
+<p>以如下数据为例：</p>
+<pre><code class="lang-javascript">    {
+        <span class="hljs-string">"Name"</span>:<span class="hljs-string">"John Smith"</span>,
+        <span class="hljs-string">"Age"</span>:<span class="hljs-number">32</span>,
+        <span class="hljs-string">"Employed"</span>:<span class="hljs-literal">true</span>
+    }
 </code></pre>
+<p>AForm渲染的HTML如下所示：</p>
+<pre><code class="lang-html">
+    <span class="hljs-tag">&lt;<span class="hljs-title">fieldset</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">"border:none"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-form-element json-Object"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">legend</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">"display: none;"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">cmd</span>=<span class="hljs-value">"aform_array_collapse_fieldset"</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-form-collapser "</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">legend</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-form-fdset"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">""</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-form-element json-basic-element json-String form-group"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-field-label  label_Name"</span> <span class="hljs-attribute">for</span>=<span class="hljs-value">"ele_json_20"</span>&gt;</span>Name：<span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-field-input form-control"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"ele_json_20"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"Name"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">""</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">jpath</span>=<span class="hljs-value">".Age"</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">""</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-form-element json-basic-element json-Number form-group"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-field-label  label_Age"</span> <span class="hljs-attribute">for</span>=<span class="hljs-value">"ele_json_21"</span>&gt;</span>Age：<span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-field-input form-control"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"ele_json_21"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"Age"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">""</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">style</span>=<span class="hljs-value">""</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-form-element json-basic-element json-Boolean form-group"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">label</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-field-label  label_Employed"</span> <span class="hljs-attribute">for</span>=<span class="hljs-value">"ele_json_22"</span>&gt;</span>Employed：<span class="hljs-tag">&lt;/<span class="hljs-title">label</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"json-field-input form-control"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"ele_json_22"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"checkbox"</span> <span class="hljs-attribute">checked</span>=<span class="hljs-value">""</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"Employed"</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">fieldset</span>&gt;</span>
+</code></pre>
+<p>您可以通过firebug或chrome devtools查看dom容器的样式名</p>
+<p>.以下是一个AForm表单样式范例：</p>
+<pre><code class="lang-css">
+    <span class="hljs-class">.aform</span> <span class="hljs-tag">div</span><span class="hljs-class">.json-form-element</span>    <span class="hljs-comment">/* 输入控件外层容器样式 */</span>
+     <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">padding</span>:<span class="hljs-value"> <span class="hljs-number">5px</span></span></span>;
+    <span class="hljs-rule">}</span></span>
+
+    <span class="hljs-class">.aform</span> <span class="hljs-tag">label</span><span class="hljs-class">.json-field-label</span>    <span class="hljs-comment">/* 输入控件左侧label样式 */</span>
+     <span class="hljs-rules">{
+        <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> inline-block</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">width</span>:<span class="hljs-value"> <span class="hljs-number">110px</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">font-weight</span>:<span class="hljs-value"> bold</span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">font-size</span>:<span class="hljs-value"> <span class="hljs-number">13px</span></span></span>;
+        <span class="hljs-rule"><span class="hljs-attribute">color</span>:<span class="hljs-value"> <span class="hljs-hexcolor">#666</span></span></span>;
+    <span class="hljs-rule">}</span></span>
+</code></pre>
+<p><strong>注意，如果需要直接通过AForm的配置修改当前表单的样式，请参见<code>labelCssText</code>、<code>ctrlCssText</code>以及<code>cssText</code>属性。</strong></p>
+
                     
                     </section>
                 
@@ -652,7 +661,7 @@ table.json-Array a.json-form-action    /* 数组表格操作列单元格下删�
         </div>
 
         
-        <a href="../custom/configjs.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: bootstrap结合"><i class="fa fa-angle-left"></i></a>
+        <a href="../custom/configjs.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 与 bootstrap 结合"><i class="fa fa-angle-left"></i></a>
         
         
     </div>

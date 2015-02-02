@@ -25,6 +25,6 @@
    * [aform.config.js](custom/configjs.md)
    * [样式编写指引](custom/css.md)
 * [最佳实践](best/readme.md)
-   * [bootstrap结合](custom/configjs.md)
+   * [与 bootstrap 结合](custom/configjs.md)
    * [样式编写指引](custom/css.md)
 
