@@ -22,6 +22,9 @@ var af = new AForm("target",{
         "age":{label:"年龄",type:"number"},
         "education":{label:"教育经历",fields:{
             school:{label:"学校"}
+            from:{label:"开始时间",type:"date"},
+            end:{label:"结束时间",type:"date"},
+            degree:{label:"学位",required:false}
         }}
     }
 });
@@ -29,9 +32,9 @@ af.render({
     "name": 1,
     "age": 2,
     "education":[{
-        school:"中国理工大学"
+        school:"中国理工大学",from:"2004-9-1",end:"2008-7-1",degree:"学士"
     },{
-        school:"中国文化大学"
+        school:"中国文化大学",from:"2008-9-1",end:"2010-7-1",degree:"硕士"
     }]
 });
 
