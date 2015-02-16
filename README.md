@@ -1,6 +1,6 @@
 #介绍
 
-AForm 是工业级的表单解决方案，它基于声明式编程和模型驱动，做到了大部分工作的自动化，使用AForm，您仅需关心数据模型和表单的最终展现，而无需关心开发细节，对于大量使用表单的应用系统来说，AForm可以极大地提高您的生产力。
+AForm 是工业级的表单解决方案，它基于声明式编程和模型驱动，做到了大部分工作的自动化，使用AForm，您仅需关心数据模型、数据约束和表单的最终展现，而无需关心表单的实现细节，对于大量使用表单的应用系统来说，AForm可以极大地提高您的生产力。
 
 ![示意图](http://xiehuiqi220.github.io/AForm/img/converse.png)
 
@@ -13,7 +13,7 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 7. 全适配，支持所有浏览器和移动终端，从ie6到html5无缝支持
 
 ### 使用例子
-[查看 jsfiddler](http://jsfiddle.net/xiehuiqi220/yw58Lr2o/)
+[查看 jsfiddler](http://jsfiddle.net/xiehuiqi220/yw58Lr2o/1/)
 ```javascript
 var af = new AForm("target",{
     className:"form-horizontal",
