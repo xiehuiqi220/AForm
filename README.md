@@ -24,7 +24,7 @@ var af = new AForm("target",{
             school:{label:"学校"}
             from:{label:"开始时间",type:"date"},
             end:{label:"结束时间",type:"date"},
-            degree:{label:"学位",required:false}
+            degree:{label:"学位",required:false,type:"select",datalist:["学士","硕士",""]}
         }}
     }
 });
