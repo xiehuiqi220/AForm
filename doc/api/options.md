@@ -6,7 +6,7 @@
 配置名		|释义	|类型	|默认值	|范例
 -----		|-----	|-----	|-----	|-----
 title		|表单标题|字符串	|不设置	|`title : "新增页面"`
-schemaMode		|结构模式，remote/local/merge|字符串	|remote	|`schemaMode : "local"`
+schemaMode		|结构模式，`remote/local/merge`|字符串	|remote	|`schemaMode : "local"`
 showArrayNO		|是否显示数组表格前的序号列|布尔	|false	|`showArrayNO : false`
 hideCollapser		|隐藏折叠器|布尔	|false	|`hideCollapser : true`
 className		|容器样式名|字符串	|不设置	|`className : "compact vertical"`
@@ -25,7 +25,7 @@ fields		|表单字段，详细配置见“字段配置”|对象	|不设置	|fie
 配置名		|释义	|类型	|默认值	|范例
 -----		|-----	|-----	|-----	|-----
 ctrlId		|输入控件的id，当该字段的输入在界面中唯一的话，设置该id便于您之后获取该输入控件，不设置该项，会使用组件自动生成的id	|字符串	|不设置	|`ctrlId:"txt_name"`
-ctrlAttr	|输入控件的属性集合，用于设置额外或个性化的属性	|json对象	|不设置	|`ctrlAttr:{max:200,min:100,step:5,onchange:"alert(this.value)"}`
+ctrlAttr	|输入控件的属性集合，用于设置额外或个性化的属性	|json对象	|不设置	|`ctrlAttr:{max:200,min:100,step:5}`
 hidden		|是否隐藏该字段的输入界面，若true在html5下将为容器生成hidden属性	|布尔型	|false	|`hidden:true`
 label		|生成的label中的内容，不设置则使用字段名	|字符串	|空字符串	|`label:"年龄"`
 dfaultValue	|默认值	|any	|不设置	|`dfaultValue:"Y"`
@@ -38,6 +38,7 @@ break		|换行，仅当inline为true时有效	|布尔型	|false	|`break:true`
 hideCollapser	|是否隐藏折叠器，针对object和array有效，若不设置或设置为false，则会在输入控件集合外层添加一个复选框用于折叠或展开子项	|布尔型	|false	|`hideCollapser:true`
 collapse	|是否折叠容器，针对object和array有效，	|布尔型	|false	|`collapse:true`
 tips		|输入控件右侧生成的tips内容，需配合tipsTpl使用 |字符串 |不设置 |`tips:"<span>填写您常使用的邮箱</span>"`
+noTips		|是否显示输入框右侧的tips，对于表格中的输入框，由于表头已显示了tips，因此可设置此项以隐藏输入框后的tips |布尔型 |false |`noTips:true`
 tipsTpl	|输入控件右侧生成的tips容器html模板，需配合tips属性使用，若该项未设置，则使用全局配置 |字符串 |全局配置项中的tipsTpl |`tipsTpl:"<a>\{tips\}</a>"`
 ctrlCssText	|输入控件的样式 |字符串或函数 |不设置 |`ctrlCssText:"color:red"`
 labelCssText	|空间前面标签的样式 |字符串 |不设置 |`labelCssText:"color:red"`

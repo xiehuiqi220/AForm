@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1422879232942">
+    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1424073778395">
     
 
 <div class="book-summary">
@@ -629,7 +629,7 @@
 </tr>
 <tr>
 <td>schemaMode</td>
-<td>结构模式，remote/local/merge</td>
+<td>结构模式，<code>remote/local/merge</code></td>
 <td>字符串</td>
 <td>remote</td>
 <td><code>schemaMode : &quot;local&quot;</code></td>
@@ -737,7 +737,7 @@
 <td>输入控件的属性集合，用于设置额外或个性化的属性</td>
 <td>json对象</td>
 <td>不设置</td>
-<td><code>ctrlAttr:{max:200,min:100,step:5,onchange:&quot;alert(this.value)&quot;}</code></td>
+<td><code>ctrlAttr:{max:200,min:100,step:5}</code></td>
 </tr>
 <tr>
 <td>hidden</td>
@@ -822,6 +822,13 @@
 <td>字符串</td>
 <td>不设置</td>
 <td><code>tips:&quot;&lt;span&gt;填写您常使用的邮箱&lt;/span&gt;&quot;</code></td>
+</tr>
+<tr>
+<td>noTips</td>
+<td>是否显示输入框右侧的tips，对于表格中的输入框，由于表头已显示了tips，因此可设置此项以隐藏输入框后的tips</td>
+<td>布尔型</td>
+<td>false</td>
+<td><code>noTips:true</code></td>
 </tr>
 <tr>
 <td>tipsTpl</td>

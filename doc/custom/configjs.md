@@ -40,7 +40,7 @@ Bootstrap 3.2 支持3种布局方式：
 **注意：由于 Bootstrap 的表单html规范和AForm的并不完全一致，因此在实现form-horizontal的时候需要您强制设置 `form-control` 的 `display` 属性为 `inline` 且宽度不为100% ，从而不占据一行的空间**，像如下这样：
 
 ```css
-.aform.form-horizontal form-control {
+.aform.form-horizontal .form-control {
     display:inline;
     width:auto;
 }

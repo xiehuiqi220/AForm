@@ -6,7 +6,6 @@
  
  
 //默认全局配置
-
 AForm.Config = AForm.Config || {};
 AForm.Config.defaultDelimiter = ",";//默认字符串分隔符，用于处理复选框的逗号隔开的值
 //表格行操作
@@ -56,19 +55,23 @@ AForm.Config.fn = {
         var name = input.getAttribute("name");
 
         var errMsg = conf ? ("字段[" + (conf.label) + "]不能为空") : input.title;
-        if (!errMsg) errMsg = "字段[" + (input.getAttribute("name")) + "]不能为空";
+        if (!errMsg) {
+            errMsg = "字段[" + (name) + "]不能为空";
+        }
 
         AForm.Config.fn.showTips(input , errMsg);
-        if (typeof input.focus == "function" || typeof input.focus == "object") {
+        if (typeof input.focus === "function" || typeof input.focus === "object") {
             input.focus();
         }
     },
     "onInvalid": function (input, conf, errorMsg) {
         var errMsg = errorMsg ? errorMsg : (conf ? ("字段[" + (conf.label) + "]的值非法") : input.title);
-        if (!errMsg) errMsg = "字段[" + (input.getAttribute("name")) + "]非法";
+        if (!errMsg) {
+            errMsg = "字段[" + (input.getAttribute("name")) + "]非法";
+        }
 
         AForm.Config.fn.showTips(input , errMsg);
-        if (typeof input.focus == "function" || typeof input.focus == "object") {
+        if (typeof input.focus === "function" || typeof input.focus === "object") {
             input.focus();
         }
     },
