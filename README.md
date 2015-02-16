@@ -13,7 +13,7 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 7. 全适配，支持所有浏览器和移动终端，从ie6到html5无缝支持
 
 ### 使用例子
-
+[查看 jsfiddler](http://jsfiddle.net/xiehuiqi220/yw58Lr2o/)
 ```javascript
 var af = new AForm("target",{
     className:"form-horizontal",
