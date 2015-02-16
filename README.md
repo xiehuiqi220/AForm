@@ -38,6 +38,7 @@ af.render({
     }]
 });
 
+console.log(af.getJson());//将输出与渲染数据一致的json结构
 ```
 
 ### 文档
