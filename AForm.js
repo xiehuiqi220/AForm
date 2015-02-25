@@ -118,6 +118,9 @@
         desc: "AForm arr渲染器",
         render: function (nameOrIndex, input, fieldConfig, renderCount, afObj, jpath, hideLabel) {
             fieldConfig.rowAction = fieldConfig.rowAction || afObj.config.rowAction;
+            if (typeof nameOrIndex == "string") {
+                fieldConfig.attr["name"] = nameOrIndex;
+            }
 
             //检测插件，插件优先
             if (fieldConfig.type in AForm.Plugin.control) {
@@ -264,7 +267,11 @@
     //注册OBJ渲染器
     AForm.registerControl(AFORM_OBJ_PLUGIN, {
         desc: "AForm OBJ渲染器",
-        render: function (nameOrIndex, input, fieldConfig, renderCount, afObj, jpath, hideLabel) {
+        render: function (nameOrIndex, input, fieldConfig, renderCount, afObj, jpath) {
+            if (typeof nameOrIndex == "string") {
+                fieldConfig.attr["name"] = nameOrIndex;
+            }
+
             //检测插件，插件优先
             if (fieldConfig.type in AForm.Plugin.control) {
                 //插件用固定样式包裹
@@ -317,9 +324,6 @@
     AForm.registerControl(AFORM_SYS_PLUGIN, {
         desc: "AForm全局渲染器",
         render: function (nameOrIndex, input, fieldConfig, renderCount, afObj, jpath, hideLabel) {
-            if (typeof nameOrIndex == "string") {
-                fieldConfig.attr["name"] = nameOrIndex;
-            }
             if (fieldConfig.hidden) {
                 fieldConfig.attr["hidden"] = "hidden";
                 fieldConfig.cssText += ";display:none";
@@ -744,7 +748,7 @@
             labelHtml += "</" + AForm.Config.tags.label + ">";
 
             var cssText = (param.fieldConfig.cssText || "");
-            var attr = (param.fieldConfig.attr || "");
+            var attr = (param.fieldConfig.attr || {});
             var className = "json-form-element json-basic-element json-" + param.dataType + " " + AForm.Config.extClassName.basicContainer;
 
             if (param.fieldConfig.inline) {
@@ -752,17 +756,17 @@
                 className += " json-form-inline";
             }
             if (param.fieldConfig.hidden) {
-                attr += " hidden='hidden'";
+                attr.hidden='hidden';
                 cssText += ";display:none";
             }
             if (param.fieldConfig.jpath) {
-                attr += " jpath='" + param.fieldConfig.jpath + "'";
+                attr.jpath=param.fieldConfig.jpath;
             }
             if (param.fieldConfig.width) {
                 cssText += ";width:" + param.fieldConfig.width;
             }
 
-            var html = ["<" + AForm.Config.tags.basicContainer + " " + attr + " style='" + cssText + "' class='" + className + "'>"];
+            var html = ["<" + AForm.Config.tags.basicContainer + " " + _formHelper.obj2str(attr) + " style='" + cssText + "' class='" + className + "'>"];
             html.push(labelHtml);
 
             if (param.fieldConfig.frontalHtml)//输入控件前的html
