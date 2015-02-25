@@ -6,14 +6,14 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 
 ### 主要特点
 
-1. 声明式，易用，轻量，无依赖，无侵入
+1. 声明式，易用，轻量，不依赖任何库，无侵入
 2. 模型驱动，AForm认为模型即表单，表单即模型
 3. 自动化，支持任意复杂的数据模型，如嵌套对象，数组
 5. 一站式，支持输入验证、数据适配、自定义样式、输入插件
 7. 全适配，支持所有浏览器和移动终端，从ie6到html5无缝支持
 
 ### 使用例子
-[查看 jsfiddler](http://jsfiddle.net/xiehuiqi220/yw58Lr2o/1/)
+[查看 jsfiddler](http://jsfiddle.net/xiehuiqi220/yw58Lr2o/)
 ```javascript
 var af = new AForm("target",{
     className:"form-horizontal",
