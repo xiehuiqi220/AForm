@@ -29,7 +29,7 @@ module.exports = function(grunt) {
         'jsdoc': {
             src: ['AForm.js'],
             options: {
-                destination: 'doc'
+                destination: 'jsdoc'
             }
         },
 		'serve': {

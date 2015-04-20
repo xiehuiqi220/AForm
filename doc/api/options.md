@@ -17,7 +17,8 @@ addRowText		|数组表格添加新行的链接文本|字符串	|AForm.Config.wor
 rowAction		|数组表单操作列的按钮列表|对象	|AForm.Config.defaultAction	|请参见“表格增强”一节
 tipsTpl		|tips模板|字符串	|AForm.Config.tpl.tips	|`tipsTpl : "<b>{tips}</b>"`
 thTipsTpl		|表格列tips模板|字符串	|AForm.Config.tpl.thTips	|`thTipsTpl : "<b>{tips}</b>"`
-fields		|表单字段，详细配置见“字段配置”|对象	|不设置	|fields : {}
+restrict		|是否严格模式，请参见"避免额外输入项干预数据获取"一节|布尔	|false|`restrict :true`
+fields		|表单字段，详细配置见“字段配置”|对象	|不设置	|`fields : {}`
 
 
 ## 字段配置

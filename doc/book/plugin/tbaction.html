@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="3.2" data-basepath=".." data-revision="1425280623260">
+    <div class="book"  data-level="3.2" data-basepath=".." data-revision="1429531538065">
     
 
 <div class="book-summary">
@@ -132,6 +132,28 @@
                     </a>
                 
             
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="2.1.1" data-path="api/ignorerestrict.html">
+            
+                
+                    <a href="../api/ignorerestrict.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.1.</b>
+                        
+                         避免额外输入项干扰数据获取
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
             
         </li>
     
@@ -607,7 +629,49 @@
                 
                     <section class="normal" id="section-gitbook_21">
                     
-                        <h1 id="">表格增强</h1>
+                        <h2 id="">定义表格操作</h2>
+<p>对于数组，AForm默认渲染成表格，表格最右侧即为操作列，默认操作列有两个按钮，增加和删除，你可以使用<code>noCreate</code>和<code>noDelete</code>分别隐藏增加和删除按钮。</p>
+<p>默认按钮的定义在这里，你可以修改全局配置：</p>
+<pre><code class="lang-javascript">AForm.Config.defaultAction = {
+     <span class="hljs-string">"aform_array_add_row"</span>: {
+        html: <span class="hljs-string">"&lt;a href='javascript:void(null)' title='增加'&gt;＋&lt;/a&gt;"</span>
+    },
+    <span class="hljs-string">"aform_array_delete_row"</span>: {
+     html: <span class="hljs-string">"&lt;a href='javascript:void(null)' title='删除'&gt;×&lt;/a&gt;"</span>
+    }
+};
+</code></pre>
+<p>对于某个表单实例，若想自定其操作按钮，可以使用<code>rowAction</code>配置，例子：</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> af = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>, {
+    title: <span class="hljs-string">"xx列表"</span>,
+    schemaMode: <span class="hljs-string">"local"</span>,
+    noCreate:<span class="hljs-literal">true</span>,
+    noDelete:<span class="hljs-literal">true</span>,
+    rowAction:{
+        <span class="hljs-string">"select"</span>:{<span class="hljs-comment">//定义了一个选择操作</span>
+            html:<span class="hljs-string">'&lt;a href="#nolink"&gt;选择&lt;/a&gt;'</span>,
+            handler:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(row,table,cmd)</span></span>{
+                <span class="hljs-built_in">console</span>.log(row);
+                <span class="hljs-comment">// 这里能获取到当前所在的表格行</span>
+                <span class="hljs-comment">//从而可以对行进行处理</span>
+                }
+            }
+        },
+    fields: {...}
+});
+</code></pre>
+<h2 id="">定义操作的前置或后置处理逻辑</h2>
+<p>若想在执行表格操作前做一些处理，比如删除行之前执行服务器端的删除，可以监听<code>beforeExeCmd</code>事件来实现，若该事件的handler返回false，则不会执行后续的操作；若想在表格操作完成之后做一些处理，可以监听<code>afterExeCmd</code>来实现，以下是一个例子：</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> af = <span class="hljs-keyword">new</span> AForm(...);
+af.on(<span class="hljs-string">"beforeExeCmd"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(cmd, row)</span> </span>{
+    <span class="hljs-keyword">if</span> (cmd != <span class="hljs-string">"aform_array_delete_row"</span>)<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+
+    <span class="hljs-keyword">if</span> (confirm(<span class="hljs-string">"删除该行吗？"</span>)) {
+        <span class="hljs-keyword">var</span> id = $(<span class="hljs-string">"input[name=id]"</span>, row).val();
+        <span class="hljs-keyword">return</span> ajaxSyncDelete(id);<span class="hljs-comment">//执行同步的ajax远程调用操作</span>
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+});
+</code></pre>
 
                     
                     </section>

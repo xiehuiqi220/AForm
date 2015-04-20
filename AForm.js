@@ -1,7 +1,7 @@
 /*!
  * AForm v1.1
  * Copyright 2014, 谢慧琦
- * Date: 2014年5月10日
+ * Date: 2015年3月12日
  */
 
 (function () {
@@ -126,9 +126,11 @@
             if (fieldConfig.type in AForm.Plugin.control) {
                 //插件用固定样式包裹
                 var html = [];
-                html.push("<span style=\"" + _s(fieldConfig.ctrlCssText) + "\" type=\"" + fieldConfig.type + "\" class=\"json-form-element json-field-plugin\">");
-                html.push(AForm.Plugin.control[fieldConfig.type].render(nameOrIndex, input, fieldConfig, AForm.renderCount, afObj));
-                html.push("</span>");
+                var thisPlugin = AForm.Plugin.control[fieldConfig.type];
+                var tagName = thisPlugin.tagName || "div";
+                html.push("<" + tagName + " style=\"" + _s(fieldConfig.ctrlCssText) + "\" type=\"" + fieldConfig.type + "\" class=\"json-form-element json-field-plugin\">");
+                html.push(thisPlugin.render(nameOrIndex, input, fieldConfig, AForm.renderCount, afObj));
+                html.push("</" + tagName + ">");
                 return html.join("");
             }
 
@@ -272,15 +274,29 @@
                 fieldConfig.attr["name"] = nameOrIndex;
             }
 
-            //检测插件，插件优先
+            var cssText = (fieldConfig.cssText || "");
+
+            if (fieldConfig.inline) {
+                cssText += ";display:inline-block;*display:inline;*zoom:1";//* ie 6、7 hack
+            }
+            if (fieldConfig.hidden) {
+                cssText += ";display:none";
+            }
+            if (fieldConfig.width) {
+                cssText += ";width:" + fieldConfig.width;
+            }
+
             if (fieldConfig.type in AForm.Plugin.control) {
                 //插件用固定样式包裹
                 var html = [];
-                html.push("<span style=\"" + _s(fieldConfig.ctrlCssText) + "\" type=\"" + fieldConfig.type + "\" class=\"json-form-element json-field-plugin\">");
-                html.push(AForm.Plugin.control[fieldConfig.type].render(nameOrIndex, input, fieldConfig, AForm.renderCount, afObj));
-                html.push("</span>");
+                var thisPlugin = AForm.Plugin.control[fieldConfig.type];
+                var tagName = thisPlugin.tagName || "div";
+                html.push("<" + tagName + " style=\"" + _s(cssText) + "\" type=\"" + fieldConfig.type + "\" class=\"json-form-element json-field-plugin\">");
+                html.push(thisPlugin.render(nameOrIndex, input, fieldConfig, AForm.renderCount, afObj));
+                html.push("</" + tagName + ">");
                 return html.join("");
             }
+
 
             var fdStyle = "";
             if (!nameOrIndex) {
@@ -474,9 +490,11 @@
                 for (var icmd in rowAction) {
                     var item = rowAction[icmd];
                     if (icmd == cmd && typeof item.handler == "function") {
+                    	var ret = true;
                         if (fnBefore.length) {
-                            _joinFunction(fnBefore, window, [icmd, row, table]) && item.handler(row, table, icmd);
+                            ret = _joinFunction(fnBefore, window, [icmd, row, table]);
                         }
+                        ret && item.handler(row, table, icmd);
                         _joinFunction(fnAfter, window, [icmd, row, table]);//after
                         break;
                     }
@@ -591,7 +609,8 @@
 
             for (var i = 0; i < len; i++) {
                 var v = isTextValue ? list[i].value : list[i];
-                html.push("<option value=\"" + v + "\" />");
+                var t = isTextValue ? list[i].text : list[i];
+                html.push("<option label=\""+_s(t)+"\" value=\"" + _s(v) + "\" />");
             }
 
             html.push("</datalist>");
@@ -613,7 +632,7 @@
                     var listId = "list_" + param.id;
                     var attrList = "";
 
-                    html.push("<input ");
+                    html.push("<input data-gen='aform' ");
                     if (param.datalist && param.datalist.length > 0) {
                         listHtml = (this.generateDatalist(param.datalist, listId));
                         html.push(" list='" + listId + "'");
@@ -634,7 +653,7 @@
                     break;
                 case "textarea":
 
-                    html.push("<textarea ");
+                    html.push("<textarea data-gen='aform' ");
                     html.push(param.attrHtml);
                     html.push(" id='");
                     html.push(param.id + "'");
@@ -648,7 +667,7 @@
                     break;
                 case "hidden":
 
-                    html.push("<input type='hidden' ");
+                    html.push("<input data-gen='aform' type='hidden' ");
                     html.push(param.attrHtml);
                     html.push(" id='");
                     html.push(param.id + "'");
@@ -658,7 +677,7 @@
                     break;
                 case "select":
 
-                    html.push("<select ");
+                    html.push("<select data-gen='aform' ");
                     html.push(param.attrHtml);
                     html.push(" id='" + param.id + "' ");
                     html.push(param.attrName);
@@ -699,7 +718,7 @@
                     for (var i = 0; i < len; i++) {
                         var v = isTextValue ? list[i].value : list[i];
                         var t = isTextValue ? list[i].text : list[i];
-                        html.push("<label><input " + param.attrName + " " + sDisabled + " type='radio' " + (v.toString() == param.value ? "checked" : "") + " value=\"" + v + "\" />" + t + "</label>");
+                        html.push("<label><input data-gen='aform' " + param.attrName + " " + sDisabled + " type='radio' " + (v.toString() == param.value ? "checked" : "") + " value=\"" + v + "\" />" + t + "</label>");
                     }
 
                     html.push("</span>");
@@ -723,7 +742,7 @@
                         var v = isO ? list[i].value : list[i];
                         var t = isO ? list[i].text : list[i];
                         var c = isO ? list[i].custom : "";
-                        html.push("<label><input " + param.attrName + " " + sDisabled + " type='checkbox' " + (_formHelper.isInArray(_s(v), valueArr) ? "checked" : "") + " value=\"" + _s(v) + "\" data-custom=\"" + _s(c) + "\" /> " + _s(t) + "</label>");
+                        html.push("<label><input data-gen='aform' " + param.attrName + " " + sDisabled + " type='checkbox' " + (_formHelper.isInArray(_s(v), valueArr) ? "checked" : "") + " value=\"" + _s(v) + "\" data-custom=\"" + _s(c) + "\" /> " + _s(t) + "</label>");
                     }
 
                     html.push("</span>");
@@ -756,11 +775,11 @@
                 className += " json-form-inline";
             }
             if (param.fieldConfig.hidden) {
-                attr.hidden='hidden';
+                attr.hidden = 'hidden';
                 cssText += ";display:none";
             }
             if (param.fieldConfig.jpath) {
-                attr.jpath=param.fieldConfig.jpath;
+                attr["jpath"]=param.fieldConfig.jpath;
             }
             if (param.fieldConfig.width) {
                 cssText += ";width:" + param.fieldConfig.width;
@@ -821,9 +840,11 @@
                 //先判断是否有插件，有则用插件托管渲染
                 if (param.fieldConfig.type in AForm.Plugin.control) {
                     //插件用固定样式包裹
-                    html.push("<span style=\"" + _s(param.fieldConfig.ctrlCssText) + "\" type=\"" + param.fieldConfig.type + "\" class=\"json-field-plugin\">");
-                    html.push(AForm.Plugin.control[param.fieldConfig.type].render(param.nameOrIndex, param.inputData, param.fieldConfig, AForm.renderCount, param.afObj));
-                    html.push("</span>");
+                    var thisPlugin = AForm.Plugin.control[param.fieldConfig.type];
+                    var tagName = thisPlugin.tagName || "span";
+                    html.push("<" + tagName + " style=\"" + _s(param.fieldConfig.ctrlCssText) + "\" type=\"" + param.fieldConfig.type + "\" class=\"json-field-plugin\">");
+                    html.push(thisPlugin.render(param.nameOrIndex, param.inputData, param.fieldConfig, AForm.renderCount, param.afObj));
+                    html.push("</" + tagName + ">");
                 }
                 else {
                     if (AForm.Config.tags.controlContainer) {
@@ -921,6 +942,7 @@
             schemaMode: "remote",//默认是remote，亦即根据data自动生成
             showArrayNO: true,//是否显示数组元素序号，从1开始
             hideCollapser: false,//隐藏折叠器
+            restrict: false,//是否严格模式
             className: "",//容器样式名
             validators: false,//全局验证器
             novalidate: false,//开启验证
@@ -1115,11 +1137,9 @@
     {
         var result = null;
         try {
-            result = eval("(" + this.getJsonString() + ")");
+            result = this.getJson();
         }
-        catch (ex) {
-            ;
-        }
+        catch (ex) {}
         finally {
             return result;
         }
@@ -1132,8 +1152,7 @@
         try {
             result = this.getJsonString();
         }
-        catch (ex) {
-        }
+        catch (ex) {}
         finally {
             return result;
         }
@@ -1179,6 +1198,7 @@
             return pluginInstance.getJsonPartString(domEle, this.getConfigByPath(jpath));
         }
 
+        var domEleName;
         if (domEle.className.indexOf('json-Object') > -1) {
             domEleName = domEle.getAttribute("name");//ie9需使用getAttribute
             var conf = {};
@@ -1247,17 +1267,20 @@
             }
 
             //没有插件的话再遍历input
-            controlList = [];
+            var controlList = [];
             var ips = _formHelper.toArray(domEle.getElementsByTagName("input"));
             var txts = _formHelper.toArray(domEle.getElementsByTagName("textarea"));
             var sels = _formHelper.toArray(domEle.getElementsByTagName("select"));
 
-            controlList = ips.concat(txts).concat(sels);
+            var clTemp = ips.concat(txts).concat(sels);
 
-            for (var ii = 0; ii < controlList.length; ii++) {
-                var ip = controlList[ii];
-                if (ip.getAttribute("ignore") == "true") {
-                    controlList.splice(ii, 1);
+            for (var ii = 0; ii < clTemp.length; ii++) {
+                var ip = clTemp[ii];
+                //忽略的控件无需取值
+                //严格模式下，非aform生成的input无需取值
+                if (ip.getAttribute("ignore") == "true" || ip.getAttribute("ignore") == "ignore" || (this.config.restrict && ip.getAttribute("data-gen") != "aform")) {
+                } else {
+                    controlList.push(ip);
                 }
             }
 
@@ -1428,7 +1451,7 @@
         fieldConfig.attr = fieldConfig.attr || {};//容器属性
         fieldConfig.ctrlAttr = fieldConfig.ctrlAttr || {};//容器内控件属性
         fieldConfig.cssText = fieldConfig.cssText || "";
-        fieldConfig.ctrlAttr.jpath = jpath;
+        fieldConfig.ctrlAttr["jpath"] = jpath;
         fieldConfig.jpath = jpath;
 
         //处理校验表达式
@@ -1455,8 +1478,7 @@
 
     //undefined或null转为空字符串
     function _s(v) {
-        if (v === undefined)return "";
-        if (v === null)return "";
+        if (v === undefined || v === null)return "";
         return v.toString();
     }
 
@@ -1493,7 +1515,7 @@
 
         var arr = [];
         var oo = 0;
-        for (k in obj) {
+        for (var k in obj) {
             oo++;
             arr.push(k);
 

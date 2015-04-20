@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1425280623260">
+    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1429531538065">
     
 
 <div class="book-summary">
@@ -132,6 +132,28 @@
                     </a>
                 
             
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="2.1.1" data-path="api/ignorerestrict.html">
+            
+                
+                    <a href="../api/ignorerestrict.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.1.</b>
+                        
+                         避免额外输入项干扰数据获取
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
             
         </li>
     
@@ -613,7 +635,8 @@
 <h3 id="1-">1. 必填项校验</h3>
 <p><code>required</code>，可选值 true/false</p>
 <h3 id="2-">2. 正则表达式校验</h3>
-<p><code>pattern</code>,值为正则表达式字符串，如：“<code>\\d+</code>”（纯数字），该选项最终会渲染成输入控件的pattern属性（HTML5 新增），因此您<strong>不必在表达式的前后加上^以及$</strong>。</p>
+<p><code>pattern</code>,值为正则表达式字符串，如：“<code>\\d+</code>”（纯数字），该选项最终会渲染成输入控件的pattern属性（HTML5 新增），因此您<strong>不必在表达式的前后加上^以及$</strong>。
+<code>patternErrorMsg</code>，配置正则表达式校验失败的消息提示，如：“请输入数字”</p>
 <h3 id="3-">3. 自定义逻辑校验</h3>
 <p><code>validators</code>，一个数组或对象，当是对象时，其包含两个key：<code>rule</code>与<code>errorMsg</code>，<code>rule</code>是一个参数为输入控件值的函数，返回布尔类型，<code>true</code>为通过验证，否则未通过验证，未通过验证将弹出<code>errorMsg</code>提醒；</p>
 <p>当<code>validators</code>是一个数组时，数组元素即为上述提到的包含<code>rule</code>和<code>errorMsg</code>的对象，所有规则通过时该字段才通过验证；</p>

@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.9" data-basepath=".." data-revision="1425280623260">
+    <div class="book"  data-level="2.9" data-basepath=".." data-revision="1429531538065">
     
 
 <div class="book-summary">
@@ -132,6 +132,28 @@
                     </a>
                 
             
+            
+            <ul class="articles">
+                
+    
+        
+        <li class="chapter " data-level="2.1.1" data-path="api/ignorerestrict.html">
+            
+                
+                    <a href="../api/ignorerestrict.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.1.</b>
+                        
+                         避免额外输入项干扰数据获取
+                    </a>
+                
+            
+            
+        </li>
+    
+
+            </ul>
             
         </li>
     
@@ -607,25 +629,47 @@
                 
                     <section class="normal" id="section-gitbook_11">
                     
-                        <h1 id="">数据适配器</h1>
+                        <h1 id="">字段数据适配器</h1>
 <p>valueAdapter,值适配器，可在渲染或获取值前修改值，valueAdapter为一个对象，包含两个属性 beforeRender 和 beforeGet，分别代表渲染前的处理和获取数据前的处理，通常这两个函数的逻辑是相反的，以保持数据一致性，这两个函数的参数都是当前的值，函数返回新的值</p>
-<h2 id="yn">示例，把Y/N转为布尔值</h2>
-<pre><code>var jf = new AForm(&quot;divOutPut&quot;,fields:{
-    &quot;isPublish&quot;:{
-        label:&quot;是否发布&quot;,valueAdapter:{
-            beforeRender:function(v){
-                return v == &quot;Y&quot;;
-            },
-            beforeGet:function(v){
-                return v ? &quot;Y&quot; : &quot;N&quot;;
+<p>示例，把Y/N转为布尔值</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"divOutPut"</span>,{
+    fields:{
+        <span class="hljs-string">"isPublish"</span>:{label:<span class="hljs-string">"是否发布"</span>,valueAdapter:{
+                beforeRender:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span></span>{
+                    <span class="hljs-keyword">return</span> v == <span class="hljs-string">"Y"</span>;
+                },
+                beforeGet:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span></span>{
+                    <span class="hljs-keyword">return</span> v ? <span class="hljs-string">"Y"</span> : <span class="hljs-string">"N"</span>;
+                }
             }
         }
     }
 });
-jf.render({isPublish:&quot;N&quot;});
-//最终结果是isPublish将渲染为一个复选框，而获取的数据仍然会是Y或N，而不是true或false
-</code></pre><h2 id="">什么情况下用到适配器？</h2>
+jf.render({isPublish:<span class="hljs-string">"N"</span>});
+<span class="hljs-comment">//最终结果是isPublish将渲染为一个复选框</span>
+<span class="hljs-comment">//而获取的数据仍然会是Y或N，而不是true或false</span>
+</code></pre>
+<h2 id="">全局适配器</h2>
+<p>当valueAdapter属性配置在全局配置中，则为全局数据适配器，全局数据适配器能修改所有表单的数据，而不仅仅某个字段的值。</p>
+<p>示例，获取数据前删除某个字段</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"divOutPut"</span>, {
+    fields: {
+        a: {},
+        b: {}
+    },
+    valueAdapter: {
+        beforeGet: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
+            <span class="hljs-keyword">delete</span> data[<span class="hljs-string">"b"</span>];
+            <span class="hljs-keyword">return</span> data;
+        }
+    }
+});
+jf.render();
+jf.getJson();<span class="hljs-comment">//output {a:""} not {a:"",b:""}</span>
+</code></pre>
+<h2 id="">什么情况下用到适配器？</h2>
 <p>比如，对于某个键，服务器返回给你的是Y/N，而你想转为true或false从而渲染为一个复选框，此时适配器就有用了；或者当服务器传给你的时间是unix时间戳，你想转为yMd本地化格式，这个时候适配器也很有用，尽管你可以再渲染表单前对数据作一下加工，但适配器可以使你的代码写的更为优雅简洁。</p>
+<p><strong>注意，使用数据适配器，则需使用<code>getJson</code>或<code>tryGetJson</code>获取数据，使用<code>getJsonString</code>相关的函数，适配器将无法生效。</strong></p>
 
                     
                     </section>

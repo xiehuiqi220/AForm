@@ -4,7 +4,7 @@
     <head>
         
         <meta charset="UTF-8">
-        <title>工具 | AForm — 模型驱动的自动化表单解决方案</title>
+        <title>避免额外输入项干扰数据获取 | AForm — 模型驱动的自动化表单解决方案</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.0.2">
@@ -18,10 +18,10 @@
     
     
     
-    <link rel="next" href="../api.html" />
+    <link rel="next" href="../mannual/structure.html" />
     
     
-    <link rel="prev" href="../plugin/tbaction.html" />
+    <link rel="prev" href="../api/render.html" />
     
 
         
@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="3.3" data-basepath=".." data-revision="1429531538065">
+    <div class="book"  data-level="2.1.1" data-basepath=".." data-revision="1429531538065">
     
 
 <div class="book-summary">
@@ -137,7 +137,7 @@
                 
     
         
-        <li class="chapter " data-level="2.1.1" data-path="api/ignorerestrict.html">
+        <li class="chapter active" data-level="2.1.1" data-path="api/ignorerestrict.html">
             
                 
                     <a href="../api/ignorerestrict.html">
@@ -340,7 +340,7 @@
         </li>
     
         
-        <li class="chapter active" data-level="3.3" data-path="plugin/util.html">
+        <li class="chapter " data-level="3.3" data-path="plugin/util.html">
             
                 
                     <a href="../plugin/util.html">
@@ -627,14 +627,31 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_22">
+                    <section class="normal" id="section-gitbook_5">
                     
-                        <h1 id="">工具</h1>
-<h2 id="">常用验证正则表达式</h2>
-<ol>
-<li>邮箱</li>
-<li>URL</li>
-</ol>
+                        <h1 id="ignorerestrict">关于ignore属性与restrict模式</h1>
+<p>由于AForm获取数据（<code>getJson()</code> 或 <code>getJsonString()</code>）时会根据dom的结构来获取对应的json结构，因此若AForm在渲染后，容器内增加了一些额外的input输入项，那么可能会导致不可预期的错误，因额外的输入项不是AForm指定schema生成的。</p>
+<p>AForm 有两个方案可以解决本问题：</p>
+<h3 id="1-ignore-">方法1、用 ignore 属性忽略输入项</h3>
+<p>为新注入的额外输入元素增加 <code>ignore</code> 属性，并把属性值设为<code>ignore</code>，这样 AForm 获取数据时会忽略该输入组件，注意 <code>ignore</code> 并不是dom 的标准属性，而是自定义属性：</p>
+<pre><code class="lang-javascript">&lt;input type=<span class="hljs-string">"text"</span> ignore=<span class="hljs-string">"ignore"</span> /&gt;
+
+$(<span class="hljs-string">"input"</span>).attr(<span class="hljs-string">"ignore"</span>,<span class="hljs-string">"ignore"</span>);<span class="hljs-comment">//使用jquery</span>
+</code></pre>
+<p><code>ignore</code> 也可用于忽略 AForm 表单生成的字段，为表单中的输入项DOM元素设置该属性，则该输入项不会被取值，因此其验证规则也不会生效。</p>
+<h3 id="2">方法2、设置表单为严格模式</h3>
+<p>为表单的全局属性设置 <code>restrict</code> 为 <code>true</code>，该模式在获取数据时将忽略所有非 AForm 生成的输入控件，例子：</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>,{
+    restrict:<span class="hljs-literal">true</span>,<span class="hljs-comment">//严格模式</span>
+    fields:{
+        <span class="hljs-comment">//字段a通过extHtml为当前的表单增加了额外的输入框</span>
+        <span class="hljs-comment">//但由于设置了严格模式，获取数据时不会获取到该 额外输入框的数据</span>
+        <span class="hljs-string">"a"</span>:{label:<span class="hljs-string">"a"</span>,type:<span class="hljs-string">"text"</span>,extHtml:<span class="hljs-string">"&lt;input name='xx' /&gt;"</span>}
+    }
+});
+
+<span class="hljs-built_in">console</span>.log(jf.getJson());<span class="hljs-comment">//输出的数据将不会包含xx属性</span>
+</code></pre>
 
                     
                     </section>
@@ -645,10 +662,10 @@
         </div>
 
         
-        <a href="../plugin/tbaction.html" class="navigation navigation-prev " aria-label="Previous page: 表格增强"><i class="fa fa-angle-left"></i></a>
+        <a href="../api/render.html" class="navigation navigation-prev " aria-label="Previous page: 渲染与获取数据"><i class="fa fa-angle-left"></i></a>
         
         
-        <a href="../api.html" class="navigation navigation-next " aria-label="Next page: API手册"><i class="fa fa-angle-right"></i></a>
+        <a href="../mannual/structure.html" class="navigation navigation-next " aria-label="Next page: 表单的结构"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>
