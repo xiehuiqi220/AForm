@@ -2,7 +2,7 @@
  * AForm v1.1
  * Copyright 2014, 谢慧琦
  * Date: 2015年3月12日
- */
+ */ 
 
 (function () {
     var AFORM_SYS_PLUGIN = "__AFORM_SYS_PLUGIN__";
