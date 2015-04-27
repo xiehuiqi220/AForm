@@ -1,0 +1,20 @@
+{
+  "name": "aform",
+  "version": "1.1.0",
+  "homepage": "https://github.com/xiehuiqi220/AForm",
+  "authors": [
+    "伐薪 <huiqi.xhq@alibaba-inc.com>"
+  ],
+  "main": "aform.js",
+  "keywords": [
+    "form"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

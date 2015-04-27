@@ -1,0 +1,13 @@
+node_modules/
+.idea/
+.svn
+.project
+.DS_Store
+.settings
+*.swp
+*.sublime-project
+*.sublime-workspace
+*.exe
+npm-debug.log
+
+logs/
