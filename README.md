@@ -22,7 +22,7 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 **4)** 直接下载js源文件 [aform.js](https://raw.githubusercontent.com/xiehuiqi220/AForm/master/aform.js)
 
 ### 使用例子
-[查看 jsfiddler](http://jsfiddle.net/xiehuiqi220/yw58Lr2o/)
+[查看 jsbin 范例](http://jsbin.com/napuxe/1/edit?html,css,js,output)
 ```javascript
 var af = new AForm("target",{
     className:"form-horizontal",
