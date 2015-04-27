@@ -118,10 +118,10 @@ label.json-form-un-checked{
 /*展开的状态*/
 label.json-form-ctrl-un-collapse{
     padding-left: 20px;
-    background: url("http://img.china.alibaba.com/cms/upload/2014/463/430/2034364_785834663.jpg") no-repeat left center;
+    background: url("img/arrow_collapsed.png") no-repeat left center;
 }
 /*折叠的状态*/
 label.json-form-ctrl-collapse{
     padding-left: 20px;
-    background: url("http://img.china.alibaba.com/cms/upload/2014/453/430/2034354_785834663.jpg") no-repeat 3px center;
+    background: url("img/arrow_expanded.png") no-repeat 3px center;
 }
