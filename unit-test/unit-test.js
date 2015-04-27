@@ -163,6 +163,12 @@ QUnit.test("样式与属性定义", function(assert) {
     assert.equal($(af.container).html(), desthtml, "生成的html合法!");
 });
 QUnit.test("验证", function(assert) {
+    AForm.registerValidator(">2",{
+        rule:function(v){
+            return v.length > 2;
+        },
+        errorMsg:"必须大于2"
+    });
     var conf = {
         fields: {
             a: {label: "a", required: true},
@@ -173,7 +179,8 @@ QUnit.test("验证", function(assert) {
                 },
                 errorMsg: "must begin with http"
             }
-            }
+            },
+            d: {label: "d", validators: ">2"}
         }
     };
     var af = new AForm("frm", conf);
@@ -203,6 +210,12 @@ QUnit.test("验证", function(assert) {
     //测试1
     af.render({
         c: "ss"
+    });
+    var result = af.tryGetJson();
+    assert.equal(result, null, "比较获取的数据与原始数据");
+    //测试1
+    af.render({
+        d: "s"
     });
     var result = af.tryGetJson();
     assert.equal(result, null, "比较获取的数据与原始数据");
