@@ -192,8 +192,6 @@ QUnit.test("验证", function(assert) {
     af.render(data);
     var desthtml = '<fieldset style=\";border:none\" class=\"json-form-element json-Object\"><legend style=\"display: none;\"><label cmd=\"aform_array_collapse_fieldset\" class=\"json-form-collapser json-form-ctrl-un-collapse\" id=\"json_form_collapser_1\"></label></legend><div class=\"json-form-fdset\" style=\"display:\"><div jpath=\".a\" style=\"\" class=\"json-form-element json-basic-element json-String form-group\"><label class=\"json-field-label  label_a\" style=\";display:\" for=\"ele_json_2\">a：<span class=\"json-form-required\">*</span></label><input data-gen=\"aform\" jpath=\".a\" required=\"\" class=\"json-field-input form-control\" id=\"ele_json_2\" type=\"text\" name=\"a\" value=\"\"></div><div jpath=\".b\" style=\"\" class=\"json-form-element json-basic-element json-String form-group\"><label class=\"json-field-label  label_b\" style=\";display:\" for=\"ele_json_3\">b：</label><input data-gen=\"aform\" jpath=\".b\" pattern=\"\\d+\" class=\"json-field-input form-control\" id=\"ele_json_3\" type=\"text\" name=\"b\" value=\"\"></div><div jpath=\".c\" style=\"\" class=\"json-form-element json-basic-element json-String form-group\"><label class=\"json-field-label  label_c\" style=\";display:\" for=\"ele_json_4\">c：</label><input data-gen=\"aform\" jpath=\".c\" class=\"json-field-input form-control\" id=\"ele_json_4\" type=\"text\" name=\"c\" value=\"\"></div></div></fieldset>';
     assert.equal($(af.container).html(), desthtml, "生成的html合法!");
-    var result = af.tryGetJson();
-    assert.deepEqual(result, data, "比较获取的数据与原始数据");
 
     //测试1
     af.render({
@@ -221,6 +219,14 @@ QUnit.test("验证", function(assert) {
     assert.equal(result, null, "比较获取的数据与原始数据");
 });
 QUnit.test("数据适配器", function(assert) {
+    AForm.registerAdapter("myadp",{
+        beforeRender: function(v) {
+            return v + "_";
+        },
+        beforeGet: function(v) {
+            return v+"__";
+        }
+    });
     var conf = {
         fields: {
             a: {label: "a", valueAdapter: {
@@ -231,9 +237,10 @@ QUnit.test("数据适配器", function(assert) {
                     return "x";
                 }
             }
-            }
+            },
+            d:{label:"d",valueAdapter:"myadp"}
         },
-        valueAdapter: {
+        valueAdapter: {//增加了两个额外字段
             beforeRender: function(obj) {
                 obj["b"] = "b";
                 return obj;
@@ -246,14 +253,17 @@ QUnit.test("数据适配器", function(assert) {
     };
     var af = new AForm("frm", conf);
     var data = {
-        a: "a"
+        a: "a",
+        d:"ddd"
     };
     af.render(data);
     assert.equal($("input[name=a]", af.container).val(), "ab", "比较a渲染后的值");
+    assert.equal($("input[name=d]", af.container).val(), "ddd_", "比较a渲染后的值");
     var result = af.tryGetJson();
     assert.deepEqual(result, {
         a: "x",
         b: "b",
-        c: "c"
+        c: "c",
+        d:"ddd___"
     }, "比较获取的数据是否是x");
 });

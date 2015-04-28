@@ -1057,7 +1057,8 @@
         _formHelper.addClass(this.container, "aform");
         _formHelper.addClass(this.container, this.config.className);
 
-        _computeValidator(this.config.validators)
+        this.config.validators = _computeValidator(this.config.validators);
+        this.config.valueAdapter = _computeAdapter(this.config.valueAdapter);
 
         //设置name属性
         for (var p in this.config.fields) {
@@ -1380,12 +1381,11 @@
 
             //获取该字段的value
             var values = [];
-            for (var i = 0; i < l; i++) {
-                var input = controlList[i];
+            _h.each (controlList,function(input) {
                 var domType = input.type;
                 if (domType == "radio" || domType == "checkbox") {
                     if (!input.checked) {
-                        continue;
+                        return;
                     }//未勾选，则忽略之，继续下一个input
                 }
 
@@ -1402,7 +1402,7 @@
                 {
                     values.push(input.value);
                 }
-            }
+            });
 
             //处理为空情形
             var tmpValue = values.join('');
@@ -1526,8 +1526,7 @@
         }
 
         //设置属性默认值
-        fieldConfig.hideCollapser =
-                "hideCollapser" in fieldConfig ? fieldConfig.hideCollapser : this.config.hideCollapser;
+        fieldConfig.hideCollapser = "hideCollapser" in fieldConfig ? fieldConfig.hideCollapser : this.config.hideCollapser;
         fieldConfig.hideColon = "hideColon" in fieldConfig ? fieldConfig.hideColon : this.config.hideColon;
         fieldConfig.hideLabel = "hideLabel" in fieldConfig ? fieldConfig.hideLabel : this.config.hideLabel;
         fieldConfig.showArrayNO = "showArrayNO" in fieldConfig ? fieldConfig.showArrayNO : this.config.showArrayNO;
@@ -1543,6 +1542,7 @@
         fieldConfig.jpath = jpath;
 
         fieldConfig.validators = _computeValidator(fieldConfig.validators);
+        fieldConfig.valueAdapter = _computeAdapter(fieldConfig.valueAdapter);
 
         //值适配器处理，仅当name_or_index是字符串，即为对象的属性时才可适配，否则返回数组导致无限循环
         if (typeof nameOrIndex == "string" && fieldConfig.valueAdapter &&
@@ -1646,6 +1646,16 @@
         });
 
         return validators;
+    }
+
+    //处理适配器
+    function _computeAdapter(adpt) {
+        //全局验证器加工
+        if (typeof adpt == "string") {
+            adpt = AForm.Plugin.adapter[adpt];
+        }
+
+        return adpt;
     }
 
     //执行函数队列
