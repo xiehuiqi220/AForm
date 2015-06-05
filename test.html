@@ -1,0 +1,71 @@
+<!DOCTYPE html />
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<title>
+
+AForm - 演示
+
+</title>
+
+</head>
+<body>
+    <div id="container">
+        <div id="main">
+<div style="margin:10px">
+<input onclick="generate(txtJson.value,txtConfig.value)" type="button" style="height:30px" value="生成表单" />
+</div>
+<h3>表单生成结果</h3>
+<form target="_blank" method="post" action="getData.php">
+<div style="margin-top:10px;margin-bottom:10px;border:1px solid gray" id="form1">
+<span style="font-size:13px;color:Gray">//表单将在这里生成</span>
+</div>
+&nbsp;
+<input type="button" value="获取json数据" onclick="console.log(jf.getJson())" />
+<br />&nbsp;
+</form>
+    <link href="aform.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="demo_data/json2.js"></script>
+    <script src="aform.js" type="text/javascript"></script>
+    <script src="aform.config.js" type="text/javascript"></script>
+    <script src="aform.plugin.js" type="text/javascript"></script>
+<script>
+        jf = new AForm("form1", {
+					        "jtype": "Array",
+					        "showArrayNO": true,
+					        "schemaMode":"local",
+                            "attr":{border:1},
+					        "fields": {
+					            "unitOfMeasure": {
+					                "inline": false,
+					                "hideColon": false,
+					                "hideLabel": false,
+					                "break": false,
+					                "label": "unitOfMeasure",
+					                "readonly": false,
+					                "type": "select",
+					                "datalist": ["MM", "CM", "M", "IN", "FT", "inches", "feet", "meters", "decimeters", "centimeters", "millimeters", "micrometers", "nanometers", "picometers"],
+					                "defaultValue": "MM"
+					            },
+					            "Value": {
+					                "inline": false,
+					                "hideColon": false,
+					                "hideLabel": false,
+					                "break": false,
+					                "label": "Value",
+					                "readonly": false,
+					                "type": "number",
+					                "defaultValue": 0
+					            }
+    }
+});
+        jf.render();
+   
+</script>
+        </div>
+    </div>
+
+<!-- 范例json -->
+
+</body>
+</html>
