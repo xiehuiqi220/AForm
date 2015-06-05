@@ -50,10 +50,12 @@ frontalHtml|输入框前的附加内容，勿放置任何input控件，否则会
 inline		|输入控件外层容器是否行内布局，相当于设置display为inline-block |布尔型 |false |`inline:true`
 width		|输入控件外层容器的宽度，取值和css的width属性一致 |字符串 |不设置 |`width:"300px"`
 type		|输入控件类型，可选的值为：text、textarea、radio、checkbox、select、hidden或其他浏览器支持的类型，如html5新增的number、date等类型，额外属性需配合ctrlAttr使用 |字符串 |text |`type:"select"`
+needOther		|仅针对type为radio的字段有效，将生成“其他”选项和输入框 |布尔型 |false |`needOther:true`
 maxlength	|输入控件的输入值最大长度，仅针对文本框和文本区域有效 |数字 |不设置 |`maxlength:20`
 readonly	|输入控件是否只读，仅针对文本框和文本区域有效 |布尔型 |不设置 |`readonly:true`
 disabled	|输入控件是否禁用，效果同html元素的disabled属性 |布尔型 |不设置 |`disabled:true`
 required	|输入控件是否必填，用value是否为空字符串判断 |布尔型 |不设置 |`required:true`
+requiredAtBegin	|表示必填项的符号是否显示在标签最前面，否则显示在后面 |布尔型 |false |`requiredAtBegin:true`
 pattern	|输入值的校验正则表达式，格式同html5的表单元素的pattern属性 |字符串 |不设置 |`pattern:"\\d+"`
 patternErrorMsg	|正则校验失败后的错误提示 |字符串 |不设置 |`patternErrorMsg:"宽度需要是一个整数"`
 validators	|输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法；为对象时，下设两个属性rule和errorMsg，rule是一个函数；为数组时，其元素是上述任何类型 |字符串或函数 |不设置 |    `validator:function(v){return v > 5;}`

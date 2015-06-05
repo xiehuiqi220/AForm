@@ -5,7 +5,7 @@
    * [模块化加载模式](amd.md)
 * [使用指南](mannual/README.md)
    * [渲染与获取数据](api/render.md)
-       * [避免额外输入项干扰数据获取](api/ignorerestrict.md)
+       * [避免干扰](api/ignorerestrict.md)
    * [表单的结构](mannual/structure.md)
    * [表单的布局](mannual/layout.md)
    * [输入控件的类型](mannual/control.md)
