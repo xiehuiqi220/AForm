@@ -62,9 +62,13 @@ fieldset.json-Object	/* fieldset的样式，该fieldset是一个Object的编辑容器 */
 
 table.json-Array	/* 数组表格的样式 */
 {
-	/*border:1px solid #c0c0c0;
-	border-collapse:collapse;*/
+	border:1px solid #c0c0c0;
+	border-collapse:collapse;
 	width:100%;
+}
+table.json-Array td,table.json-Array th
+{
+	border:1px solid #c0c0c0;
 }
 table.json-Array caption	/* 数组表格标题caption的样式 */
 {
