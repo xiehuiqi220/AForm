@@ -1,4 +1,22 @@
-#介绍
+### v1.3 更新日志
+
+1. 输入控件的实现改为实例化模式，同类型多个输入控件在同一个表单不会冲突
+2. 输入控件实现了继承
+3. 可以使用AForm.create创建表单，和使用new AForm创建实例的参数和结果一样
+4. radio类型支持设置“其他”选项，使用needOther:true将额外增加其他选项以及一个文本输入框
+5. 修复表格无法设置ctrlId的bug
+6. 表格和fieldset均支持frontalHtml、extHtml和tips选项
+7. 输入项label的必填星号支持放置在label的前面，使用requireAtBegin为true即可
+8. 增加off方法，用于解绑一个事件监听处理程序
+9. 增加one方法，绑定的事件处理程序在执行后将被移除，常用于定义输入控件时在render方法中延迟绑定事件
+10. schemaMode为local时，支持2层的浅拷贝
+11. 表格的border默认不设置（此前设置为1），如需设置可以使用attr:{border:1}实现
+12. 修复schemaMode为local且jtype为Array时render空数据仍当成object渲染的bug
+13. 其他代码的优化和bug修复
+14. 若div.json-form-element或div.json=field-plugin设置了ignore属性，则其下所有input均会被忽略
+
+
+### 介绍
 
 AForm 是工业级的表单解决方案，它基于声明式编程和模型驱动，做到了大部分工作的自动化，使用AForm，您仅需关心数据模型、数据约束和表单的最终展现，而无需关心表单的实现细节，对于大量使用表单的应用系统来说，AForm可以极大地提高您的生产力。
 
@@ -13,6 +31,7 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 5. 全适配，支持所有浏览器和移动终端，从ie6到html5无缝支持
 
 ### 安装或引用
+
 **1)** 直接 clone 本仓库 ```git clone https://github.com/xiehuiqi220/AForm.git```
 
 **2)** 使用 bower ```bower install aform --save```
@@ -22,7 +41,10 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 **4)** 直接下载js源文件 [aform.js](https://raw.githubusercontent.com/xiehuiqi220/AForm/master/aform.js)
 
 ### 使用例子
-[查看 jsbin 范例](http://jsbin.com/napuxe/1/edit?html,css,js,output)
+
+
+[查看 jsbin 范例](http://jsbin.com/napuxe/3/edit?html,css,js,output)
+
 ```javascript
 var af = new AForm("target",{
     className:"form-horizontal",
@@ -56,9 +78,9 @@ console.log(af.getJson());//将输出与渲染数据一致的json结构
 2. [文档](http://xiehuiqi220.github.io/AForm/doc/book/)，持续完善中
 3. [单元测试](http://xiehuiqi220.github.io/AForm/unit-test/)
 
-###联系
+### 联系
 
 任何问题，请联系我：xiehuiqi220@gmail.com，非休息时间一般可做到一小时内回复
 
-###协议
+### 协议
 [MIT license]
