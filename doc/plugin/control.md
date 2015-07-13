@@ -2,12 +2,11 @@
 
 若html自带的输入控件，如text、select等都无法满足你的需求时，可以编写自定义输入控件，如多级联动下拉列表、ip地址输入框，此时，仅需定义控件的渲染html和取值规则即可。
 
-可以使用 `AForm.registerControl(myControlName,[baseName],obj)` 来注册一个输入控件。
+可以使用 `AForm.registerControl(myControlName,[baseName],obj)` 来注册一个输入控件，参数解释：
 
-* name：控件名字
+* myControlName：输入控件的名字
 * baseName：父控件名字
 * obj：控件的实现
-
 
 输入控件的实现至少需包含两个方法：
 
@@ -31,7 +30,7 @@
     //注册一个带两个输入框的区间输入控件
     AForm.registerControl("rangeInput": {
             desc: "区间范围输入框",
-            render: function (k, v, config,af) {
+            render: function (k, v, config , i ,af) {
                 v = v.split(",");
                 var html = "";
                 var itemType = config.itemType || "text";
@@ -54,10 +53,9 @@
 
 ## 使用输入控件
 
-设置字段的type属性为控件为控件名即可：
+设置字段的type属性为控件名即可：
 
 ```javascript
-
     var jf = new AForm("divOutput",{
             fields:{
                 range:{label:"价格区间",type:"rangeInput"}//注意type的值即控件注册的名字
@@ -120,12 +118,13 @@ AForm.registerControl("textarea", "__AFORM_BASIC_PLUGIN__", {...});
 
 ## 在自定义输入控件中绑定dom事件
 
-由于`render`方法返回的是html，因此为html中的dom绑定事件需在整个表单渲染结束后，可以捕获aform的renderComplete事件并为dom绑定事件。
+由于`render`方法返回的是html，因此为html中的dom绑定事件需在整个表单渲染结束后，可以捕获aform的`renderComplete`事件并为dom绑定事件，这里的关键是需要为必要的dom元素设置合适的id或选择器，以便在处理函数中获取到响应的dom。
 
 范例（注册一个日期选择器）：
 
 
 ```javascript
+//继承aform基本输入控件，避免重写取值函数
 AForm.registerControl("datetime", "__AFORM_BASIC_PLUGIN__", {
     desc: "日期",
     render: function(k, v, conf, i, af,jpath) {
@@ -166,6 +165,30 @@ AForm.registerControl("datetime", "__AFORM_BASIC_PLUGIN__", {
 
 ```
 ** 注意，在`render`中绑定事件尽量使用`one`而不是使用`on`， 以确保注册的事件处理程序仅执行一次，若使用`on`，则表单如果多次`render`会触发多次监听器处理程序，而由于aform每次渲染dom会发生变化，此前注册的监听器处理程序可能会因为无法找到dom节点而运行报错**
+
+
+## 取数异常处理
+
+在`getJsonPartString`中若字段未通过验证，仅需使用`emit`发送相应事件以通知业务方即可，其他的逻辑就交给aform处理吧，阅读[表单验证](../mannual/validate.md)获取更多详情。
+
+实例：
+
+```javascript
+getJsonPartString: function (con ,fd, af) {
+    var sel = $(con).find(".xyz");
+    if (fd.required && !sel.val()) {
+        af.emit("empty",[sel[0], fd]);//触发empty事件
+
+        return false;
+    }
+    if (sel.val().indexOf("http://") !== 0) {
+        af.emit("invalid",[sel[0], fd,"xx需以http开头"]);//触发invalid事件
+
+        return false;
+    }
+    return sel.attr("name") + ":\"" + sel.val() + "\"";
+}
+```
 
 
 

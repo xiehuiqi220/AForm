@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1433748827801">
+    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1436774262142">
     
 
 <div class="book-summary">
@@ -638,61 +638,158 @@
 <p><code>pattern</code>,值为正则表达式字符串，如：“<code>\\d+</code>”（纯数字），该选项最终会渲染成输入控件的pattern属性（HTML5 新增），因此您<strong>不必在表达式的前后加上^以及$</strong>。
 <code>patternErrorMsg</code>，配置正则表达式校验失败的消息提示，如：“请输入数字”</p>
 <h3 id="3-">3. 自定义逻辑校验</h3>
-<p><code>validators</code>，一个数组或对象，当是对象时，其包含两个key：<code>rule</code>与<code>errorMsg</code>，<code>rule</code>是一个参数为输入控件值的函数，返回布尔类型，<code>true</code>为通过验证，否则未通过验证，未通过验证将弹出<code>errorMsg</code>提醒；</p>
-<p>当<code>validators</code>是一个数组时，数组元素即为上述提到的包含<code>rule</code>和<code>errorMsg</code>的对象，所有规则通过时该字段才通过验证；</p>
+<p><code>validators</code>，数组、对象或字符串，当是对象时，其包含两个key：<code>rule</code>与<code>errorMsg</code>，<code>rule</code>是一个有两个参数函数，参数1是输入的值，参数2是输入控件本身dom对象，返回布尔类型，<code>true</code>为通过验证，否则未通过验证，未通过验证将弹出<code>errorMsg</code>提醒；</p>
+<p>当<code>validators</code>是一个数组时，数组元素即为上述提到的包含<code>rule</code>和<code>errorMsg</code>的对象，所有规则均返回<code>true</code>该字段才通过验证；</p>
+<p>当<code>validators</code>是一个字符串（验证器名字）时，将使用该名字对应的验证器，验证器需提前使用<code>AForm.registerValidator(name,obj)</code>注册。</p>
 <p><strong>当validators用在全局配置中时，其校验的是整个表单得到的json数据值</strong>。</p>
-<h2 id="">示例：</h2>
-<pre><code>var jf = new AForm(&quot;target&quot;,{
-fields:{
-    a:{label:&quot;a&quot;,required:true},//必填校验
-    b:{label:&quot;b&quot;,pattern:&quot;\\d+&quot;}//正则校验
-    c:{label:&quot;b&quot;,validators:{//自定义校验
-        rule : function(v){
-            return v.indexOf(&quot;http://&quot;) == 0;//以http开头
-        },
-        errorMsg:&quot;字段b需以http开头&quot;
-    }}
-},
-validators:{//全局校验器
-    rule : function(json){
-        return json.a &gt; json.b;
+<p>示例：</p>
+<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>,{
+    fields:{
+        a:{label:<span class="hljs-string">"a"</span>,required:<span class="hljs-literal">true</span>},<span class="hljs-comment">//必填校验</span>
+        b:{label:<span class="hljs-string">"b"</span>,pattern:<span class="hljs-string">"\\d+"</span>}<span class="hljs-comment">//正则校验</span>
+        c:{label:<span class="hljs-string">"b"</span>,validators:{<span class="hljs-comment">//自定义校验</span>
+            rule : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v , input)</span></span>{
+                <span class="hljs-keyword">return</span> v.indexOf(<span class="hljs-string">"http://"</span>) == <span class="hljs-number">0</span>;<span class="hljs-comment">//以http开头</span>
+            },
+            errorMsg:<span class="hljs-string">"字段b需以http开头"</span>
+        }}
     },
-    errorMsg:&quot;字段a的值应该大于b的值&quot;
-}
-});
-</code></pre><h2 id="">定义输入未通过验证的提示方式</h2>
-<p>提示方式通过如下配置定义：</p>
-<pre><code>AForm.Config.fn = {
-        &quot;showTips&quot;: function (input, errMsg) {
-            alert(errMsg);
+    validators:{<span class="hljs-comment">//全局校验器</span>
+        rule : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(json)</span></span>{
+            <span class="hljs-keyword">return</span> json.a &gt; json.b;
         },
-        &quot;onEmpty&quot;: function (input, conf) {
-            var name = input.getAttribute(&quot;name&quot;);
-
-            var errMsg = conf ? (&quot;字段[&quot; + (conf.label) + &quot;]不能为空&quot;) : input.title;
-            if (!errMsg) errMsg = &quot;字段[&quot; + (input.getAttribute(&quot;name&quot;)) + &quot;]不能为空&quot;;
-
-            AForm.Config.fn.showTips(input, errMsg);
-            if (typeof input.focus == &quot;function&quot; || typeof input.focus == &quot;object&quot;) {
-                input.focus();
-            }
+        errorMsg:<span class="hljs-string">"字段a的值应该大于b的值"</span>
+    }
+    });
+</code></pre>
+<p><code>rule</code>作用于单个字段时其第2个参数是当前报错的输入控件，在某些情况下可以用到。</p>
+<h2 id="">注册验证器</h2>
+<p>在复杂的项目，表单验证逻辑需要复用时，可以使用<code>AForm.registerValidator(name , obj)</code>来注册一个验证器，字段使用该验证器时仅需设置<code>validators</code>为验证器的名字即可，示例：</p>
+<pre><code class="lang-javascript">    <span class="hljs-comment">//定义校验手机号码的校验器</span>
+    AForm.registerValidator(<span class="hljs-string">"cellphone"</span>, {
+        rule: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+            <span class="hljs-keyword">return</span> <span class="hljs-regexp">/\d{11}/</span>.test(v);
         },
-        &quot;onInvalid&quot;: function (input, conf, errorMsg) {
-            var errMsg = errorMsg ? errorMsg : (conf ? (&quot;字段[&quot; + (conf.label) + &quot;]的值非法&quot;) : input.title);
-            if (!errMsg) errMsg = &quot;字段[&quot; + (input.getAttribute(&quot;name&quot;)) + &quot;]非法&quot;;
+        errorMsg: <span class="hljs-string">"请输入正确的手机号码"</span>
+    });
 
-            AForm.Config.fn.showTips(input, errMsg);
-            if (typeof input.focus == &quot;function&quot; || typeof input.focus == &quot;object&quot;) {
-                input.focus();
-            }
+    <span class="hljs-comment">//长度校验</span>
+    AForm.registerValidator(<span class="hljs-string">"100length"</span>, {
+        rule: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v, input)</span> </span>{
+            <span class="hljs-keyword">this</span>.errorMsg = <span class="hljs-string">"字符长度不能超过100，当前为"</span> + v.length;
+            <span class="hljs-keyword">return</span> v.length &lt;= <span class="hljs-number">100</span>;
         },
-        &quot;onGlobalInvalid&quot;: function (msg) {
-            alert(msg);
+        errorMsg: <span class="hljs-string">""</span>
+    });
+
+    <span class="hljs-comment">//使用单个校验器</span>
+    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>,{
+        fields:{
+            a:{label:<span class="hljs-string">"a"</span>,validators:<span class="hljs-string">"cellphone"</span>},<span class="hljs-comment">//使用验证器名</span>
         }
-    };
-</code></pre><p>若您需要修改，可自行引入aform.config.js，并把上述代码拷贝至该文件，修改即可。</p>
+    });
+
+    <span class="hljs-comment">//使用多个校验器</span>
+    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>,{
+        fields:{
+            a:{label:<span class="hljs-string">"a"</span>,validators:[<span class="hljs-string">"cellphone"</span>,<span class="hljs-string">"100length"</span>]},<span class="hljs-comment">//数组元素即验证器名</span>
+        }
+    });
+</code></pre>
+<h2 id="">定义输入未通过验证的提示方式</h2>
+<p>提示方式通过如下配置定义：</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">//显示提示的函数</span>
+AForm.Config.fn.showTips = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(input, errMsg)</span> </span>{
+    alert(errMsg);
+};
+<span class="hljs-comment">//当字段为空的处理函数</span>
+AForm.Config.fn.onEmpty = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(input, conf)</span> </span>{
+    <span class="hljs-keyword">var</span> name = input.getAttribute(<span class="hljs-string">"name"</span>);
+
+    <span class="hljs-keyword">var</span> errMsg = conf ? (<span class="hljs-string">"字段["</span> + (conf.label) + <span class="hljs-string">"]不能为空"</span>) : input.title;
+    <span class="hljs-keyword">if</span> (!errMsg) errMsg = <span class="hljs-string">"字段["</span> + (input.getAttribute(<span class="hljs-string">"name"</span>)) + <span class="hljs-string">"]不能为空"</span>;
+
+    AForm.Config.fn.showTips(input, errMsg);
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> input.focus == <span class="hljs-string">"function"</span> || <span class="hljs-keyword">typeof</span> input.focus == <span class="hljs-string">"object"</span>) {
+        input.focus();
+    }
+};
+<span class="hljs-comment">//当字段未通过验证的函数</span>
+AForm.Config.fn.onInvalid = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(input, conf, errorMsg)</span> </span>{
+    <span class="hljs-keyword">var</span> errMsg = errorMsg ? errorMsg : (conf ? (<span class="hljs-string">"字段["</span> + (conf.label) + <span class="hljs-string">"]的值非法"</span>) : input.title);
+    <span class="hljs-keyword">if</span> (!errMsg) errMsg = <span class="hljs-string">"字段["</span> + (input.getAttribute(<span class="hljs-string">"name"</span>)) + <span class="hljs-string">"]非法"</span>;
+
+    AForm.Config.fn.showTips(input, errMsg);
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> input.focus == <span class="hljs-string">"function"</span> || <span class="hljs-keyword">typeof</span> input.focus == <span class="hljs-string">"object"</span>) {
+        input.focus();
+    }
+},
+<span class="hljs-comment">//当全局数据未通过验证的函数</span>
+AForm.Config.fn.onGlobalInvalid = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(msg)</span> </span>{
+    alert(msg);
+};
+</code></pre>
+<p>若您需要修改，可自行引入aform.config.js，并把上述代码拷贝至该文件，修改即可。</p>
 <p><strong>
-注意：目前AForm的机制是只要有一个字段校验未通过，则直接抛出异常，因此暂不支持一次性显示所有未通过校验字段的原因。</strong></p>
+注意：AForm默认是只要有一个字段校验未通过，则直接抛出异常，可通过配置表单的<code>breakOnError:false</code>关闭该机制，当该属性为false时，所有字段的错误都透传了才抛出异常。</strong></p>
+<h2 id="">验证事件</h2>
+<p>字段为空、字段校验不通过或全局数据校验不通过的处理函数可分别使用<code>empty</code>、<code>invalid</code>、<code>globalInvalid</code> 事件名来注册。</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">//捕获字段为空事件</span>
+<span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>, ...);
+jf.on(<span class="hljs-string">"empty"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input , conf)</span></span>{
+    <span class="hljs-comment">//todo</span>
+});
+
+<span class="hljs-comment">//捕获字段不合法事件</span>
+<span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>, ...);
+jf.on(<span class="hljs-string">"invalid"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input , conf  , errorMsg)</span></span>{
+    <span class="hljs-comment">//todo</span>
+});
+
+<span class="hljs-comment">//捕获全局数据不合法事件</span>
+<span class="hljs-comment">//由于全局数据不合法有可能并非某个输入框导致，因此input参数可能为空</span>
+<span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>, ...);
+jf.on(<span class="hljs-string">"empty"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(errorMsg , [input])</span></span>{<span class="hljs-comment">//</span>
+    <span class="hljs-comment">//todo</span>
+});
+</code></pre>
+<h2 id="">汇总所有错误信息</h2>
+<p>若需获取汇总的错误信息，可通过aform实例的<code>errors</code>属性获取（注意先关闭<code>breakOnError</code>，否则总是只能获取到一个错误），该属性为一个元素为错误对象的数组，每个错误对象结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>释义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>errorType</td>
+<td>错误类型，empty、invalid 或 globalInvalid</td>
+</tr>
+<tr>
+<td>errorMsg</td>
+<td>错误消息</td>
+</tr>
+<tr>
+<td>invalidControl</td>
+<td>对应的输入控件，有可能为空</td>
+</tr>
+</tbody>
+</table>
+<p>示例：</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>, {
+    breakOnError : <span class="hljs-literal">false</span>, <span class="hljs-comment">//当所有错误都暴露后才中断</span>
+    ...
+});
+<span class="hljs-keyword">var</span> data = jf.tryGetJson();
+<span class="hljs-keyword">if</span>(!data &amp;&amp; <span class="hljs-keyword">this</span>.errors.length &gt;  <span class="hljs-number">0</span>){
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.erros);
+}<span class="hljs-keyword">else</span> {
+    <span class="hljs-comment">//数据获取成功</span>
+    <span class="hljs-built_in">console</span>.log(data);
+}
+</code></pre>
 
                     
                     </section>

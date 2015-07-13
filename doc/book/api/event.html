@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="4.3" data-basepath=".." data-revision="1433748827801">
+    <div class="book"  data-level="4.3" data-basepath=".." data-revision="1436774262142">
     
 
 <div class="book-summary">
@@ -640,25 +640,36 @@
 <tbody>
 <tr>
 <td>renderComplete</td>
-<td>表单 render 渲染完成时的处理函数</td>
+<td>表单 render 渲染完成</td>
 </tr>
 <tr>
 <td>enter</td>
-<td>用户按了回车键时的处理函数</td>
+<td>用户按了回车键</td>
 </tr>
 <tr>
 <td>beforeExeCmd</td>
-<td>用户交互前的处理函数，如删除表格的一行，返回true时才能继续后续的行为，因此可以用于删除前的一些权限校验、服务器逻辑处理等</td>
+<td>用户交互前，如删除表格的一行，返回true时才能继续后续的行为，因此可以用于删除前的一些权限校验、服务器逻辑处理等</td>
 </tr>
 <tr>
 <td>afterExeCmd</td>
-<td>用户交互后的处理函数</td>
+<td>用户交互后</td>
+</tr>
+<tr>
+<td>invalid</td>
+<td>字段输入错误，详见 <a href="../mannual/validate.html">表单验证</a></td>
+</tr>
+<tr>
+<td>empty</td>
+<td>字段输入为空，详见 <a href="../mannual/validate.html">表单验证</a></td>
+</tr>
+<tr>
+<td>globalInvalid</td>
+<td>全局数据错误，详见 <a href="../mannual/validate.html">表单验证</a></td>
 </tr>
 </tbody>
 </table>
 <h2 id="">示例：</h2>
-<pre><code>
-    //renderComplete
+<pre><code class="lang-javascript">    //renderComplete
     var jf = new AForm(...);
     jf.on(&quot;renderComplete&quot;, function(){
         //todo
@@ -676,6 +687,7 @@
         else return true;
     });
 </code></pre>
+
                     
                     </section>
                 

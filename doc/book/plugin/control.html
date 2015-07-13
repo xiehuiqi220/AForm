@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1433748827801">
+    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1436774262142">
     
 
 <div class="book-summary">
@@ -627,13 +627,13 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_22">
+                    <section class="normal" id="section-gitbook_19">
                     
                         <h1 id="">自定义输入控件</h1>
 <p>若html自带的输入控件，如text、select等都无法满足你的需求时，可以编写自定义输入控件，如多级联动下拉列表、ip地址输入框，此时，仅需定义控件的渲染html和取值规则即可。</p>
-<p>可以使用 <code>AForm.registerControl(myControlName,[baseName],obj)</code> 来注册一个输入控件。</p>
+<p>可以使用 <code>AForm.registerControl(myControlName,[baseName],obj)</code> 来注册一个输入控件，参数解释：</p>
 <ul>
-<li>name：控件名字</li>
+<li>myControlName：输入控件的名字</li>
 <li>baseName：父控件名字</li>
 <li>obj：控件的实现</li>
 </ul>
@@ -660,7 +660,7 @@
 <pre><code class="lang-javascript">    <span class="hljs-comment">//注册一个带两个输入框的区间输入控件</span>
     AForm.registerControl(<span class="hljs-string">"rangeInput"</span>: {
             desc: <span class="hljs-string">"区间范围输入框"</span>,
-            render: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(k, v, config,af)</span> </span>{
+            render: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(k, v, config , i ,af)</span> </span>{
                 v = v.split(<span class="hljs-string">","</span>);
                 <span class="hljs-keyword">var</span> html = <span class="hljs-string">""</span>;
                 <span class="hljs-keyword">var</span> itemType = config.itemType || <span class="hljs-string">"text"</span>;
@@ -680,9 +680,8 @@
 </code></pre>
 <p><strong>注意：getJsonPartString 是返回一个key-value键值对，而不是纯粹的value，建议使用双引号包裹key，否则若key包含空格、中划线则在后续的解析中将会报语法错误</strong></p>
 <h2 id="">使用输入控件</h2>
-<p>设置字段的type属性为控件为控件名即可：</p>
-<pre><code class="lang-javascript">
-    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"divOutput"</span>,{
+<p>设置字段的type属性为控件名即可：</p>
+<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"divOutput"</span>,{
             fields:{
                 range:{label:<span class="hljs-string">"价格区间"</span>,type:<span class="hljs-string">"rangeInput"</span>}<span class="hljs-comment">//注意type的值即控件注册的名字</span>
         }
@@ -731,9 +730,10 @@ AForm.registerControl(<span class="hljs-string">"select"</span>, <span class="hl
 AForm.registerControl(<span class="hljs-string">"textarea"</span>, <span class="hljs-string">"__AFORM_BASIC_PLUGIN__"</span>, {...});
 </code></pre>
 <h2 id="dom">在自定义输入控件中绑定dom事件</h2>
-<p>由于<code>render</code>方法返回的是html，因此为html中的dom绑定事件需在整个表单渲染结束后，可以捕获aform的renderComplete事件并为dom绑定事件。</p>
+<p>由于<code>render</code>方法返回的是html，因此为html中的dom绑定事件需在整个表单渲染结束后，可以捕获aform的<code>renderComplete</code>事件并为dom绑定事件，这里的关键是需要为必要的dom元素设置合适的id或选择器，以便在处理函数中获取到响应的dom。</p>
 <p>范例（注册一个日期选择器）：</p>
-<pre><code class="lang-javascript">AForm.registerControl(<span class="hljs-string">"datetime"</span>, <span class="hljs-string">"__AFORM_BASIC_PLUGIN__"</span>, {
+<pre><code class="lang-javascript"><span class="hljs-comment">//继承aform基本输入控件，避免重写取值函数</span>
+AForm.registerControl(<span class="hljs-string">"datetime"</span>, <span class="hljs-string">"__AFORM_BASIC_PLUGIN__"</span>, {
     desc: <span class="hljs-string">"日期"</span>,
     render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(k, v, conf, i, af,jpath)</span> </span>{
         conf.pattern = conf.pattern || ymdPattern;<span class="hljs-comment">//校验年月日格式</span>
@@ -772,6 +772,24 @@ AForm.registerControl(<span class="hljs-string">"textarea"</span>, <span class="
 });
 </code></pre>
 <p><strong> 注意，在<code>render</code>中绑定事件尽量使用<code>one</code>而不是使用<code>on</code>， 以确保注册的事件处理程序仅执行一次，若使用<code>on</code>，则表单如果多次<code>render</code>会触发多次监听器处理程序，而由于aform每次渲染dom会发生变化，此前注册的监听器处理程序可能会因为无法找到dom节点而运行报错</strong></p>
+<h2 id="">取数异常处理</h2>
+<p>在<code>getJsonPartString</code>中若字段未通过验证，仅需使用<code>emit</code>发送相应事件以通知业务方即可，其他的逻辑就交给aform处理吧，阅读<a href="../mannual/validate.html">表单验证</a>获取更多详情。</p>
+<p>实例：</p>
+<pre><code class="lang-javascript">getJsonPartString: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(con ,fd, af)</span> </span>{
+    <span class="hljs-keyword">var</span> sel = $(con).find(<span class="hljs-string">".xyz"</span>);
+    <span class="hljs-keyword">if</span> (fd.required &amp;&amp; !sel.val()) {
+        af.emit(<span class="hljs-string">"empty"</span>,[sel[<span class="hljs-number">0</span>], fd]);<span class="hljs-comment">//触发empty事件</span>
+
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">if</span> (sel.val().indexOf(<span class="hljs-string">"http://"</span>) !== <span class="hljs-number">0</span>) {
+        af.emit(<span class="hljs-string">"invalid"</span>,[sel[<span class="hljs-number">0</span>], fd,<span class="hljs-string">"xx需以http开头"</span>]);<span class="hljs-comment">//触发invalid事件</span>
+
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">return</span> sel.attr(<span class="hljs-string">"name"</span>) + <span class="hljs-string">":\""</span> + sel.val() + <span class="hljs-string">"\""</span>;
+}
+</code></pre>
 
                     
                     </section>

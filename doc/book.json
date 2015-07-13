@@ -1,3 +1,6 @@
 {
-    "output": "book/"
+    "output": "book/",
+    "variables": {
+        "host": "mybook.com"
+    }
 }

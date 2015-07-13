@@ -99,6 +99,13 @@
         }
     };
 
+    //初始化事件
+    var validateEvt = {
+        empty : AForm.Config.fn.onEmpty,
+        invalid : AForm.Config.fn.onInvalid,
+        globalInvalid : AForm.Config.fn.onGlobalInvalid
+    };
+
     //全局静态函数
 
     /**
@@ -187,7 +194,7 @@
                 var ip = clTemp[ii];
                 //忽略的控件无需取值
                 //严格模式下，非aform生成的input无需取值
-                if ( _h.isIgnore(ip) || (af.config.restrict && ip.getAttribute("data-gen") != "aform")) {
+                if (_h.isIgnore(ip) || (af.config.restrict && ip.getAttribute("data-gen") != "aform")) {
                 } else {
                     controlList.push(ip);
                 }
@@ -231,15 +238,15 @@
                 }
                 else//文本输入框、radio、checobox等
                 {
-                    if(conf.needOther){//若设置了other选项
-                        if(_h.hasClass(input,"aform-other-input")){//若选中了other
-                            if(values[values.length - 1] == "__other__") {
+                    if (conf.needOther) {//若设置了other选项
+                        if (_h.hasClass(input, "aform-other-input")) {//若选中了other
+                            if (values[values.length - 1] == "__other__") {
                                 values[values.length - 1] = (input.value);
                             }
-                        }else {
+                        } else {
                             values.push(input.value);
                         }
-                    }else {
+                    } else {
                         values.push(input.value);
                     }
                 }
@@ -247,29 +254,23 @@
 
             //处理为空情形
             var tmpValue = values.join('');
-            if (conf.required && (tmpValue == "")) {
-                AForm.Config.fn.onEmpty(controlList[0], conf);
-                af.hasGetError = true;
-                throw new Error(fieldName + " cannot be empty");
+            if (!af.config.noValidate && conf.required && (tmpValue == "")) {
+                af.emit("empty", [controlList[0], conf]);
             }
             //处理非法情形
-            if (tmpValue != "" && conf.pattern && !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
-                AForm.Config.fn.onInvalid(input, conf, conf.patternErrorMsg || "");
-                af.hasGetError = true;
-                throw new Error("invalid value , not match pattern");
+            if (!af.config.noValidate && tmpValue != "" && conf.pattern &&
+                !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
+                af.emit("invalid", [input, conf, conf.patternErrorMsg || ""]);
             }
             //处理规则校验
-            if (tmpValue != "" && conf.validators) {
-                for (var i = 0; i < conf.validators.length; i++) {
-                    var item = conf.validators[i];
+            if (!af.config.noValidate && tmpValue != "" && conf.validators) {
+                _h.each(conf.validators,function(item , i) {
                     if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
                         if (item.errorMsg !== false) {
-                            AForm.Config.fn.onInvalid(input, conf, item.errorMsg);
+                            af.emit("invalid", [input, conf, item.errorMsg]);
                         }
-                        af.hasGetError = true;
-                        throw new Error("invalid value , not match rule");
                     }
-                }
+                });
             }
 
             //值适配器处理
@@ -330,11 +331,11 @@
             var tbId = fieldConfig.ctrlId || ("ele_json_tb_" + AForm.renderCount);
             var me = afObj;
             _onclickSetter[tbId] = function(e) {
-                _formHelper.exeCmd(e, tbId, fieldConfig.rowAction, me.eventArrr.beforeExeCmd, me.eventArrr.afterExeCmd);
+                _formHelper.exeCmd(e, tbId, fieldConfig.rowAction, me.eventArr.beforeExeCmd, me.eventArr.afterExeCmd);
             };
 
             var cssText = fieldConfig.cssText;
-            if(fieldConfig.hidden){
+            if (fieldConfig.hidden) {
                 cssText += ";display:none";
             }
             var temp = [];
@@ -529,7 +530,7 @@
             fieldsetBegin += _FormElementFactory.getLabelText(fieldConfig, nameOrIndex);
             fieldsetBegin += "</label>";
             if (fieldConfig.tips && !fieldConfig.noTips) {
-                fieldsetBegin += fieldConfig.tipsTpl.replace(/\{tips\}/g, fieldConfig.tips);
+                fieldsetBegin += _genTips(fieldConfig.tipsTpl, fieldConfig)
             }
 
             fieldsetBegin += "</legend>";
@@ -571,7 +572,7 @@
                     renderRer = basicControl;
                     break;
                 case "Object":
-                    renderRer = objControl;;
+                    renderRer = objControl;
                     break;
                 case "Array":
                     renderRer = arrControl;
@@ -605,15 +606,17 @@
             }
         },
         hasClass: function(ele, clsName) {
-            if(!ele || !ele.nodeType == 1)return false;
+            if (!ele || !ele.nodeType == 1) {
+                return false;
+            }
             return (" " + ele.className).indexOf(" " + clsName) > -1;
         },
-        isFormElement : function(ele){
-            var isEle = _h.hasClass(ele,"json-form-element") || _h.hasClass(ele,"json-field-plugin");
+        isFormElement: function(ele) {
+            var isEle = _h.hasClass(ele, "json-form-element") || _h.hasClass(ele, "json-field-plugin");
             return isEle && !_h.isIgnore(ele);
         },
-        isIgnore : function(ele){
-            if(!ele || !ele.getAttribute){
+        isIgnore: function(ele) {
+            if (!ele || !ele.getAttribute) {
                 return false;
             }
             return ele.getAttribute("ignore") == "true" || ele.getAttribute("ignore") == "ignore";
@@ -1001,19 +1004,21 @@
                         var v = isTextValue ? list[i].value : list[i];
                         v = _s(v);
                         var t = isTextValue ? list[i].text : list[i];
-                        if(v == param.value) {
+                        if (v == param.value) {
                             hasChecked = true;
                         }
                         html.push("<label><input data-gen='aform' " + param.attrName + " " + sDisabled +
                             " type='radio' " + (v == param.value ? "checked" : "") + " value=\"" + v +
                             "\" />" + t + "</label>");
                     }
-                    if(param.needOther){
+                    if (param.needOther) {
                         var needChecked = !hasChecked && param.value;//若value未被选中，且不为空
-                        html.push("<label><input class=\"aform-other-radio\" data-gen='aform' " + param.attrName + " " + sDisabled +
+                        html.push("<label><input class=\"aform-other-radio\" data-gen='aform' " + param.attrName + " " +
+                            sDisabled +
                             " type='radio' " + (needChecked ? "checked" : "") + " value=\"__other__\" />其他</label>");
-                        html.push("<label><input class=\"aform-other-input "+AForm.Config.extClassName.control+"\" data-gen='aform' " + param.attrName + " " + sDisabled +
-                            " type='text'  value=\"" + (hasChecked ? "" : param.value) +"\" /></label>");
+                        html.push("<label><input class=\"aform-other-input " + AForm.Config.extClassName.control +
+                            "\" data-gen='aform' " + param.attrName + " " + sDisabled +
+                            " type='text'  value=\"" + (hasChecked ? "" : param.value) + "\" /></label>");
                     }
 
                     html.push("</span>");
@@ -1073,7 +1078,7 @@
             labelHtml += "</" + AForm.Config.tags.label + ">";
 
             var cssText = (param.fieldConfig.cssText || "");
-            var attr = _h.extend({},param.fieldConfig.attr);
+            var attr = _h.extend({}, param.fieldConfig.attr);
             var className = "json-form-element json-basic-element json-" + param.dataType + " " +
                 AForm.Config.extClassName.basicContainer;
 
@@ -1177,7 +1182,7 @@
             if (!param.fieldConfig.noTips && param.fieldConfig.tips)//若未隐藏帮助tips，且tips不为空
             {
                 var tipsTpl = param.fieldConfig.tipsTpl || param.globalConfig.tipsTpl;//字段优先
-                html.push(tipsTpl.replace(/\{tips\}/g, param.fieldConfig.tips));
+                html.push(_genTips(tipsTpl, param.fieldConfig));
             }
             html.push("</" + AForm.Config.tags.basicContainer + ">");
 
@@ -1221,10 +1226,11 @@
         }
     };
 
-    //构造函数
-    //param container dom元素或其id
-    //param config 配置对象，json格式
-    //return void
+    /**
+     * @description aform构造函数
+     * @param {String or Object} container  表单容器的domId，或dom节点
+     * @param {Object} config 控件定义
+     */
     function AForm(container, config) {
         this.container = typeof container == "string" ? _formHelper.$(container) : container;
         if (!this.container) {
@@ -1232,13 +1238,16 @@
             return false;
         }
 
-        this.eventArrr = { //渲染完后 的回调队列，可以通过on('renderComplete',function) 加入回调队列
-            "renderComplete": [],
+        this.eventArr = {
+            "renderComplete": [],//渲染完后 的回调队列，可以通过on('renderComplete',function) 加入回调队列
             "enter": [],
             "beforeExeCmd": [],
-            "afterExeCmd": []
+            "afterExeCmd": [],
+            "invalid": [],//字段未通过校验时
+            "globalInvalid": [],//完整表单数据未通过校验时
+            "empty": [] //字段必填但为空时
         };
-        this.hasGetError = false;//是否获取数据时存在错误
+        this.errors = [];//是否获取数据时存在错误
 
         //初始化默认配置
         this.config = {
@@ -1254,7 +1263,8 @@
             className: "",//容器样式名
             requireAtBegin: false,//必填星号是否在label的前面
             validators: false,//全局验证器
-            novalidate: false,//开启验证
+            noValidate: false,//默认开启验证
+            breakOnError: true,//当单个字段出错时，中断程序执行流
             readonly: false,//只读模式，若为true，则默认其下所有控件均为只读
             hideColon: false,//不隐藏冒号
             addRowText: AForm.Config.wording.addRowText,
@@ -1271,7 +1281,7 @@
                     var ep = p.replace(/^on([A-Z])/, function(all, $1) {
                         return $1.toLowerCase()
                     });
-                    if (ep in this.eventArrr) {
+                    if (ep in this.eventArr) {
                         this.on(ep, config[p]);
                     }
                 }
@@ -1281,8 +1291,8 @@
             }
         }
 
-        _formHelper.addClass(this.container, "aform");
-        _formHelper.addClass(this.container, this.config.className);
+        _h.addClass(this.container, "aform");
+        _h.addClass(this.container, this.config.className);
 
         this.config.validators = _computeValidator(this.config.validators);
         this.config.valueAdapter = _computeAdapter(this.config.valueAdapter);
@@ -1291,47 +1301,77 @@
         for (var p in this.config.fields) {
             this.config.fields[p].name = p;
         }
+
+        //初始化事件
+        for(var evt in validateEvt){
+            this.on(evt, validateEvt[evt]);
+        }
+
+        this.on("empty", function(input, conf){
+            this.errors.push({
+                "errorType": "empty",
+                "errorMsg": "请输入" + conf.label,
+                "invalidControl": input
+            });
+        });
+        this.on("invalid", function(input, conf, errorMsg){
+            this.errors.push({
+                "errorType": "invalid",
+                "errorMsg": errorMsg,
+                "invalidControl": input
+            });
+        });
+        this.on("globalInvalid", function(msg,input){
+            this.errors.push({
+                "errorType": "globalInvalid",
+                "errorMsg": msg,
+                "invalidControl": input
+            });
+        });
     }
 
     //绑定一个事件
     AForm.prototype.on = function(evtName, handler) {
-        if (evtName in this.eventArrr) {
-            this["eventArrr"][evtName].push(handler);
+        if (evtName in this.eventArr) {
+            this["eventArr"][evtName].push(handler);
         }
     };
 
     //解除一个事件
     AForm.prototype.off = function(evtName, handler) {
-        if (evtName in this.eventArrr) {
+        if (evtName in this.eventArr) {
             var me = this;
             var newArr = [];
-            _h.each(this["eventArrr"][evtName], function(item, i) {
+            _h.each(this["eventArr"][evtName], function(item, i) {
                 if (item !== handler) {
                     newArr.push(item);
                 }
             });
 
-            this["eventArrr"][evtName] = newArr;
+            this["eventArr"][evtName] = newArr;
         }
     };
 
     //绑定一个事件，执行完毕取消绑定
     AForm.prototype.one = function(evtName, handler) {
-        if (evtName in this.eventArrr) {
-            var len = this["eventArrr"][evtName].length;
+        if (evtName in this.eventArr) {
+            var len = this["eventArr"][evtName].length;
             var me = this;
             var dstFn = function() {
                 me.off(evtName, dstFn);
                 handler();
             };
-            this["eventArrr"][evtName].push(dstFn);
+            this["eventArr"][evtName].push(dstFn);
         }
     };
 
     //发射一个事件
     AForm.prototype.emit = function(evtName, data) {
-        _joinFunction(this.eventArrr[evtName], this, data);
-        //针对renderComplete的特殊处理
+        _joinFunction(this.eventArr[evtName], this, data);
+        if(evtName in validateEvt && this.config.breakOnError){
+            _debug(data);
+            throw new Error("invalid data ,reason is " + evtName);
+        }
     };
 
     //重置，相当于用最后一次渲染的数据重新绘制表单，这样既可清除上次渲染之后用户输入的痕迹
@@ -1347,8 +1387,10 @@
         }
         if (input == undefined || input == null) {
             this.config.schemaMode = "local";//若不传数据，则强制使用本地schema
-            if(this.config.jtype == "Array"){
-                input = [{}];
+            if (this.config.jtype == "Array") {
+                input = [
+                    {}
+                ];
             }
         } else {
             //全局数据适配器
@@ -1370,7 +1412,7 @@
 
                         for (var p in localData) {
                             tmp[p] = localData[p];//拷贝
-                            if(_h.getObjType(input[i]) != "Object"){
+                            if (_h.getObjType(input[i]) != "Object") {
                                 input[i] = {};
                             }
                             if (p in input[i]) {
@@ -1395,7 +1437,7 @@
                                 ];
                             }
                             _h.each(input[p], function(item, i) {
-                                localData[p][i] = _h.extend({},localData[p][0]);
+                                localData[p][i] = _h.extend({}, localData[p][0]);
                                 for (var pp in localData[p][i]) {
                                     if (_h.getObjType(input[p][i]) == "Object" && pp in input[p][i]) {
                                         localData[p][i][pp] = input[p][i][pp];
@@ -1463,7 +1505,7 @@
         //renderComplete
         this.emit("renderComplete");
 
-        if (this.eventArrr.enter.length > 0) {
+        if (this.eventArr.enter.length > 0) {
             var me = this;
             this.container.onkeyup = function(evt) {
                 evt = evt || window.event;
@@ -1519,20 +1561,23 @@
     //获取输入空间集合的value，返回json
     AForm.prototype.getJsonString = function(domEle)//遍历具有
     {
-        this.hasGetError = false;//reset
+        var me = this;
+        this.errors = [];//reset
 
         var result = _getJsonString.call(this);
-        if (this.config.validators) {
+        if (!this.config.noValidate && this.config.validators) {
             var json = eval("(" + result + ")");
             _h.each(this.config.validators, function(item) {
-                if (typeof item.rule == "function" && item.rule(json, this.container) !== true) {
-                    if (item.errorMsg !== false) {
-                        AForm.Config.fn.onGlobalInvalid(item.errorMsg);
-                    }
-                    this.hasGetError = true;
-                    throw new Error("invalid value , not match global rule " + item.errorMsg);
+                if (typeof item.rule == "function" && item.rule(json, me.container) !== true &&
+                    item.errorMsg !== false) {
+                    me.emit("globalInvalid", [item.errorMsg , item.invalidControl]);
                 }
             });
+        }
+
+        if (this.errors.length > 0) {
+            _debug(this.errors);
+            throw new Error("get form value has " + this.errors.length + " errors");
         }
         return result;
     };
@@ -1540,13 +1585,14 @@
     //获取输入控件集合的value，返回形如json的字符串
     function _getJsonString(domEle)//遍历
     {
+        var me = this;
         domEle = domEle || (this.container ? this.container.childNodes[0] : null);//若未传，则默认为根元素
         if (!domEle) {
             return "";
         }
         var result = [];
 
-        if (domEle.className.indexOf("json-field-plugin") > -1)//插件优先
+        if (_h.hasClass(domEle, "json-field-plugin"))//插件优先
         {
             var guid = domEle.getAttribute("guid");
             var pluginInstance = controlInstance[guid];
@@ -1556,7 +1602,7 @@
         }
 
         var domEleName;
-        if (domEle.className.indexOf('json-Object') > -1) {
+        if (_h.hasClass(domEle, 'json-Object')) {
             domEleName = domEle.getAttribute("name");//ie9需使用getAttribute
             var conf = {};
             if (domEleName) {
@@ -1576,8 +1622,8 @@
             else {
                 //找到fdset json-form-fdset
                 var divs = domEle.childNodes;
-                _h.each(divs,function(ele){
-                    if(ele.tagName == "DIV" && ele.className == "json-form-fdset"){
+                _h.each(divs, function(ele) {
+                    if (ele.tagName == "DIV" && ele.className == "json-form-fdset") {
                         childNodes = ele.childNodes;
                         return false;
                     }
@@ -1585,7 +1631,7 @@
             }
 
             var realNodes = [];
-            _h.each(childNodes,function(node,i){
+            _h.each(childNodes, function(node, i) {
                 _h.isFormElement(node) && realNodes.push(node);
             });
 
@@ -1599,7 +1645,7 @@
             }
             result.push("}");
         }
-        else if (domEle.className.indexOf('json-Array') > -1) {
+        else if (_h.hasClass(domEle, 'json-Array')) {
             domEleName = domEle.getAttribute("name");
             if (domEleName) {
                 result.push("\"" + domEleName + "\":");
@@ -1608,22 +1654,20 @@
 
             var rows = domEle.tBodies.length > 0 ? domEle.tBodies[0].rows : [];//忽略thead
             var len = rows.length;
-            for (var i = 0; i < len; i++)//
-            {
-                var row = rows[i];
-                result.push(_getJsonString.call(this, row));
+            _h.each(rows, function(row, i) {
+                result.push(_getJsonString.call(me, row));
                 if (i < len - 1) {
                     result.push(",");
                 }
-            }
+            });
             result.push("]");
         }
-        else if (domEle.className.indexOf("json-basic-element") > -1) {
+        else if (_h.hasClass(domEle, "json-basic-element")) {
             //先找插件
             var nodes = domEle.childNodes;
             var i = nodes.length;
             while (i--) {
-                if (nodes[i].className && nodes[i].className.indexOf("json-field-plugin") > -1) {
+                if (_h.hasClass(nodes[i], "json-field-plugin")) {
                     var guid = nodes[i].getAttribute("guid");
                     var pluginInstance = controlInstance[guid];
 
@@ -1840,6 +1884,13 @@
                 ret = fnArr[i].apply(caller, arg);
             }
         }
+        return ret;
+    }
+
+    //生成tips
+    function _genTips(tipsTpl, fd) {
+        var ret = tipsTpl.replace(/\{tips\}/g, _s(fd.tips));
+        ret = ret.replace(/\{tipsCssText\}/g, _s(fd.tipsCssText));
         return ret;
     }
 
