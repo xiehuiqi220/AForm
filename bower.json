@@ -1,13 +1,17 @@
 {
   "name": "aform",
-  "version": "1.3.0",
+  "version": "1.3.5",
   "homepage": "https://github.com/xiehuiqi220/AForm",
   "authors": [
     "伐薪 <huiqi.xhq@alibaba-inc.com>"
   ],
   "main": "aform.js",
   "keywords": [
-    "form"
+    "jsonform",
+    "dynamic form",
+    "html5 form",
+    "automatic form",
+    "表单"
   ],
   "license": "MIT",
   "ignore": [
