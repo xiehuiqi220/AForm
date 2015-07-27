@@ -430,7 +430,7 @@
                 if (isRegular && curEle.constructor == Object) {
                     temp.push("<td style='" + attrIndexDisplay + "' class='json-form-rowNumber'>" + (i + 1) + "</td>");
                     //对字段排序
-                    var keyArray = _sortObject(firstEle, fieldConfig.fields);
+                    var keyArray = _sortObject(curEle, fieldConfig.fields);
                     //遍历排好序的字段
                     for (var ii = 0; ii < keyArray.length; ii++) {
                         var p = keyArray[ii];
