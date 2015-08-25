@@ -1,6 +1,3 @@
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-
 ### v1.3.5 更新日志
 
 1. 增加了invalid、empty和globalInvalid事件，分别对应字段不合法，字段为空和整个数据不合法，同时自定义输入组件也可以通过向表单实例发射该事件通知表单
