@@ -664,20 +664,37 @@
                     if (conf.needOther) {//若设置了other选项
                         if (_h.hasClass(input, "aform-other-input")) {//若选中了other
                             if (values[values.length - 1] == "__other__") {
-                                values[values.length - 1] = (_h.trim(input.value));
+                                values[values.length - 1] = (input.value);
                             }
                         } else {
-                            values.push(_h.trim(input.value));
+                            values.push(input.value);
                         }
                     } else {
-                        values.push(_h.trim(input.value));
+                        values.push(input.value);
                     }
                 }
             }
 
             //处理为空情形
             var tmpValue = values.join('');
-            validateInput(af, input, tmpValue, conf, controlList[0]);
+            if (!af.config.noValidate && conf.required && (tmpValue == "")) {
+                af.emit("empty", [controlList[0], conf]);
+            }
+            //处理非法情形
+            if (!af.config.noValidate && tmpValue != "" && conf.pattern &&
+                !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
+                af.emit("invalid", [input, conf, conf.patternErrorMsg || ""]);
+            }
+            //处理规则校验
+            if (!af.config.noValidate && tmpValue != "" && conf.validators) {
+                _h.each(conf.validators, function(item, i) {
+                    if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
+                        if (item.errorMsg !== false) {
+                            af.emit("invalid", [input, conf, item.errorMsg]);
+                        }
+                    }
+                });
+            }
 
             //值适配器处理
             var fnAdpt = function(v) {
@@ -736,7 +753,7 @@
 
             var tbId = fieldConfig.ctrlId || ("ele_json_tb_" + AForm.renderCount);
             var me = afObj;
-            _eventSetter["click"][tbId] = function(e) {
+            _onclickSetter[tbId] = function(e) {
                 _formHelper.exeCmd(e, tbId, fieldConfig.rowAction, me.eventArr.beforeExeCmd, me.eventArr.afterExeCmd);
             };
 
@@ -907,7 +924,7 @@
 
             if (fieldConfig.type in AForm.Plugin.control) {
                 //插件用固定样式包裹
-                return _genPlugin(nameOrIndex, input, afObj, fieldConfig.type, fieldConfig, cssText, "div");
+                return _genPlugin(nameOrIndex, fieldConfig.type, input, afObj, fieldConfig, cssText, "div")
             }
 
             if (!nameOrIndex) {
@@ -927,7 +944,7 @@
                 fieldsetBegin +=
                     (fieldConfig.collapse ? "json-form-ctrl-collapse" : "json-form-ctrl-un-collapse") + "'";
                 fieldsetBegin += "id='" + colId + "' >";
-                _eventSetter["click"][colId] = function(e) {
+                _onclickSetter[colId] = function(e) {
                     _formHelper.exeCmd(e);
                 };
             } else {
@@ -992,10 +1009,8 @@
     sysControl = new AForm.Plugin.control[AFORM_SYS_PLUGIN];
 
     var _valueSetter = {};//dom value赋值队列，生命周期为一次render过程，每次render前要reset为空对象
-    var _eventSetter = {
-        click: {},
-        blur: {}
-    };//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
+    var _onchangeSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
+    var _onclickSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
 
     //表单元素工厂
     var _FormElementFactory = {
@@ -1028,7 +1043,6 @@
         generateInputHtml: function(param) {
             param = param || {};
             param.type = param.type || "text";
-            var afObj = param.afObj;
 
             var sDisabled = param.disabled ? "disabled" : "";
 
@@ -1052,11 +1066,10 @@
                     html.push(param.attrName);
                     html.push(" value=\"" + "" + "\" />");
 
-                    _eventSetter["blur"][param.id] = function(e) {
-                        var ip = _h.getTarget(e);
-                        _formHelper.validateInput(ip, param, afObj);
+                    _onchangeSetter[param.id] = function() {
+                        _formHelper.onValueChange(this, param);
                     };
-                    //param.value == 0的情况下，会不显示0
+                    //parm.value == 0的情况下，会不显示0
                     param.value != "" && (_valueSetter[param.id] = param.value);//使用dom赋值，而不使用字符串拼接方式，避免单引号、双引号等字符转义出问题
                     html.push(listHtml);
 
@@ -1070,9 +1083,8 @@
                     html.push(param.attrName);
                     html.push(">" + param.value + "</textarea>");
 
-                    _eventSetter["blur"][param.id] = function(e) {
-                        var ip = _h.getTarget(e);
-                        _formHelper.validateInput(ip, param, afObj);
+                    _onchangeSetter[param.id] = function() {
+                        _formHelper.onValueChange(this, param)
                     };
 
                     break;
@@ -1093,11 +1105,6 @@
                     html.push(" id='" + param.id + "' ");
                     html.push(param.attrName);
                     html.push(">");
-
-                    _eventSetter["blur"][param.id] = function(e) {
-                        var ip = _h.getTarget(e);
-                        _formHelper.validateInput(ip, param, afObj);
-                    };
 
                     var list = param.datalist || [];
                     var len = list.length;
@@ -1277,7 +1284,6 @@
                     arg.attrHtml = attrHtml;
                     arg.attrName = strAttrName;
                     arg.value = param.inputData;
-                    arg.afObj = param.afObj;
                     html.push(_FormElementFactory.generateInputHtml(arg));
                     if (AForm.Config.tags.controlContainer) {
                         html.push("</" + AForm.Config.tags.controlContainer + ">");
@@ -1348,18 +1354,12 @@
             return false;
         }
 
-        AForm.formCount++;
-        if (!this.container.id) {
-            this.container.id = "aform_" + AForm.formCount + "_" + parseInt(Math.random() * 10000);
-        }
-        aformInstance[this.container.id] = this;
         this.eventArr = {
             "renderComplete": [],//渲染完后 的回调队列，可以通过on('renderComplete',function) 加入回调队列
             "enter": [],
             "change": [],//表单有输入项修改时
             "beforeExeCmd": [],
             "afterExeCmd": [],
-            "valid": [],//字段通过校验时
             "invalid": [],//字段未通过校验时
             "globalInvalid": [],//完整表单数据未通过校验时
             "empty": [] //字段必填但为空时
@@ -1515,7 +1515,7 @@
     //发射一个事件
     AForm.prototype.emit = function(evtName, data) {
         _joinFunction(this.eventArr[evtName], this, data);
-        if (evtName in validateEvt && evtName != "valid" && this.config.breakOnError) {
+        if (evtName in validateEvt && this.config.breakOnError) {
             _debug(data);
             throw new Error("invalid data ,reason is " + evtName);
         }
@@ -1620,10 +1620,8 @@
         }
 
         _valueSetter = {};//渲染前reset
-        _eventSetter = {
-            click: {},
-            blur: {}
-        };
+        _onchangeSetter = {};
+        _onclickSetter = {};
 
         this.originData = input;//最后一次渲染的原始数据
         this.container.innerHTML = this.renderData(this.originData);
@@ -1634,12 +1632,18 @@
                 _formHelper.$(id).value = _valueSetter[id];
             }
         }
-        //事件赋值器
-        _h.objEach(_eventSetter, function(evtName, idObj) {
-            _h.objEach(idObj, function(id, fn) {
-                _h.addEvent(_h.$(id), evtName, fn);
-            });
-        });
+        //事件onchange赋值器
+        for (var id in _onchangeSetter) {
+            if (id && _formHelper.$(id)) {
+                _formHelper.$(id).onchange = _onchangeSetter[id];
+            }
+        }
+        //事件onclick赋值器
+        for (var id in _onclickSetter) {
+            if (id && _formHelper.$(id)) {
+                _formHelper.$(id).onclick = _onclickSetter[id];
+            }
+        }
 
         //渲染标题
         var rootEle = this.container.childNodes[0];
@@ -1825,7 +1829,7 @@
             var nodes = domEle.childNodes;
             var i = nodes.length;
             while (i--) {
-                if (_h.hasClass(nodes[i], "json-field-plugin") && !_h.isIgnore(nodes[i])) {
+                if (_h.hasClass(nodes[i], "json-field-plugin")) {
                     var guid = nodes[i].getAttribute("guid");
                     var pluginInstance = controlInstance[guid];
 
@@ -2037,42 +2041,6 @@
         return adpt;
     }
 
-    //校验输入项
-    function validateInput(af, input, tmpValue, conf, firstInput) {
-        //若不需验证，直接返回
-        if (af.config.noValidate) {
-            return true;
-        }
-
-        var invalid = false;
-        firstInput = firstInput || input;//当有多个选项时，为空时聚焦到第一个选项
-        if (!af.config.noValidate && conf.required && (tmpValue == "")) {
-            invalid = true;
-            af.emit("empty", [firstInput, conf]);
-        }
-        //处理非法情形
-        if (!af.config.noValidate && tmpValue != "" && conf.pattern &&
-            !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
-            invalid = true;
-            af.emit("invalid", [input, conf, conf.patternErrorMsg || ""]);
-        }
-        //处理规则校验
-        if (!af.config.noValidate && tmpValue != "" && conf.validators) {
-            _h.each(conf.validators, function(item, i) {
-                if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
-                    if (item.errorMsg !== false) {
-                        invalid = true;
-                        af.emit("invalid", [input, conf, item.errorMsg]);
-                    }
-                }
-            });
-        }
-
-        if (!invalid) {
-            af.emit("valid", [input]);
-        }
-    }
-
     //处理自定义属性
     function _computeProp(fd, af) {
         if (!fd || typeof fd !== "object") {//防止重复计算
@@ -2150,7 +2118,7 @@
             //若不是表单字段，则忽略
             var jpath = target.getAttribute("jpath");
             if ((target.type !== "radio" && target.type !== "checkbox") || !jpath) {
-                return;//不能return false，因在ie低版本下会禁止浏览器默认事件
+                return false;
             }
 
             fn(jpath, target.value, target);
@@ -2159,20 +2127,18 @@
         //监听onchange事件
         var ie = _h.isIE();
         var ips = [];
-        if (ie && ie < 9) {
-            ips = _h.getInput(container, false);
-        } else {
+        if(ie && ie < 9){
+            ips = _h.getInput(container  ,false);
+        }else {
             //当通过冒泡绑定时，避免重复绑定
-            if (!(container.getAttribute("data-monitor"))) {
+            if(!(container.getAttribute("data-monitor"))) {
                 ips = [container];
             }
         }
 
-        _h.each(ips, function(ipt) {
-            if (ipt.type && !(ipt.getAttribute("jpath"))) {
-                return;
-            }
-            ipt.setAttribute("data-monitor", true);
+        _h.each(ips, function(ipt){
+            if(ipt.type && !(ipt.getAttribute("jpath")))return;
+            ipt.setAttribute("data-monitor",true);
             _h.addEvent(ipt, "change", function(e) {
                 var target = _h.getTarget(e);
                 //若不是表单字段，则忽略

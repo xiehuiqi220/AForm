@@ -1,48 +1,83 @@
-#与Bootstrap的结合
+#aform.config.js详解
 
-Bootstrap 3.2 支持3种布局方式：
-
-1. 垂直（`form-vertical`），标签和输入框上下排列
-2. 行内（`form-inline`），标签和输入框水平排列，一行显示多个域
-3. 水平（`form-horizontal`），标签和输入框水平排列，但一行仅显示一个域
-
-另 Bootstrap 为表单容器以及输入控件定义了`form-group`、`form-control`，因此 AForm 与 Bootstrap 的结合，归根到底就是要把 AForm 配置为应用上述样式。
-
-## 1、修改AForm全局配置增加额外样式名
-
-在创建AForm表单实例之前，为AForm生成的DOM的添加 Bootstrap 对应的样式：
-
-```javascript
-    AForm.Config.extClassName.basicContainer = "form-group";
-    AForm.Config.extClassName.table = "table table-bordered";
-    AForm.Config.extClassName.control = "form-control";
-
-```
-
-这段代码可以在创建某个AForm前直接使用，也可以放置在aform.config.js文件中作为全站默认配置
-
-## 2、通过 `className` 属性设置AForm实例的样式名为Bootstrap相应布局样式名
+若需修改aform的全局配置，建议您在aform.js引入之后再引入一个命名为aform.config.js的文件，其内容可以是如下代码一部分，详细含义请见注释。
 
 ```javascript
 
-    var jf = new AForm("target",{
-        className:"form-horizontal",//注意该属性
-        fields:{
-            a:{label:"a",defaultValue:1},
-            b:{label:"b",defaultValue:2}
+    AForm.Config.defaultDelimiter = ",";//默认字符串分隔符，用于处理复选框的逗号隔开的值
+    /** 表格行操作 */
+    AForm.Config.defaultAction = {
+        "aform_array_add_row": {
+            html: "<a href='javascript:void(null)' title='增加'>＋</a>"
+        },
+        "aform_array_delete_row": {
+            html: "<a href='javascript:void(null)' title='删除'>×</a>"
         }
-    });
+    };
 
-    jf.render();
+    /** 标签 */
+    AForm.Config.tags = {
+        "basicContainer": "div",//div
+        "objectContainer": "fieldset",
+        "label": "label", //label
+        "controlContainer": "" //默认为空
+    };
+    /** 额外样式名 */
+    AForm.Config.extClassName = {
+        "basicContainer": "",//form-group
+        "label": "",
+        "table": "",//table table-bordered
+        "control": "",//form-control
+        "controlContainer": ""
+    };
+    /** 模板 */
+    AForm.Config.tpl = {
+        "tips": "&nbsp;<a title='{tip}' href='#nolink'>[?]</a>",
+        "thTips": "<sup title='{tips}'>[?]</sup>"
+    };
+    /** 文案 */
+    AForm.Config.wording = {
+        "numText": "NO.",
+        "addRowText": "增加",//增加
+        "oprText": "操作",//操作
+        "labelColon": "：" //：
+    };
 
-```
+    /** 处理函数 */
+    AForm.Config.fn = {
+        "showTips": function(input, errMsg) {
+            alert(errMsg);
+        },
+        "hideTips": function(input) {
+            _debug(input.name + " value is valid");
+        },
+        "onEmpty": function(input, conf) {
+            var name = input.getAttribute("name");
 
-**注意：由于 Bootstrap 的表单html规范和AForm的并不完全一致，因此在实现form-horizontal的时候需要您强制设置 `form-control` 的 `display` 属性为 `inline` 且宽度不为100% ，从而不占据一行的空间**，像如下这样：
+            var errMsg = conf ? ("字段[" + (conf.label) + "]不能为空") : input.title;
+            if (!errMsg) {
+                errMsg = "字段[" + (input.getAttribute("name")) + "]不能为空";
+            }
 
-```css
-.aform.form-horizontal .form-control {
-    display:inline;
-    width:auto;
-}
+            AForm.Config.fn.showTips(input, errMsg);
+        },
+        "onInvalid": function(input, conf, errorMsg) {
+            var errMsg = errorMsg ? errorMsg : (conf ? ("字段[" + (conf.label) + "]的值非法") : input.title);
+            if (!errMsg) {
+                errMsg = "字段[" + (input.getAttribute("name")) + "]非法";
+            }
+
+            AForm.Config.fn.showTips(input, errMsg);
+            if (typeof input.focus === "function" || typeof input.focus === "object") {
+                input.focus();
+            }
+        },
+        "onValid": function(input, conf) {
+            AForm.Config.fn.hideTips(input);
+        },
+        "onGlobalInvalid": function(msg) {
+            alert(msg);
+        }
+    };
 
 ```

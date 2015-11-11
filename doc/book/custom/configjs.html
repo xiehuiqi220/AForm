@@ -4,7 +4,7 @@
     <head>
         
         <meta charset="UTF-8">
-        <title>与 bootstrap 结合 | AForm — 模型驱动的自动化表单解决方案</title>
+        <title>aform.config.js | AForm — 模型驱动的自动化表单解决方案</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.0.2">
@@ -21,7 +21,7 @@
     <link rel="next" href="../custom/css.html" />
     
     
-    <link rel="prev" href="../best/readme.html" />
+    <link rel="prev" href="../custom/README.html" />
     
 
         
@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="6.1" data-basepath=".." data-revision="1436774262142">
+    <div class="book"  data-level="5.1" data-basepath=".." data-revision="1447228719262">
     
 
 <div class="book-summary">
@@ -146,6 +146,22 @@
                             <b>2.1.1.</b>
                         
                          避免干扰
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="2.1.2" data-path="api/lazyrender.html">
+            
+                
+                    <a href="../api/lazyrender.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.2.</b>
+                        
+                         延迟渲染
                     </a>
                 
             
@@ -285,6 +301,22 @@
             
         </li>
     
+        
+        <li class="chapter " data-level="2.10" data-path="mannual/monitor.html">
+            
+                
+                    <a href="../mannual/monitor.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.10.</b>
+                        
+                         监听用户输入
+                    </a>
+                
+            
+            
+        </li>
+    
 
             </ul>
             
@@ -324,13 +356,29 @@
         </li>
     
         
-        <li class="chapter " data-level="3.2" data-path="plugin/tbaction.html">
+        <li class="chapter " data-level="3.2" data-path="plugin/customprop.html">
+            
+                
+                    <a href="../plugin/customprop.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                         自定义属性
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="3.3" data-path="plugin/tbaction.html">
             
                 
                     <a href="../plugin/tbaction.html">
                         <i class="fa fa-check"></i>
                         
-                            <b>3.2.</b>
+                            <b>3.3.</b>
                         
                          表格增强
                     </a>
@@ -340,13 +388,13 @@
         </li>
     
         
-        <li class="chapter " data-level="3.3" data-path="plugin/util.html">
+        <li class="chapter " data-level="3.4" data-path="plugin/util.html">
             
                 
                     <a href="../plugin/util.html">
                         <i class="fa fa-check"></i>
                         
-                            <b>3.3.</b>
+                            <b>3.4.</b>
                         
                          工具
                     </a>
@@ -502,31 +550,15 @@
                 
     
         
-        <li class="chapter active" data-level="6.1" data-path="custom/configjs.html">
+        <li class="chapter " data-level="6.1" data-path="bootstrap.html">
             
                 
-                    <a href="../custom/configjs.html">
+                    <a href="../bootstrap.html">
                         <i class="fa fa-check"></i>
                         
                             <b>6.1.</b>
                         
                          与 bootstrap 结合
-                    </a>
-                
-            
-            
-        </li>
-    
-        
-        <li class="chapter " data-level="6.2" data-path="custom/css.html">
-            
-                
-                    <a href="../custom/css.html">
-                        <i class="fa fa-check"></i>
-                        
-                            <b>6.2.</b>
-                        
-                         样式编写指引
                     </a>
                 
             
@@ -627,40 +659,86 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_9">
+                    <section class="normal" id="section-gitbook_12">
                     
-                        <h1 id="bootstrap">与Bootstrap的结合</h1>
-<p>Bootstrap 3.2 支持3种布局方式：</p>
-<ol>
-<li>垂直（<code>form-vertical</code>），标签和输入框上下排列</li>
-<li>行内（<code>form-inline</code>），标签和输入框水平排列，一行显示多个域</li>
-<li>水平（<code>form-horizontal</code>），标签和输入框水平排列，但一行仅显示一个域</li>
-</ol>
-<p>另 Bootstrap 为表单容器以及输入控件定义了<code>form-group</code>、<code>form-control</code>，因此 AForm 与 Bootstrap 的结合，归根到底就是要把 AForm 配置为应用上述样式。</p>
-<h2 id="1aform">1、修改AForm全局配置增加额外样式名</h2>
-<p>在创建AForm表单实例之前，为AForm生成的DOM的添加 Bootstrap 对应的样式：</p>
-<pre><code class="lang-javascript">    AForm.Config.extClassName.basicContainer = <span class="hljs-string">"form-group"</span>;
-    AForm.Config.extClassName.table = <span class="hljs-string">"table table-bordered"</span>;
-    AForm.Config.extClassName.control = <span class="hljs-string">"form-control"</span>;
-</code></pre>
-<p>这段代码可以在创建某个AForm前直接使用，也可以放置在aform.config.js文件中作为全站默认配置</p>
-<h2 id="2-classname-aformbootstrap">2、通过 <code>className</code> 属性设置AForm实例的样式名为Bootstrap相应布局样式名</h2>
+                        <h1 id="aformconfigjs">aform.config.js详解</h1>
+<p>若需修改aform的全局配置，建议您在aform.js引入之后再引入一个命名为aform.config.js的文件，其内容可以是如下代码一部分，详细含义请见注释。</p>
 <pre><code class="lang-javascript">
-    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>,{
-        className:<span class="hljs-string">"form-horizontal"</span>,<span class="hljs-comment">//注意该属性</span>
-        fields:{
-            a:{label:<span class="hljs-string">"a"</span>,defaultValue:<span class="hljs-number">1</span>},
-            b:{label:<span class="hljs-string">"b"</span>,defaultValue:<span class="hljs-number">2</span>}
+    AForm.Config.defaultDelimiter = <span class="hljs-string">","</span>;<span class="hljs-comment">//默认字符串分隔符，用于处理复选框的逗号隔开的值</span>
+    <span class="hljs-comment">/** 表格行操作 */</span>
+    AForm.Config.defaultAction = {
+        <span class="hljs-string">"aform_array_add_row"</span>: {
+            html: <span class="hljs-string">"&lt;a href='javascript:void(null)' title='增加'&gt;＋&lt;/a&gt;"</span>
+        },
+        <span class="hljs-string">"aform_array_delete_row"</span>: {
+            html: <span class="hljs-string">"&lt;a href='javascript:void(null)' title='删除'&gt;×&lt;/a&gt;"</span>
         }
-    });
+    };
 
-    jf.render();
-</code></pre>
-<p><strong>注意：由于 Bootstrap 的表单html规范和AForm的并不完全一致，因此在实现form-horizontal的时候需要您强制设置 <code>form-control</code> 的 <code>display</code> 属性为 <code>inline</code> 且宽度不为100% ，从而不占据一行的空间</strong>，像如下这样：</p>
-<pre><code class="lang-css"><span class="hljs-class">.aform</span><span class="hljs-class">.form-horizontal</span> <span class="hljs-class">.form-control</span> <span class="hljs-rules">{
-    <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value">inline</span></span>;
-    <span class="hljs-rule"><span class="hljs-attribute">width</span>:<span class="hljs-value">auto</span></span>;
-<span class="hljs-rule">}</span></span>
+    <span class="hljs-comment">/** 标签 */</span>
+    AForm.Config.tags = {
+        <span class="hljs-string">"basicContainer"</span>: <span class="hljs-string">"div"</span>,<span class="hljs-comment">//div</span>
+        <span class="hljs-string">"objectContainer"</span>: <span class="hljs-string">"fieldset"</span>,
+        <span class="hljs-string">"label"</span>: <span class="hljs-string">"label"</span>, <span class="hljs-comment">//label</span>
+        <span class="hljs-string">"controlContainer"</span>: <span class="hljs-string">""</span> <span class="hljs-comment">//默认为空</span>
+    };
+    <span class="hljs-comment">/** 额外样式名 */</span>
+    AForm.Config.extClassName = {
+        <span class="hljs-string">"basicContainer"</span>: <span class="hljs-string">""</span>,<span class="hljs-comment">//form-group</span>
+        <span class="hljs-string">"label"</span>: <span class="hljs-string">""</span>,
+        <span class="hljs-string">"table"</span>: <span class="hljs-string">""</span>,<span class="hljs-comment">//table table-bordered</span>
+        <span class="hljs-string">"control"</span>: <span class="hljs-string">""</span>,<span class="hljs-comment">//form-control</span>
+        <span class="hljs-string">"controlContainer"</span>: <span class="hljs-string">""</span>
+    };
+    <span class="hljs-comment">/** 模板 */</span>
+    AForm.Config.tpl = {
+        <span class="hljs-string">"tips"</span>: <span class="hljs-string">"&amp;nbsp;&lt;a title='{tip}' href='#nolink'&gt;[?]&lt;/a&gt;"</span>,
+        <span class="hljs-string">"thTips"</span>: <span class="hljs-string">"&lt;sup title='{tips}'&gt;[?]&lt;/sup&gt;"</span>
+    };
+    <span class="hljs-comment">/** 文案 */</span>
+    AForm.Config.wording = {
+        <span class="hljs-string">"numText"</span>: <span class="hljs-string">"NO."</span>,
+        <span class="hljs-string">"addRowText"</span>: <span class="hljs-string">"增加"</span>,<span class="hljs-comment">//增加</span>
+        <span class="hljs-string">"oprText"</span>: <span class="hljs-string">"操作"</span>,<span class="hljs-comment">//操作</span>
+        <span class="hljs-string">"labelColon"</span>: <span class="hljs-string">"："</span> <span class="hljs-comment">//：</span>
+    };
+
+    <span class="hljs-comment">/** 处理函数 */</span>
+    AForm.Config.fn = {
+        <span class="hljs-string">"showTips"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input, errMsg)</span> </span>{
+            alert(errMsg);
+        },
+        <span class="hljs-string">"hideTips"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input)</span> </span>{
+            _debug(input.name + <span class="hljs-string">" value is valid"</span>);
+        },
+        <span class="hljs-string">"onEmpty"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input, conf)</span> </span>{
+            <span class="hljs-keyword">var</span> name = input.getAttribute(<span class="hljs-string">"name"</span>);
+
+            <span class="hljs-keyword">var</span> errMsg = conf ? (<span class="hljs-string">"字段["</span> + (conf.label) + <span class="hljs-string">"]不能为空"</span>) : input.title;
+            <span class="hljs-keyword">if</span> (!errMsg) {
+                errMsg = <span class="hljs-string">"字段["</span> + (input.getAttribute(<span class="hljs-string">"name"</span>)) + <span class="hljs-string">"]不能为空"</span>;
+            }
+
+            AForm.Config.fn.showTips(input, errMsg);
+        },
+        <span class="hljs-string">"onInvalid"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input, conf, errorMsg)</span> </span>{
+            <span class="hljs-keyword">var</span> errMsg = errorMsg ? errorMsg : (conf ? (<span class="hljs-string">"字段["</span> + (conf.label) + <span class="hljs-string">"]的值非法"</span>) : input.title);
+            <span class="hljs-keyword">if</span> (!errMsg) {
+                errMsg = <span class="hljs-string">"字段["</span> + (input.getAttribute(<span class="hljs-string">"name"</span>)) + <span class="hljs-string">"]非法"</span>;
+            }
+
+            AForm.Config.fn.showTips(input, errMsg);
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> input.focus === <span class="hljs-string">"function"</span> || <span class="hljs-keyword">typeof</span> input.focus === <span class="hljs-string">"object"</span>) {
+                input.focus();
+            }
+        },
+        <span class="hljs-string">"onValid"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input, conf)</span> </span>{
+            AForm.Config.fn.hideTips(input);
+        },
+        <span class="hljs-string">"onGlobalInvalid"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(msg)</span> </span>{
+            alert(msg);
+        }
+    };
 </code></pre>
 
                     
@@ -672,7 +750,7 @@
         </div>
 
         
-        <a href="../best/readme.html" class="navigation navigation-prev " aria-label="Previous page: 最佳实践"><i class="fa fa-angle-left"></i></a>
+        <a href="../custom/README.html" class="navigation navigation-prev " aria-label="Previous page: 个性化"><i class="fa fa-angle-left"></i></a>
         
         
         <a href="../custom/css.html" class="navigation navigation-next " aria-label="Next page: 样式编写指引"><i class="fa fa-angle-right"></i></a>

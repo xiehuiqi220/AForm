@@ -40,6 +40,7 @@ AForm支持3种最基本的表单验证方式：
     },
     validators:{//全局校验器
         rule : function(json){
+            this.invalidControl = $(":input[name=a],jf.container")[0];//指定错误项目
             return json.a > json.b;
         },
         errorMsg:"字段a的值应该大于b的值"
@@ -48,6 +49,8 @@ AForm支持3种最基本的表单验证方式：
 ```
 
 `rule`作用于单个字段时其第2个参数是当前报错的输入控件，在某些情况下可以用到。
+
+全局校验时，可在校验函数中可以指定`this.invalidControl`设置错误的控件，注意该值需要是一个原生的dom对象。
 
 ## 注册验证器
 
@@ -130,9 +133,11 @@ AForm.Config.fn.onGlobalInvalid = function (msg) {
 **
 注意：AForm默认是只要有一个字段校验未通过，则直接抛出异常，可通过配置表单的`breakOnError:false`关闭该机制，当该属性为false时，所有字段的错误都透传了才抛出异常。**
 
-## 验证事件
+## 监听验证事件
 
-字段为空、字段校验不通过或全局数据校验不通过的处理函数可分别使用`empty`、`invalid`、`globalInvalid` 事件名来注册。
+字段为空、字段校验不通过或全局数据校验不通过的处理函数可分别使用`empty`、`invalid`、`globalInvalid` 事件名来注册监听，此时通常应该向用户显示错误提示。
+
+字段合法时可通过`valid`事件来注册监听，此时通常把错误提示隐藏
 
 ```javascript
 //捕获字段为空事件
@@ -154,6 +159,18 @@ jf.on("empty",function(errorMsg , [input]){//
     //todo
 });
 
+```
+
+一般情况下，仅仅修改两个全局配置函数即可显示或隐藏错误提示：
+```javascript
+
+AForm.Config.fn.showTips = function(input, errMsg) {
+    alert(errMsg);
+};
+
+AForm.Config.fn.hideTips = function(input) {
+    //todo:隐藏提示
+};
 ```
 
 ## 汇总所有错误信息

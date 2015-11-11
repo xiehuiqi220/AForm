@@ -75,6 +75,9 @@ AForm.Config.fn = {
             input.focus();
         }
     },
+    "onValid" : function(){
+        //alert(msg);
+    },
     "onGlobalInvalid" : function(msg){
         alert(msg);
     }

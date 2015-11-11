@@ -5,9 +5,11 @@
 | 接口名 | 释义 | 备注 |
 | -- | -- | -- |
 | create(container,config) | 创建表单实例 | 同 `new AForm(...)` |
+| get(containerId) | 根据容器id获取aform表单实例 | 返回aform实例而不是dom元素 |
 | registerAdapter(name,obj) | 注册数据适配器 |obj定义见2.9数据适配器章节
 | registerControl(name,[baseName],obj) | 注册输入控件 |obj定义见3.1自定义输入控件
 | registerValidator(name,obj) | 注册校验器 |obj定义见2.6表单验证章节
+| registerProp(name,obj) | 注册自定义属性 |obj定义见2.6表单验证章节
 
 # 对象方法
 
@@ -28,4 +30,5 @@
 | -- | -- | -- |
 | config | 当前AForm的配置 | |
 | container | 当前AForm所使用的DOM容器 | |
+| busy | 忙指示器，若大于0，则render时会挂起直到busy为0才开始渲染 | |
 | originData | 当前AForm最后一次渲染所使用的数据 | 最终生成表单的数据，有可能与用户render传入的数据不完全一致 |

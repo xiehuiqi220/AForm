@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1436774262142">
+    <div class="book"  data-level="2.6" data-basepath=".." data-revision="1447228719262">
     
 
 <div class="book-summary">
@@ -146,6 +146,22 @@
                             <b>2.1.1.</b>
                         
                          避免干扰
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="2.1.2" data-path="api/lazyrender.html">
+            
+                
+                    <a href="../api/lazyrender.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.2.</b>
+                        
+                         延迟渲染
                     </a>
                 
             
@@ -285,6 +301,22 @@
             
         </li>
     
+        
+        <li class="chapter " data-level="2.10" data-path="mannual/monitor.html">
+            
+                
+                    <a href="../mannual/monitor.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.10.</b>
+                        
+                         监听用户输入
+                    </a>
+                
+            
+            
+        </li>
+    
 
             </ul>
             
@@ -324,13 +356,29 @@
         </li>
     
         
-        <li class="chapter " data-level="3.2" data-path="plugin/tbaction.html">
+        <li class="chapter " data-level="3.2" data-path="plugin/customprop.html">
+            
+                
+                    <a href="../plugin/customprop.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                         自定义属性
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="3.3" data-path="plugin/tbaction.html">
             
                 
                     <a href="../plugin/tbaction.html">
                         <i class="fa fa-check"></i>
                         
-                            <b>3.2.</b>
+                            <b>3.3.</b>
                         
                          表格增强
                     </a>
@@ -340,13 +388,13 @@
         </li>
     
         
-        <li class="chapter " data-level="3.3" data-path="plugin/util.html">
+        <li class="chapter " data-level="3.4" data-path="plugin/util.html">
             
                 
                     <a href="../plugin/util.html">
                         <i class="fa fa-check"></i>
                         
-                            <b>3.3.</b>
+                            <b>3.4.</b>
                         
                          工具
                     </a>
@@ -502,31 +550,15 @@
                 
     
         
-        <li class="chapter " data-level="6.1" data-path="custom/configjs.html">
+        <li class="chapter " data-level="6.1" data-path="bootstrap.html">
             
                 
-                    <a href="../custom/configjs.html">
+                    <a href="../bootstrap.html">
                         <i class="fa fa-check"></i>
                         
                             <b>6.1.</b>
                         
                          与 bootstrap 结合
-                    </a>
-                
-            
-            
-        </li>
-    
-        
-        <li class="chapter " data-level="6.2" data-path="custom/css.html">
-            
-                
-                    <a href="../custom/css.html">
-                        <i class="fa fa-check"></i>
-                        
-                            <b>6.2.</b>
-                        
-                         样式编写指引
                     </a>
                 
             
@@ -627,7 +659,7 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_18">
+                    <section class="normal" id="section-gitbook_22">
                     
                         <h1 id="">表单验证</h1>
 <h2 id="">验证方式</h2>
@@ -656,6 +688,7 @@
     },
     validators:{<span class="hljs-comment">//全局校验器</span>
         rule : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(json)</span></span>{
+            <span class="hljs-keyword">this</span>.invalidControl = $(<span class="hljs-string">":input[name=a],jf.container"</span>)[<span class="hljs-number">0</span>];<span class="hljs-comment">//指定错误项目</span>
             <span class="hljs-keyword">return</span> json.a &gt; json.b;
         },
         errorMsg:<span class="hljs-string">"字段a的值应该大于b的值"</span>
@@ -663,6 +696,7 @@
     });
 </code></pre>
 <p><code>rule</code>作用于单个字段时其第2个参数是当前报错的输入控件，在某些情况下可以用到。</p>
+<p>全局校验时，可在校验函数中可以指定<code>this.invalidControl</code>设置错误的控件，注意该值需要是一个原生的dom对象。</p>
 <h2 id="">注册验证器</h2>
 <p>在复杂的项目，表单验证逻辑需要复用时，可以使用<code>AForm.registerValidator(name , obj)</code>来注册一个验证器，字段使用该验证器时仅需设置<code>validators</code>为验证器的名字即可，示例：</p>
 <pre><code class="lang-javascript">    <span class="hljs-comment">//定义校验手机号码的校验器</span>
@@ -732,8 +766,9 @@ AForm.Config.fn.onGlobalInvalid = <span class="hljs-function"><span class="hljs-
 <p>若您需要修改，可自行引入aform.config.js，并把上述代码拷贝至该文件，修改即可。</p>
 <p><strong>
 注意：AForm默认是只要有一个字段校验未通过，则直接抛出异常，可通过配置表单的<code>breakOnError:false</code>关闭该机制，当该属性为false时，所有字段的错误都透传了才抛出异常。</strong></p>
-<h2 id="">验证事件</h2>
-<p>字段为空、字段校验不通过或全局数据校验不通过的处理函数可分别使用<code>empty</code>、<code>invalid</code>、<code>globalInvalid</code> 事件名来注册。</p>
+<h2 id="">监听验证事件</h2>
+<p>字段为空、字段校验不通过或全局数据校验不通过的处理函数可分别使用<code>empty</code>、<code>invalid</code>、<code>globalInvalid</code> 事件名来注册监听，此时通常应该向用户显示错误提示。</p>
+<p>字段合法时可通过<code>valid</code>事件来注册监听，此时通常把错误提示隐藏</p>
 <pre><code class="lang-javascript"><span class="hljs-comment">//捕获字段为空事件</span>
 <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"target"</span>, ...);
 jf.on(<span class="hljs-string">"empty"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input , conf)</span></span>{
@@ -752,6 +787,16 @@ jf.on(<span class="hljs-string">"invalid"</span>,<span class="hljs-function"><sp
 jf.on(<span class="hljs-string">"empty"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(errorMsg , [input])</span></span>{<span class="hljs-comment">//</span>
     <span class="hljs-comment">//todo</span>
 });
+</code></pre>
+<p>一般情况下，仅仅修改两个全局配置函数即可显示或隐藏错误提示：</p>
+<pre><code class="lang-javascript">
+AForm.Config.fn.showTips = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input, errMsg)</span> </span>{
+    alert(errMsg);
+};
+
+AForm.Config.fn.hideTips = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(input)</span> </span>{
+    <span class="hljs-comment">//todo:隐藏提示</span>
+};
 </code></pre>
 <h2 id="">汇总所有错误信息</h2>
 <p>若需获取汇总的错误信息，可通过aform实例的<code>errors</code>属性获取（注意先关闭<code>breakOnError</code>，否则总是只能获取到一个错误），该属性为一个元素为错误对象的数组，每个错误对象结构如下：</p>

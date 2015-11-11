@@ -85,7 +85,7 @@
     AForm.registerControl("datetime", "date", {
         desc:"datetime",
         render: function(k, v, conf, i, af) {
-            var html = this.__super.render(k, v, conf, i, af);//this.__super 为父类对象
+            var html = this.__super.render.call(this ,k, v, conf, i, af);//this.__super 为父类对象
             html += " -- datetime";
             return html;
         }
@@ -178,13 +178,9 @@ getJsonPartString: function (con ,fd, af) {
     var sel = $(con).find(".xyz");
     if (fd.required && !sel.val()) {
         af.emit("empty",[sel[0], fd]);//触发empty事件
-
-        return false;
     }
     if (sel.val().indexOf("http://") !== 0) {
         af.emit("invalid",[sel[0], fd,"xx需以http开头"]);//触发invalid事件
-
-        return false;
     }
     return sel.attr("name") + ":\"" + sel.val() + "\"";
 }

@@ -4,7 +4,7 @@
     <head>
         
         <meta charset="UTF-8">
-        <title>配置列表 | AForm — 模型驱动的自动化表单解决方案</title>
+        <title>监听用户输入 | AForm — 模型驱动的自动化表单解决方案</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 1.0.2">
@@ -18,10 +18,10 @@
     
     
     
-    <link rel="next" href="../api/event.html" />
+    <link rel="next" href="../plugin/README.html" />
     
     
-    <link rel="prev" href="../api/function.html" />
+    <link rel="prev" href="../mannual/adapter.html" />
     
 
         
@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="4.2" data-basepath=".." data-revision="1447228719262">
+    <div class="book"  data-level="2.10" data-basepath=".." data-revision="1447228719262">
     
 
 <div class="book-summary">
@@ -302,7 +302,7 @@
         </li>
     
         
-        <li class="chapter " data-level="2.10" data-path="mannual/monitor.html">
+        <li class="chapter active" data-level="2.10" data-path="mannual/monitor.html">
             
                 
                     <a href="../mannual/monitor.html">
@@ -442,7 +442,7 @@
         </li>
     
         
-        <li class="chapter active" data-level="4.2" data-path="api/options.html">
+        <li class="chapter " data-level="4.2" data-path="api/options.html">
             
                 
                     <a href="../api/options.html">
@@ -659,450 +659,42 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_7">
+                    <section class="normal" id="section-gitbook_29">
                     
-                        <h1 id="">配置列表</h1>
-<h2 id="">表单配置</h2>
-<table>
-<thead>
-<tr>
-<th>配置名</th>
-<th>释义</th>
-<th>类型</th>
-<th>默认值</th>
-<th>范例</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>title</td>
-<td>表单标题</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>title : &quot;新增页面&quot;</code></td>
-</tr>
-<tr>
-<td>schemaMode</td>
-<td>结构模式，<code>remote/local/merge</code></td>
-<td>字符串</td>
-<td>remote</td>
-<td><code>schemaMode : &quot;local&quot;</code></td>
-</tr>
-<tr>
-<td>showArrayNO</td>
-<td>是否显示数组表格前的序号列</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>showArrayNO : false</code></td>
-</tr>
-<tr>
-<td>hideCollapser</td>
-<td>隐藏折叠器</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>hideCollapser : true</code></td>
-</tr>
-<tr>
-<td>className</td>
-<td>容器样式名</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>className : &quot;compact vertical&quot;</code></td>
-</tr>
-<tr>
-<td>validators</td>
-<td>全局验证器</td>
-<td>对象或数组</td>
-<td>不设置</td>
-<td>请见&quot;表单验证一节&quot;</td>
-</tr>
-<tr>
-<td>readonly</td>
-<td>是否只读，若是则表单下所有字段为只读</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>readonly : true</code></td>
-</tr>
-<tr>
-<td>hideColon</td>
-<td>隐藏label后的冒号</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>hideColon : true</code></td>
-</tr>
-<tr>
-<td>addRowText</td>
-<td>数组表格添加新行的链接文本</td>
-<td>字符串</td>
-<td>AForm.Config.wording.addRowText</td>
-<td><code>addRowText : &quot;新增一行&quot;</code></td>
-</tr>
-<tr>
-<td>rowAction</td>
-<td>数组表单操作列的按钮列表</td>
-<td>对象</td>
-<td>AForm.Config.defaultAction</td>
-<td>请参见“表格增强”一节</td>
-</tr>
-<tr>
-<td>tipsTpl</td>
-<td>tips模板</td>
-<td>字符串</td>
-<td>AForm.Config.tpl.tips</td>
-<td><code>tipsTpl : &quot;&lt;b&gt;{tips}&lt;/b&gt;&quot;</code></td>
-</tr>
-<tr>
-<td>thTipsTpl</td>
-<td>表格列tips模板</td>
-<td>字符串</td>
-<td>AForm.Config.tpl.thTips</td>
-<td><code>thTipsTpl : &quot;&lt;b style=&#39;{tipsCssText}&#39;&gt;{tips}&lt;/b&gt;&quot;</code></td>
-</tr>
-<tr>
-<td>restrict</td>
-<td>是否严格模式，请参见&quot;避免额外输入项干预数据获取&quot;一节</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>restrict :true</code></td>
-</tr>
-<tr>
-<td>fields</td>
-<td>表单字段，详细配置见“字段配置”</td>
-<td>对象</td>
-<td>不设置</td>
-<td><code>fields : {}</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="">字段配置</h2>
-<table>
-<thead>
-<tr>
-<th>配置名</th>
-<th>释义</th>
-<th>类型</th>
-<th>默认值</th>
-<th>范例</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ctrlId</td>
-<td>输入控件的id，当该字段的输入在界面中唯一的话，设置该id便于您之后获取该输入控件，不设置该项，会使用组件自动生成的id</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>ctrlId:&quot;txt_name&quot;</code></td>
-</tr>
-<tr>
-<td>ctrlAttr</td>
-<td>输入控件的属性集合，用于设置额外或个性化的属性</td>
-<td>json对象</td>
-<td>不设置</td>
-<td><code>ctrlAttr:{max:200,min:100,step:5}</code></td>
-</tr>
-<tr>
-<td>hidden</td>
-<td>是否隐藏该字段的输入界面，若true在html5下将为容器生成hidden属性</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>hidden:true</code></td>
-</tr>
-<tr>
-<td>label</td>
-<td>生成的label中的内容，不设置则使用字段名</td>
-<td>字符串</td>
-<td>空字符串</td>
-<td><code>label:&quot;年龄&quot;</code></td>
-</tr>
-<tr>
-<td>dfaultValue</td>
-<td>默认值</td>
-<td>any</td>
-<td>不设置</td>
-<td><code>dfaultValue:&quot;Y&quot;</code></td>
-</tr>
-<tr>
-<td>hideLabel</td>
-<td>隐藏label</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>hideLabel:true</code></td>
-</tr>
-<tr>
-<td>hideColon</td>
-<td>隐藏字段标签名后面的冒号</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>hideColon:true</code></td>
-</tr>
-<tr>
-<td>hideHeader</td>
-<td>隐藏表头，仅针对数组产生的表格有效</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>hideHeader:true</code></td>
-</tr>
-<tr>
-<td>noRender</td>
-<td>不渲染该字段，则获取到的数据同样没有该字段，相当于删除了该字段</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>noRender:true</code></td>
-</tr>
-<tr>
-<td>order</td>
-<td>序号，越大越排前，用于调节字段的顺序</td>
-<td>数字</td>
-<td>0</td>
-<td><code>order:999</code></td>
-</tr>
-<tr>
-<td>break</td>
-<td>换行，仅当inline为true时有效</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>break:true</code></td>
-</tr>
-<tr>
-<td>hideCollapser</td>
-<td>是否隐藏折叠器，针对object和array有效，若不设置或设置为false，则会在输入控件集合外层添加一个复选框用于折叠或展开子项</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>hideCollapser:true</code></td>
-</tr>
-<tr>
-<td>collapse</td>
-<td>是否折叠容器，针对object和array有效，</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>collapse:true</code></td>
-</tr>
-<tr>
-<td>tips</td>
-<td>输入控件右侧生成的tips内容，需配合tipsTpl使用</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>tips:&quot;&lt;span&gt;填写您常使用的邮箱&lt;/span&gt;&quot;</code></td>
-</tr>
-<tr>
-<td>noTips</td>
-<td>是否显示输入框右侧的tips，对于表格中的输入框，由于表头已显示了tips，因此可设置此项以隐藏输入框后的tips</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>noTips:true</code></td>
-</tr>
-<tr>
-<td>tipsTpl</td>
-<td>输入控件右侧生成的tips容器html模板，需配合tips属性使用，若该项未设置，则使用全局配置</td>
-<td>字符串</td>
-<td>全局配置项中的tipsTpl</td>
-<td><code>tipsTpl:&quot;&lt;a&gt;\{tips\}&lt;/a&gt;&quot;</code></td>
-</tr>
-<tr>
-<td>ctrlCssText</td>
-<td>输入控件的样式</td>
-<td>字符串或函数</td>
-<td>不设置</td>
-<td><code>ctrlCssText:&quot;color:red&quot;</code></td>
-</tr>
-<tr>
-<td>labelCssText</td>
-<td>空间前面标签的样式</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>labelCssText:&quot;color:red&quot;</code></td>
-</tr>
-<tr>
-<td>tipsCssText</td>
-<td>tips标签的样式</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>tipsCssText:&quot;color:red&quot;</code></td>
-</tr>
-<tr>
-<td>cssText</td>
-<td>输入控件外层容器的样式</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>cssText:&quot;border:1px solid gray&quot;</code></td>
-</tr>
-<tr>
-<td>placeholder</td>
-<td>输入框为空时显示的提示文字，同html5的对应属性</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>placeholder:&quot;please input your address&quot;</code></td>
-</tr>
-<tr>
-<td>extHtml</td>
-<td>输入框后的附加内容，勿放置任何input控件，否则会影响表单的取值</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>extHtml:&quot;&lt;input type=&#39;button&#39; value=&#39;选择&#39; /&gt;&quot;</code></td>
-</tr>
-<tr>
-<td>frontalHtml</td>
-<td>输入框前的附加内容，勿放置任何input控件，否则会影响表单的取值</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>frontalHtml:&quot;/data/web/template/&quot;</code></td>
-</tr>
-<tr>
-<td>inline</td>
-<td>输入控件外层容器是否行内布局，相当于设置display为inline-block</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>inline:true</code></td>
-</tr>
-<tr>
-<td>width</td>
-<td>输入控件外层容器的宽度，取值和css的width属性一致</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>width:&quot;300px&quot;</code></td>
-</tr>
-<tr>
-<td>type</td>
-<td>输入控件类型，可选的值为：text、textarea、radio、checkbox、select、hidden或其他浏览器支持的类型，如html5新增的number、date等类型，额外属性需配合ctrlAttr使用</td>
-<td>字符串</td>
-<td>text</td>
-<td><code>type:&quot;select&quot;</code></td>
-</tr>
-<tr>
-<td>needOther</td>
-<td>仅针对type为radio的字段有效，将生成“其他”选项和输入框</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>needOther:true</code></td>
-</tr>
-<tr>
-<td>maxlength</td>
-<td>输入控件的输入值最大长度，仅针对文本框有效</td>
-<td>数字</td>
-<td>不设置</td>
-<td><code>maxlength:20</code></td>
-</tr>
-<tr>
-<td>minlength</td>
-<td>输入控件的输入值最小长度</td>
-<td>数字</td>
-<td>不设置</td>
-<td><code>minlength:10</code></td>
-</tr>
-<tr>
-<td>readonly</td>
-<td>输入控件是否只读，仅针对文本框和文本区域有效</td>
-<td>布尔型</td>
-<td>不设置</td>
-<td><code>readonly:true</code></td>
-</tr>
-<tr>
-<td>disabled</td>
-<td>输入控件是否禁用，效果同html元素的disabled属性</td>
-<td>布尔型</td>
-<td>不设置</td>
-<td><code>disabled:true</code></td>
-</tr>
-<tr>
-<td>required</td>
-<td>输入控件是否必填，用value是否为空字符串判断</td>
-<td>布尔型</td>
-<td>不设置</td>
-<td><code>required:true</code></td>
-</tr>
-<tr>
-<td>requiredAtBegin</td>
-<td>表示必填项的符号是否显示在标签最前面，否则显示在后面</td>
-<td>布尔型</td>
-<td>false</td>
-<td><code>requiredAtBegin:true</code></td>
-</tr>
-<tr>
-<td>pattern</td>
-<td>输入值的校验正则表达式，格式同html5的表单元素的pattern属性</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>pattern:&quot;\\d+&quot;</code></td>
-</tr>
-<tr>
-<td>patternErrorMsg</td>
-<td>正则校验失败后的错误提示</td>
-<td>字符串</td>
-<td>不设置</td>
-<td><code>patternErrorMsg:&quot;宽度需要是一个整数&quot;</code></td>
-</tr>
-<tr>
-<td>validators</td>
-<td>输入值的校验函数或表达式，为字符串时，格式为js条件表达式，为真时合法；为函数时，返回true为合法；为对象时，下设两个属性rule和errorMsg，rule是一个函数；为数组时，其元素是上述任何类型</td>
-<td>字符串或函数</td>
-<td>不设置</td>
-<td><code>validator:function(v){return v &gt; 5;}</code></td>
-</tr>
-<tr>
-<td>title</td>
-<td>鼠标移到输入控件上时显示的提示内容，也是当字段输入不合法时的提示内容</td>
-<td>字符串</td>
-<td>不设置</td>
-<td>title:&quot;请填写数字&quot;</td>
-</tr>
-<tr>
-<td>datalist</td>
-<td>输入控件的可选项目列表，针对select、checkbox、radio有效，当浏览器支持html5的datalist且输入控件是text时，会生成datalist标签辅助输入。</td>
-<td>数组</td>
-<td>不设置</td>
-<td><code>datalist:[{value:0,text:&quot;男&quot;,group:&quot;分组名&quot;,custom:&quot;自定义数据&quot;}]</code></td>
-</tr>
-<tr>
-<td>multiple</td>
-<td>是否多选，仅针对select和checkbox有效</td>
-<td>布尔类型</td>
-<td>false</td>
-<td><code>multiple:true</code></td>
-</tr>
-<tr>
-<td>delimiter</td>
-<td>多选时，数据值的分隔符</td>
-<td>字符串</td>
-<td>半角逗号&quot;,&quot;</td>
-<td><code>delimiter:&quot;;&quot;</code></td>
-</tr>
-<tr>
-<td>size</td>
-<td>输入控件的size属性，表现为文本框的长度或多选下拉列表的高度等效果</td>
-<td>数字</td>
-<td>不设置</td>
-<td><code>size:5</code></td>
-</tr>
-<tr>
-<td>noCreate</td>
-<td>是否禁用数组表格的添加行功能</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>noCreate:true</code></td>
-</tr>
-<tr>
-<td>noDelete</td>
-<td>是否禁用数组表格的删除行功能</td>
-<td>布尔</td>
-<td>false</td>
-<td><code>noCreate:true</code></td>
-</tr>
-<tr>
-<td>onRenderComplete</td>
-<td>当前字段渲染完毕后的处理函数</td>
-<td>函数</td>
-<td>不设置</td>
-<td><code>onRenderComplete:fn</code></td>
-</tr>
-<tr>
-<td>valueAdapter</td>
-<td>值适配器，可在渲染或获取值前修改值，为一个对象，包含两个属性beforeRender和beforeGet，皆为传入旧值且返回新值的函数</td>
-<td>对象</td>
-<td>不设置</td>
-<td>请参见数据适配器一章</td>
-</tr>
-</tbody>
-</table>
+                        <h1 id="">监听用户输入</h1>
+<p>若需监听表单所有输入，可使用change事件来监听，处理函数有3个参数，含义分别是：</p>
+<ul>
+<li>jpath：当前修改的输入项的jpath路径，如&quot;.age&quot;、&quot;.list[0].name&quot;，注意若当前渲染的是一个对象，那么jpath前面是带点号的</li>
+<li>val：修改后的新值</li>
+<li>input：当前操作的输入控件</li>
+</ul>
+<p>范例：</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(...);
+jf.on(<span class="hljs-string">"change"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(jpath , val , input)</span></span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">arguments</span>);
+});
+</code></pre>
+<h2 id="">监听指定字段</h2>
+<p>在change事件中可以根据jpath来筛选需要处理的字段，也可以直接编写配置实现，aform提供了watch配置，该配置是一个key为jpath，值为函数数组的对象，也就是说一个jpath可以指定多个处理函数，例如：</p>
+<pre><code class="lang-javscript">var af = new Aform(&quot;target&quot;,{
+title:&quot;test form&quot;,
+fields:{
+    age:{label:&quot;年龄&quot;}
+}
+watch: {
+            &quot;.age&quot;: [
+            function(cv , input) {
+                console.log(&quot;我的值被改成&quot; + cv + &quot;啦！&quot;);
+            }
+            ]
+        }
+});
+</code></pre>
+<h2 id="">注意</h2>
+<p>目前aform仅能监听由aform自己生成的输入项修改事件，若是自定义控件，需自行触发aform实例的change事件，如</p>
+<pre><code class="lang-javscript">afObj.emit(&quot;change&quot;, [jpath , val ， input]);
+</code></pre>
+<p>另外，若字段是复选框组合，则监听到的变化是被选中那个复选框的值，这一点与aform取数时会取到所有勾选复选框的值有一点差别。</p>
 
                     
                     </section>
@@ -1113,10 +705,10 @@
         </div>
 
         
-        <a href="../api/function.html" class="navigation navigation-prev " aria-label="Previous page: 接口与属性列表"><i class="fa fa-angle-left"></i></a>
+        <a href="../mannual/adapter.html" class="navigation navigation-prev " aria-label="Previous page: 数据适配器"><i class="fa fa-angle-left"></i></a>
         
         
-        <a href="../api/event.html" class="navigation navigation-next " aria-label="Next page: 事件"><i class="fa fa-angle-right"></i></a>
+        <a href="../plugin/README.html" class="navigation navigation-next " aria-label="Next page: 插件与增强"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>

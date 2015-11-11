@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="2.4" data-basepath=".." data-revision="1436774262142">
+    <div class="book"  data-level="2.4" data-basepath=".." data-revision="1447228719262">
     
 
 <div class="book-summary">
@@ -146,6 +146,22 @@
                             <b>2.1.1.</b>
                         
                          避免干扰
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="2.1.2" data-path="api/lazyrender.html">
+            
+                
+                    <a href="../api/lazyrender.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.2.</b>
+                        
+                         延迟渲染
                     </a>
                 
             
@@ -285,6 +301,22 @@
             
         </li>
     
+        
+        <li class="chapter " data-level="2.10" data-path="mannual/monitor.html">
+            
+                
+                    <a href="../mannual/monitor.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.10.</b>
+                        
+                         监听用户输入
+                    </a>
+                
+            
+            
+        </li>
+    
 
             </ul>
             
@@ -324,13 +356,29 @@
         </li>
     
         
-        <li class="chapter " data-level="3.2" data-path="plugin/tbaction.html">
+        <li class="chapter " data-level="3.2" data-path="plugin/customprop.html">
+            
+                
+                    <a href="../plugin/customprop.html">
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                         自定义属性
+                    </a>
+                
+            
+            
+        </li>
+    
+        
+        <li class="chapter " data-level="3.3" data-path="plugin/tbaction.html">
             
                 
                     <a href="../plugin/tbaction.html">
                         <i class="fa fa-check"></i>
                         
-                            <b>3.2.</b>
+                            <b>3.3.</b>
                         
                          表格增强
                     </a>
@@ -340,13 +388,13 @@
         </li>
     
         
-        <li class="chapter " data-level="3.3" data-path="plugin/util.html">
+        <li class="chapter " data-level="3.4" data-path="plugin/util.html">
             
                 
                     <a href="../plugin/util.html">
                         <i class="fa fa-check"></i>
                         
-                            <b>3.3.</b>
+                            <b>3.4.</b>
                         
                          工具
                     </a>
@@ -502,31 +550,15 @@
                 
     
         
-        <li class="chapter " data-level="6.1" data-path="custom/configjs.html">
+        <li class="chapter " data-level="6.1" data-path="bootstrap.html">
             
                 
-                    <a href="../custom/configjs.html">
+                    <a href="../bootstrap.html">
                         <i class="fa fa-check"></i>
                         
                             <b>6.1.</b>
                         
                          与 bootstrap 结合
-                    </a>
-                
-            
-            
-        </li>
-    
-        
-        <li class="chapter " data-level="6.2" data-path="custom/css.html">
-            
-                
-                    <a href="../custom/css.html">
-                        <i class="fa fa-check"></i>
-                        
-                            <b>6.2.</b>
-                        
-                         样式编写指引
                     </a>
                 
             
@@ -627,7 +659,7 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_13">
+                    <section class="normal" id="section-gitbook_15">
                     
                         <h1 id="">输入控件的类型</h1>
 <p>字段的 type 选项决定了该字段的输入控件，并将原封不动地渲染成最终的html标签的type属性，因此，该字段的可选值与html input的type属性是一致的，如：</p>
@@ -654,19 +686,22 @@
 <li>数组类型将生成一个table</li>
 <li>数值、字符串类型将生成单个文本输入框</li>
 </ol>
-<p>值得一提的是，如果type的值在插件中注册了（通常是你想自定义输入控件时），则将使用插件的渲染方法渲染输入控件，详细信息请参见“插件与增强”一章。</p>
+<p>值得一提的是，如果type的值在插件中注册了（通常是你想自定义输入控件时），则将使用插件的渲染方法渲染输入控件，详细信息请参见 <a href="../plugin/control.html">自定义输入控件</a>一章。</p>
 <h2 id="type">type的示例：</h2>
-<pre><code>var jf = new AForm(&quot;divOutput&quot;,{
-schemaMode:&quot;local&quot;,
-fields:{
-    a:{label:&quot;a&quot;,type:&quot;textarea&quot;},//文本区域
-    b:{label:&quot;b&quot;,type:&quot;radio&quot;,datalist:[
-        {text:&quot;男&quot;,value:&quot;male&quot;},
-        {text:&quot;女&quot;,value:&quot;female&quot;},
-    ]}//单选，选项使用datalist定义
-}
-});
+<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> jf = <span class="hljs-keyword">new</span> AForm(<span class="hljs-string">"divOutput"</span>,{
+    schemaMode:<span class="hljs-string">"local"</span>,
+    fields:{
+        a:{label:<span class="hljs-string">"a"</span>,type:<span class="hljs-string">"textarea"</span>},<span class="hljs-comment">//文本区域</span>
+        b:{label:<span class="hljs-string">"b"</span>,type:<span class="hljs-string">"radio"</span>,datalist:[
+            {text:<span class="hljs-string">"男"</span>,value:<span class="hljs-string">"male"</span>},
+            {text:<span class="hljs-string">"女"</span>,value:<span class="hljs-string">"female"</span>},
+        ]}<span class="hljs-comment">//单选，选项使用datalist定义</span>
+    }
+    });
 </code></pre>
+<h1 id="">自定义输入控件</h1>
+<p>请参考 <a href="../plugin/control.html">自定义输入控件</a></p>
+
                     
                     </section>
                 

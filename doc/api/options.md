@@ -16,7 +16,7 @@ hideColon		|隐藏label后的冒号|布尔	|false	|`hideColon : true`
 addRowText		|数组表格添加新行的链接文本|字符串	|AForm.Config.wording.addRowText	|`addRowText : "新增一行"`
 rowAction		|数组表单操作列的按钮列表|对象	|AForm.Config.defaultAction	|请参见“表格增强”一节
 tipsTpl		|tips模板|字符串	|AForm.Config.tpl.tips	|`tipsTpl : "<b>{tips}</b>"`
-thTipsTpl		|表格列tips模板|字符串	|AForm.Config.tpl.thTips	|`thTipsTpl : "<b>{tips}</b>"`
+thTipsTpl		|表格列tips模板|字符串	|AForm.Config.tpl.thTips	|`thTipsTpl : "<b style='{tipsCssText}'>{tips}</b>"`
 restrict		|是否严格模式，请参见"避免额外输入项干预数据获取"一节|布尔	|false|`restrict :true`
 fields		|表单字段，详细配置见“字段配置”|对象	|不设置	|`fields : {}`
 
@@ -43,6 +43,7 @@ noTips		|是否显示输入框右侧的tips，对于表格中的输入框，由�
 tipsTpl	|输入控件右侧生成的tips容器html模板，需配合tips属性使用，若该项未设置，则使用全局配置 |字符串 |全局配置项中的tipsTpl |`tipsTpl:"<a>\{tips\}</a>"`
 ctrlCssText	|输入控件的样式 |字符串或函数 |不设置 |`ctrlCssText:"color:red"`
 labelCssText	|空间前面标签的样式 |字符串 |不设置 |`labelCssText:"color:red"`
+tipsCssText	|tips标签的样式 |字符串 |不设置 |`tipsCssText:"color:red"`
 cssText	|输入控件外层容器的样式 |字符串 |不设置 |`cssText:"border:1px solid gray"`
 placeholder	|输入框为空时显示的提示文字，同html5的对应属性 |字符串 |不设置 |`placeholder:"please input your address"`
 extHtml	|输入框后的附加内容，勿放置任何input控件，否则会影响表单的取值 |字符串 |不设置 |`extHtml:"<input type='button' value='选择' />"`
@@ -51,7 +52,8 @@ inline		|输入控件外层容器是否行内布局，相当于设置display为i
 width		|输入控件外层容器的宽度，取值和css的width属性一致 |字符串 |不设置 |`width:"300px"`
 type		|输入控件类型，可选的值为：text、textarea、radio、checkbox、select、hidden或其他浏览器支持的类型，如html5新增的number、date等类型，额外属性需配合ctrlAttr使用 |字符串 |text |`type:"select"`
 needOther		|仅针对type为radio的字段有效，将生成“其他”选项和输入框 |布尔型 |false |`needOther:true`
-maxlength	|输入控件的输入值最大长度，仅针对文本框和文本区域有效 |数字 |不设置 |`maxlength:20`
+maxlength	|输入控件的输入值最大长度，仅针对文本框有效 |数字 |不设置 |`maxlength:20`
+minlength	|输入控件的输入值最小长度 |数字 |不设置 |`minlength:10`
 readonly	|输入控件是否只读，仅针对文本框和文本区域有效 |布尔型 |不设置 |`readonly:true`
 disabled	|输入控件是否禁用，效果同html元素的disabled属性 |布尔型 |不设置 |`disabled:true`
 required	|输入控件是否必填，用value是否为空字符串判断 |布尔型 |不设置 |`required:true`
