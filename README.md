@@ -1,3 +1,11 @@
+### v1.4.17 更新日志
+
+1. 增加了AForm.get方法，可根据容器id得到aform实例
+2. 增加了[valid](http://xiehuiqi220.github.io/AForm/doc/book/mannual/validate.html)事件，通知字段通过校验，另验证时机更改为当输入项失去焦点时触发，增加了AForm.Config.fn.hideTips配置，设置隐藏提示
+3. 增加了trim机制，默认所有文本域取值会经过trim
+4. 增加了[watch](http://xiehuiqi220.github.io/AForm/doc/book/mannual/monitor.html) 机制 
+4. 其他bug修复
+
 ### v1.3.5 更新日志
 
 1. 增加了invalid、empty和globalInvalid事件，分别对应字段不合法，字段为空和整个数据不合法，同时自定义输入组件也可以通过向表单实例发射该事件通知表单

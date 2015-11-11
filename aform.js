@@ -1,28 +1,39 @@
 /*!
- * aform v1.3.0
+ * aform v1.4.17
  * Copyright 2015, xiehuiqi
- * Date: 2015年6月4日
+ * Date: 2015年11月3日
  */
 
 (function() {
+    if (window.AForm) {
+        if (typeof module === "object" && module.exports) {
+            module.exports = window.AForm;
+        }
+
+        return window.AForm;
+    }//若已存在，则使用之前存在的版本
+
     /** 常量 */
     var AFORM_SYS_PLUGIN = "__AFORM_SYS_PLUGIN__";
     var AFORM_BASIC_PLUGIN = "__AFORM_BASIC_PLUGIN__";
     var AFORM_OBJ_PLUGIN = "__AFORM_OBJ_PLUGIN__";
     var AFORM_ARR_PLUGIN = "__AFORM_ARR_PLUGIN__";
     var controlInstance = {};
+    var aformInstance = {};//aform实例
     var basicControl;
     var objControl;
     var arrControl;
     var sysControl;
 
     /** 已渲染数据 */
-    AForm.renderCount = 0;
+    AForm.renderCount = 0;//已渲染的控件数
+    AForm.formCount = 0;//已生成的实例数
     /** 外部插件容器 */
     AForm.Plugin = {};
     AForm.Plugin.control = {};//控件
     AForm.Plugin.validator = {};//验证器
     AForm.Plugin.adapter = {};//适配器
+    AForm.Plugin.prop = {};//自定义属性
 
     /** 全局配紫红 */
     AForm.Config = {};
@@ -54,7 +65,7 @@
     };
     /** 模板 */
     AForm.Config.tpl = {
-        "tips": '&nbsp;<a title="{tips}" href="#nolink">[?]</a>',
+        "tips": "&nbsp;<a title='{tip}' href='#nolink'>[?]</a>",
         "thTips": "<sup title='{tips}'>[?]</sup>"
     };
     /** 文案 */
@@ -70,6 +81,9 @@
         "showTips": function(input, errMsg) {
             alert(errMsg);
         },
+        "hideTips": function(input) {
+            _debug(input.name + " value is valid");
+        },
         "onEmpty": function(input, conf) {
             var name = input.getAttribute("name");
 
@@ -79,9 +93,6 @@
             }
 
             AForm.Config.fn.showTips(input, errMsg);
-            if (typeof input.focus === "function" || typeof input.focus === "object") {
-                input.focus();
-            }
         },
         "onInvalid": function(input, conf, errorMsg) {
             var errMsg = errorMsg ? errorMsg : (conf ? ("字段[" + (conf.label) + "]的值非法") : input.title);
@@ -94,6 +105,9 @@
                 input.focus();
             }
         },
+        "onValid": function(input, conf) {
+            AForm.Config.fn.hideTips(input);
+        },
         "onGlobalInvalid": function(msg) {
             alert(msg);
         }
@@ -101,10 +115,367 @@
 
     //初始化事件
     var validateEvt = {
-        empty : AForm.Config.fn.onEmpty,
-        invalid : AForm.Config.fn.onInvalid,
-        globalInvalid : AForm.Config.fn.onGlobalInvalid
+        empty: function() {
+            AForm.Config.fn.onEmpty.apply(AForm, arguments);
+        },
+        invalid: function() {
+            AForm.Config.fn.onInvalid.apply(AForm, arguments);
+        },
+        valid: function() {
+            AForm.Config.fn.onValid.apply(AForm, arguments);
+        },
+        globalInvalid: function() {
+            AForm.Config.fn.onGlobalInvalid.apply(AForm, arguments);
+        }
     };
+
+    //helper
+    var _formHelper = {
+        $: function(id) {
+            return document.getElementById(id);
+        },
+        toArray: function(s) {
+            try {
+                return Array.prototype.slice.call(s);//ie8报错，见https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice#Streamlining_cross-browser_behavior
+            } catch (e) {
+                var arr = [];
+                for (var i = 0, len = s.length; i < len; i++) {
+                    arr[i] = s[i];
+                }
+                return arr;
+            }
+        },
+        indexOf: function(arr, fn) {
+            var pos = -1;
+            _h.each(arr, function(item, i) {
+                if (fn(item)) {
+                    pos = i;
+                    return false;
+                }
+            });
+
+            return pos;
+        },
+        isIE: function() {
+            var myNav = navigator.userAgent.toLowerCase();
+            return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) : false;
+        },
+        getInput: function(domEle, restrict) {
+            if (_h.hasClass(domEle, "json-field-plugin")) {
+                restrict = false;//若是外部自定义控件，有可能并不会在html上打上data-gen=aform的标记，因此需要设置严格模式为false
+            }
+            var controlList = [];
+            var ips = _h.toArray(domEle.getElementsByTagName("input"));
+            var txts = _h.toArray(domEle.getElementsByTagName("textarea"));
+            var sels = _h.toArray(domEle.getElementsByTagName("select"));
+
+            var clTemp = ips.concat(txts).concat(sels);
+            for (var ii = 0; ii < clTemp.length; ii++) {
+                var ip = clTemp[ii];
+                //忽略的控件无需取值
+                //严格模式下，非aform生成的input无需取值
+                if (_h.isIgnore(ip) || (restrict && ip.getAttribute("data-gen") != "aform")) {
+                } else {
+                    controlList.push(ip);
+                }
+            }
+
+            return controlList;
+        },
+        removeArray: function(arr, fn) {
+            var pos = _h.indexOf(arr, fn);
+            if (pos > -1) {
+                arr.splice(pos, 1);
+            }
+        },
+        hasClass: function(ele, clsName) {
+            if (!ele || !ele.nodeType == 1) {
+                return false;
+            }
+            return (" " + ele.className).indexOf(" " + clsName) > -1;
+        },
+        isFormElement: function(ele) {
+            var isEle = _h.hasClass(ele, "json-form-element") || _h.hasClass(ele, "json-field-plugin");
+            return isEle && !_h.isIgnore(ele);
+        },
+        isIgnore: function(ele) {
+            if (!ele || !ele.getAttribute) {
+                return false;
+            }
+            return ele.getAttribute("ignore") == "true" || ele.getAttribute("ignore") == "ignore";
+        },
+        addClass: function(ele, clsName) {
+            if (!ele || !clsName) {
+                return false;
+            }
+            if (!ele.className) {
+                ele.className = clsName;
+            }
+            else if (!_formHelper.hasClass(ele, clsName)) {
+                ele.className += " " + clsName;
+            }
+        },
+        validateInput: function(input, conf, af)//用于验证输入控件的value
+        {
+            var v = input.value;
+            return validateInput(af, input, v, conf);
+        },
+        getParent: function(ele, ptag) {
+            ptag = ptag.toUpperCase();
+            var p = ele.parentNode;
+            while (p && p.tagName != ptag) {
+                p = p.parentNode;
+            }
+
+            return p;
+        },
+        getNextSibling: function(n) {
+            var x = n.nextSibling;
+            while (x && x.nodeType != 1) {
+                x = x.nextSibling;
+            }
+            return x;
+        },
+        showNextSibling: function(ele, visible) {
+            var n = this.getNextSibling(ele);
+            while (n) {
+                var isHidden = n.getAttribute("hidden") != null;//兼容html5的hidden属性
+                n.style.display = isHidden ? "none" : (visible ? "" : "none");
+                n = this.getNextSibling(n);
+            }
+        },
+        getTarget: function(e) {
+            e = e || window.event;
+            return e.target || e.srcElement;
+        },
+        addEvent: function(ele, evt, fn) {
+            if (ele.attachEvent) {
+                return ele.attachEvent('on' + evt, fn);
+            }
+            else {
+                return ele.addEventListener(evt, fn, false);
+            }
+        },
+        exeCmd: function(e, tbid, rowAction, fnBefore, fnAfter) {
+            e = e || event;
+            var ele = e.srcElement ? e.srcElement : e.target;
+            var cmd = ele.getAttribute("cmd");
+            if (!cmd) {
+                return false;
+            }
+            var table = _formHelper.getParent(ele, "table");
+
+            //重要，如果事件源table存在事件绑定，但当前触发的事件函数源却不是该table，则是冒泡带上的事件，忽略之，防止触发两次
+            if (table && table.onclick && table.id != tbid) {
+                return false;
+            }
+            var row = _formHelper.getParent(ele, "tr");
+
+            if (cmd == "aform_array_collapse_table") {//隐藏table
+                var show = true;
+
+                if (_formHelper.hasClass(ele, "json-form-ctrl-un-collapse")) {
+                    ele.className = ele.className.replace("json-form-ctrl-un-collapse", "json-form-ctrl-collapse");
+                    show = false;//需要折叠
+                } else if (_formHelper.hasClass(ele, "json-form-ctrl-collapse")) {
+                    ele.className = ele.className.replace("json-form-ctrl-collapse", "json-form-ctrl-un-collapse");
+                }
+
+                _formHelper.showNextSibling(_formHelper.getParent(ele, "caption"), show);
+                _formHelper.showNextSibling(ele, show);
+            } else if (cmd == "aform_array_collapse_fieldset") {
+                var show = true;
+
+                if (_formHelper.hasClass(ele, "json-form-ctrl-un-collapse")) {
+                    ele.className = ele.className.replace("json-form-ctrl-un-collapse", "json-form-ctrl-collapse");
+                    show = false;
+                } else if (_formHelper.hasClass(ele, "json-form-ctrl-collapse")) {
+                    ele.className = ele.className.replace("json-form-ctrl-collapse", "json-form-ctrl-un-collapse");
+                }
+
+                _formHelper.showNextSibling(_formHelper.getParent(ele, "legend"), show);
+            } else if (cmd == "aform_array_add_row") {//默认添加行为
+                _joinFunction(fnBefore, window, ["aform_array_add_row", table]);//before
+                _formHelper.addRow(table);
+                _joinFunction(fnAfter, window, ["aform_array_add_row", table]);//after
+            } else if (cmd == "aform_array_delete_row") {//默认删除行的行为
+                if (!table) {
+                    return false;
+                }
+                if (fnBefore.length) {
+                    _joinFunction(fnBefore, window, ["aform_array_delete_row", row]) && _formHelper.removeRow(row);
+                }
+                else {
+                    if (!confirm("确定删除该行吗？")) {
+                        return false;
+                    }
+                    _formHelper.removeRow(row);
+                }
+                _joinFunction(fnAfter, window, ["aform_array_delete_row", row, table]);//after
+            } else {//执行自定义的
+                for (var icmd in rowAction) {
+                    var item = rowAction[icmd];
+                    if (icmd == cmd && typeof item.handler == "function") {
+                        var ret = true;
+                        if (fnBefore.length) {
+                            ret = _joinFunction(fnBefore, window, [icmd, row, table]);
+                        }
+                        ret && item.handler(row, table, icmd);
+                        _joinFunction(fnAfter, window, [icmd, row, table]);//after
+                        break;
+                    }
+                }
+            }
+        },
+        isObjEmpty: function(obj) {
+            if (!obj || obj.length) {
+                return true;
+            }//数组不合法，认为是空
+            for (var p in obj) {
+                return false;
+            }
+            return true;
+        },
+        isInArray: function(key, array) {
+            var i = array.length;
+            while (i--) {
+                if (key == array[i]) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        removeRow: function(row) {
+            var tbBody = row.parentNode;
+            if (tbBody.rows.length == 1 && !tbBody.tempRow)//若只有一行了，则存储该行为表格的临时行，用于下次表格新增行
+            {
+                row.cells[0].innerHTML = 0;//起始为0，addRow后，将自增1，之所以设置row的序号为0，而不是clone后再设置，是因为ie对于未在表格中的row取cell会报错
+                tbBody.tempRow = row.cloneNode(true);
+            }
+            tbBody.removeChild(row);
+        },
+        addRow: function(table) {
+            var tbBody = table.tBodies[0];
+            if (!tbBody) {
+                return false;
+            }
+            var lastRow = null;
+            if (tbBody.rows.length == 0) {
+                lastRow = tbBody.tempRow;//若表格存储了临时的行，则使用临时行
+            }
+            else {
+                lastRow = tbBody.rows[tbBody.rows.length - 1];//否则使用最后一行
+                if (!lastRow) {
+                    return false;
+                }
+            }
+            var newRow = lastRow.cloneNode(true);
+
+            var labels = newRow.getElementsByTagName("label");
+            var len = labels.length;
+
+            while (len--) {
+                var lb = labels[len];
+                var newId = "ele_json_new_" + len + "_" + (new Date().getTime() % 1000000);
+                if (lb.htmlFor) {//如果此前有for，才修改for为新值
+                    lb.htmlFor = newId;
+                }
+
+                var ip = this.getNextSibling(lb);//找到label的input
+                if (ip) {
+                    ip.readOnly = false;
+                    ip.id = newId;//input
+                    ip.value = "";//clear
+                }
+            }
+
+            table.tBodies[0].appendChild(newRow);
+            var rowNumber = newRow.cells[0].innerHTML - 0;//行的第一列，序号列，数值+1
+            newRow.cells[0].innerHTML = rowNumber + 1;
+        },
+        trim: function(s) {
+            if (typeof s != "string") {
+                return s;
+            }
+            if (s.trim) {
+                return s.trim();
+            }
+            else {
+                return s.replace(/(^\s+)|(\s+$)/g, "");
+            }
+        },
+        each: function(array, fn) {
+            var len = array.length;
+            for (var i = 0; i < len; i++) {
+                var ret = fn(array[i], i);
+                if (ret === false) {
+                    break;
+                }
+            }
+        },
+        objEach: function(obj, fn) {
+            obj = obj || {};
+            for (var p in obj) {
+                if (!obj.hasOwnProperty(p)) {
+                    continue;
+                }
+
+                if (fn(p, obj[p]) === false) {
+                    break;
+                }
+            }
+        },
+        getObjType: function(obj) {
+            if (obj === undefined) {
+                return "undefined";
+            }
+            if (obj === null) {
+                return "null";
+            }
+            if (obj.constructor == Array) {
+                return "Array";
+            }
+            if (obj.constructor == Array) {
+                return "Array";
+            }
+            else if (obj.constructor == Object) {
+                return "Object";
+            }
+            else if (obj.constructor == Number) {
+                return "Number";
+            }
+            else if (obj.constructor == Boolean) {
+                return "Boolean";
+            }
+            else if (obj.constructor == String) {
+                return "String";
+            }
+            else {
+                return "unknow";
+            }
+        },
+        extend: function(obj, base) {
+            if (!obj) {
+                obj = {};
+            }
+            if (!base) {
+                return obj;
+            }
+            for (var p in base) {
+                obj[p] = base[p];
+            }
+
+            return obj;
+        },
+        obj2str: function(obj, sep) {
+            var arr = [];
+            for (var p in obj) {
+                arr.push(p + "=\"" + obj[p] + "\"");
+            }
+            return arr.join(sep || " ");
+        }
+    };
+    var _h = _formHelper;
 
     //全局静态函数
 
@@ -116,9 +487,17 @@
     };
 
     /**
+     * @description 根据表单id获取一个aform实例，和 new 结果一样
+     */
+    AForm.get = function(id) {
+        return aformInstance[id];
+    };
+
+    /**
      * @description 注册输入控件
      * @param {String} name  控件名
-     * @param {Object} obj 控件定义
+     * @param {Object} obj 被继承的控件名或控件定义
+     * @param {Object} obj2 控件定义，无继承时无该参数
      */
     AForm.registerControl = function(name, obj, obj2) {
         if (typeof name != "string") {
@@ -151,6 +530,18 @@
     };
 
     /**
+     * @description 注册自定义属性
+     * @param {String} name  属性名，多个用空格隔开
+     * @param {Object} obj 控件定义
+     */
+    AForm.registerProp = function(name, obj) {
+        var name = name.split(/\s+/g);
+        _h.each(name, function(n) {
+            AForm.Plugin.prop[n] = obj;
+        })
+    };
+
+    /**
      * @description 注册验证器
      * @param {String} name  控件名
      * @param {Object} obj 控件定义
@@ -168,6 +559,54 @@
         AForm.Plugin.adapter[name] = obj;
     };
 
+    //基本属性的注册
+    AForm.registerProp("maxlength", {
+        beforeRender: function(m, prop, conf) {
+            conf.ctrlAttr["maxlength"] = m;
+        }
+    });
+    AForm.registerProp("minlength", {
+        beforeRender: function(ml, prop, conf) {
+            var tag = "_af_prop_minlength";
+            _h.removeArray(conf.validators, function(item) {
+                return item._af_source = tag;
+            });
+            conf.ctrlAttr["minlength"] = ml;
+            (conf.validators.push({
+                    rule: function(v) {
+                        return v.length >= ml;
+                    },
+                    _af_source: tag,
+                    errorMsg: "输入的字符长度需不少于" + ml
+                }
+            ));
+        }
+    });
+    AForm.registerProp("readonly disabled pattern", {
+        beforeRender: function(r, prop, conf) {
+            if (r) {
+                conf.ctrlAttr[prop] = r;
+            } else {
+                delete conf.ctrlAttr[prop];
+            }
+        }
+    });
+    AForm.registerProp("size title placeholder", {
+        beforeRender: function(s, prop, conf) {
+            conf.ctrlAttr[prop] = s;
+        }
+    });
+    AForm.registerProp("multiple", {
+        beforeRender: function(multiple, prop, conf) {
+            (multiple && conf.type == "select") && (conf.ctrlAttr["multiple"] = "multiple");
+        }
+    });
+    AForm.registerProp("required", {
+        beforeRender: function(required, prop, conf) {
+            required && (conf.ctrlAttr["required"] = "required");
+        }
+    });
+
     /* 注册基本渲染器 */
     AForm.registerControl(AFORM_BASIC_PLUGIN, {
         desc: "AForm 基础渲染器",
@@ -183,23 +622,7 @@
             }
         },
         getJsonPartString: function(domEle, fd, af) {
-            var controlList = [];
-            var ips = _formHelper.toArray(domEle.getElementsByTagName("input"));
-            var txts = _formHelper.toArray(domEle.getElementsByTagName("textarea"));
-            var sels = _formHelper.toArray(domEle.getElementsByTagName("select"));
-
-            var clTemp = ips.concat(txts).concat(sels);
-
-            for (var ii = 0; ii < clTemp.length; ii++) {
-                var ip = clTemp[ii];
-                //忽略的控件无需取值
-                //严格模式下，非aform生成的input无需取值
-                if (_h.isIgnore(ip) || (af.config.restrict && ip.getAttribute("data-gen") != "aform")) {
-                } else {
-                    controlList.push(ip);
-                }
-            }
-
+            var controlList = _h.getInput(domEle, af.config.restrict);
             //若仍然无控件，则返回空json
             if (controlList.length == 0) {
                 return "\"\":null";
@@ -241,37 +664,20 @@
                     if (conf.needOther) {//若设置了other选项
                         if (_h.hasClass(input, "aform-other-input")) {//若选中了other
                             if (values[values.length - 1] == "__other__") {
-                                values[values.length - 1] = (input.value);
+                                values[values.length - 1] = (_h.trim(input.value));
                             }
                         } else {
-                            values.push(input.value);
+                            values.push(_h.trim(input.value));
                         }
                     } else {
-                        values.push(input.value);
+                        values.push(_h.trim(input.value));
                     }
                 }
             }
 
             //处理为空情形
             var tmpValue = values.join('');
-            if (!af.config.noValidate && conf.required && (tmpValue == "")) {
-                af.emit("empty", [controlList[0], conf]);
-            }
-            //处理非法情形
-            if (!af.config.noValidate && tmpValue != "" && conf.pattern &&
-                !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
-                af.emit("invalid", [input, conf, conf.patternErrorMsg || ""]);
-            }
-            //处理规则校验
-            if (!af.config.noValidate && tmpValue != "" && conf.validators) {
-                _h.each(conf.validators,function(item , i) {
-                    if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
-                        if (item.errorMsg !== false) {
-                            af.emit("invalid", [input, conf, item.errorMsg]);
-                        }
-                    }
-                });
-            }
+            validateInput(af, input, tmpValue, conf, controlList[0]);
 
             //值适配器处理
             var fnAdpt = function(v) {
@@ -330,7 +736,7 @@
 
             var tbId = fieldConfig.ctrlId || ("ele_json_tb_" + AForm.renderCount);
             var me = afObj;
-            _onclickSetter[tbId] = function(e) {
+            _eventSetter["click"][tbId] = function(e) {
                 _formHelper.exeCmd(e, tbId, fieldConfig.rowAction, me.eventArr.beforeExeCmd, me.eventArr.afterExeCmd);
             };
 
@@ -501,7 +907,7 @@
 
             if (fieldConfig.type in AForm.Plugin.control) {
                 //插件用固定样式包裹
-                return _genPlugin(nameOrIndex, fieldConfig.type, input, afObj, fieldConfig, cssText, "div")
+                return _genPlugin(nameOrIndex, input, afObj, fieldConfig.type, fieldConfig, cssText, "div");
             }
 
             if (!nameOrIndex) {
@@ -521,7 +927,7 @@
                 fieldsetBegin +=
                     (fieldConfig.collapse ? "json-form-ctrl-collapse" : "json-form-ctrl-un-collapse") + "'";
                 fieldsetBegin += "id='" + colId + "' >";
-                _onclickSetter[colId] = function(e) {
+                _eventSetter["click"][colId] = function(e) {
                     _formHelper.exeCmd(e);
                 };
             } else {
@@ -586,292 +992,10 @@
     sysControl = new AForm.Plugin.control[AFORM_SYS_PLUGIN];
 
     var _valueSetter = {};//dom value赋值队列，生命周期为一次render过程，每次render前要reset为空对象
-    var _onchangeSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
-    var _onclickSetter = {};//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
-
-    //helper
-    var _formHelper = {
-        $: function(id) {
-            return document.getElementById(id);
-        },
-        toArray: function(s) {
-            try {
-                return Array.prototype.slice.call(s);//ie8报错，见https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice#Streamlining_cross-browser_behavior
-            } catch (e) {
-                var arr = [];
-                for (var i = 0, len = s.length; i < len; i++) {
-                    arr[i] = s[i];
-                }
-                return arr;
-            }
-        },
-        hasClass: function(ele, clsName) {
-            if (!ele || !ele.nodeType == 1) {
-                return false;
-            }
-            return (" " + ele.className).indexOf(" " + clsName) > -1;
-        },
-        isFormElement: function(ele) {
-            var isEle = _h.hasClass(ele, "json-form-element") || _h.hasClass(ele, "json-field-plugin");
-            return isEle && !_h.isIgnore(ele);
-        },
-        isIgnore: function(ele) {
-            if (!ele || !ele.getAttribute) {
-                return false;
-            }
-            return ele.getAttribute("ignore") == "true" || ele.getAttribute("ignore") == "ignore";
-        },
-        addClass: function(ele, clsName) {
-            if (!ele || !clsName) {
-                return false;
-            }
-            if (!ele.className) {
-                ele.className = clsName;
-            }
-            else if (!_formHelper.hasClass(ele, clsName)) {
-                ele.className += " " + clsName;
-            }
-        },
-        onValueChange: function(input, conf) {
-            this.addClass(input, "json-form-dirty");
-            this.validateInput(input, conf);
-        },
-        validateInput: function(input, conf)//用于验证输入控件的value
-        {
-            var v = input.value;
-            if (v == "" && input.getAttribute("required") != null) {
-                AForm.Config.fn.onEmpty(input, conf);
-                return false;
-            }
-            if (v != "" && input.getAttribute("pattern") &&
-                !new RegExp("^" + input.getAttribute("pattern") + "$", "i").test(input.value)) {
-                AForm.Config.fn.onInvalid(input, conf, conf.patternErrorMsg || "");
-                return false;
-            }
-
-            return true;
-        },
-        getParent: function(ele, ptag) {
-            ptag = ptag.toUpperCase();
-            var p = ele.parentNode;
-            while (p && p.tagName != ptag) {
-                p = p.parentNode;
-            }
-
-            return p;
-        },
-        getNextSibling: function(n) {
-            var x = n.nextSibling;
-            while (x && x.nodeType != 1) {
-                x = x.nextSibling;
-            }
-            return x;
-        },
-        showNextSibling: function(ele, visible) {
-            var n = this.getNextSibling(ele);
-            while (n) {
-                var isHidden = n.getAttribute("hidden") != null;//兼容html5的hidden属性
-                n.style.display = isHidden ? "none" : (visible ? "" : "none");
-                n = this.getNextSibling(n);
-            }
-        },
-        exeCmd: function(e, tbid, rowAction, fnBefore, fnAfter) {
-            e = e || event;
-            var ele = e.srcElement ? e.srcElement : e.target;
-            var cmd = ele.getAttribute("cmd");
-            if (!cmd) {
-                return false;
-            }
-            var table = _formHelper.getParent(ele, "table");
-
-            //重要，如果事件源table存在事件绑定，但当前触发的事件函数源却不是该table，则是冒泡带上的事件，忽略之，防止触发两次
-            if (table && table.onclick && table.id != tbid) {
-                return false;
-            }
-            var row = _formHelper.getParent(ele, "tr");
-
-            if (cmd == "aform_array_collapse_table") {//隐藏table
-                var show = true;
-
-                if (_formHelper.hasClass(ele, "json-form-ctrl-un-collapse")) {
-                    ele.className = ele.className.replace("json-form-ctrl-un-collapse", "json-form-ctrl-collapse");
-                    show = false;//需要折叠
-                } else if (_formHelper.hasClass(ele, "json-form-ctrl-collapse")) {
-                    ele.className = ele.className.replace("json-form-ctrl-collapse", "json-form-ctrl-un-collapse");
-                }
-
-                _formHelper.showNextSibling(_formHelper.getParent(ele, "caption"), show);
-                _formHelper.showNextSibling(ele, show);
-            } else if (cmd == "aform_array_collapse_fieldset") {
-                var show = true;
-
-                if (_formHelper.hasClass(ele, "json-form-ctrl-un-collapse")) {
-                    ele.className = ele.className.replace("json-form-ctrl-un-collapse", "json-form-ctrl-collapse");
-                    show = false;
-                } else if (_formHelper.hasClass(ele, "json-form-ctrl-collapse")) {
-                    ele.className = ele.className.replace("json-form-ctrl-collapse", "json-form-ctrl-un-collapse");
-                }
-
-                _formHelper.showNextSibling(_formHelper.getParent(ele, "legend"), show);
-            } else if (cmd == "aform_array_add_row") {//默认添加行为
-                _joinFunction(fnBefore, window, ["aform_array_add_row", table]);//before
-                _formHelper.addRow(table);
-                _joinFunction(fnAfter, window, ["aform_array_add_row", table]);//after
-            } else if (cmd == "aform_array_delete_row") {//默认删除行的行为
-                if (!table) {
-                    return false;
-                }
-                if (fnBefore.length) {
-                    _joinFunction(fnBefore, window, ["aform_array_delete_row", row]) && _formHelper.removeRow(row);
-                }
-                else {
-                    if (!confirm("确定删除该行吗？")) {
-                        return false;
-                    }
-                    _formHelper.removeRow(row);
-                }
-                _joinFunction(fnAfter, window, ["aform_array_delete_row", row, table]);//after
-            } else {//执行自定义的
-                for (var icmd in rowAction) {
-                    var item = rowAction[icmd];
-                    if (icmd == cmd && typeof item.handler == "function") {
-                        var ret = true;
-                        if (fnBefore.length) {
-                            ret = _joinFunction(fnBefore, window, [icmd, row, table]);
-                        }
-                        ret && item.handler(row, table, icmd);
-                        _joinFunction(fnAfter, window, [icmd, row, table]);//after
-                        break;
-                    }
-                }
-            }
-        },
-        isObjEmpty: function(obj) {
-            if (!obj || obj.length) {
-                return true;
-            }//数组不合法，认为是空
-            for (var p in obj) {
-                return false;
-            }
-            return true;
-        },
-        isInArray: function(key, array) {
-            var i = array.length;
-            while (i--) {
-                if (key == array[i]) {
-                    return true;
-                }
-            }
-            return false;
-        },
-        removeRow: function(row) {
-            var tbBody = row.parentNode;
-            if (tbBody.rows.length == 1 && !tbBody.tempRow)//若只有一行了，则存储该行为表格的临时行，用于下次表格新增行
-            {
-                row.cells[0].innerHTML = 0;//起始为0，addRow后，将自增1，之所以设置row的序号为0，而不是clone后再设置，是因为ie对于未在表格中的row取cell会报错
-                tbBody.tempRow = row.cloneNode(true);
-            }
-            tbBody.removeChild(row);
-        },
-        addRow: function(table) {
-            var tbBody = table.tBodies[0];
-            if (!tbBody) {
-                return false;
-            }
-            var lastRow = null;
-            if (tbBody.rows.length == 0) {
-                lastRow = tbBody.tempRow;//若表格存储了临时的行，则使用临时行
-            }
-            else {
-                lastRow = tbBody.rows[tbBody.rows.length - 1];//否则使用最后一行
-                if (!lastRow) {
-                    return false;
-                }
-            }
-            var newRow = lastRow.cloneNode(true);
-
-            var labels = newRow.getElementsByTagName("label");
-            var len = labels.length;
-
-            while (len--) {
-                var lb = labels[len];
-                var newId = "ele_json_new_" + len + "_" + (new Date().getTime() % 1000000);
-                if (lb.htmlFor) {//如果此前有for，才修改for为新值
-                    lb.htmlFor = newId;
-                }
-
-                var ip = this.getNextSibling(lb);//找到label的input
-                if (ip) {
-                    ip.readOnly = false;
-                    ip.id = newId;//input
-                    ip.value = "";//clear
-                }
-            }
-
-            table.tBodies[0].appendChild(newRow);
-            var rowNumber = newRow.cells[0].innerHTML - 0;//行的第一列，序号列，数值+1
-            newRow.cells[0].innerHTML = rowNumber + 1;
-        },
-        each: function(array, fn) {
-            var len = array.length;
-            for (var i = 0; i < len; i++) {
-                var ret = fn(array[i], i);
-                if (ret === false) {
-                    break;
-                }
-            }
-        },
-        getObjType: function(obj) {
-            if (obj === undefined) {
-                return "undefined";
-            }
-            if (obj === null) {
-                return "null";
-            }
-            if (obj.constructor == Array) {
-                return "Array";
-            }
-            if (obj.constructor == Array) {
-                return "Array";
-            }
-            else if (obj.constructor == Object) {
-                return "Object";
-            }
-            else if (obj.constructor == Number) {
-                return "Number";
-            }
-            else if (obj.constructor == Boolean) {
-                return "Boolean";
-            }
-            else if (obj.constructor == String) {
-                return "String";
-            }
-            else {
-                return "unknow";
-            }
-        },
-        extend: function(obj, base) {
-            if (!obj) {
-                obj = {};
-            }
-            if (!base) {
-                return obj;
-            }
-            for (var p in base) {
-                obj[p] = base[p];
-            }
-
-            return obj;
-        },
-        obj2str: function(obj, sep) {
-            var arr = [];
-            for (var p in obj) {
-                arr.push(p + "=\"" + obj[p] + "\"");
-            }
-            return arr.join(sep || " ");
-        }
-    };
-    var _h = _formHelper;
+    var _eventSetter = {
+        click: {},
+        blur: {}
+    };//事件赋值队列，生命周期为一次render过程，每次render前要reset为空对象
 
     //表单元素工厂
     var _FormElementFactory = {
@@ -904,6 +1028,7 @@
         generateInputHtml: function(param) {
             param = param || {};
             param.type = param.type || "text";
+            var afObj = param.afObj;
 
             var sDisabled = param.disabled ? "disabled" : "";
 
@@ -927,10 +1052,11 @@
                     html.push(param.attrName);
                     html.push(" value=\"" + "" + "\" />");
 
-                    _onchangeSetter[param.id] = function() {
-                        _formHelper.onValueChange(this, param);
+                    _eventSetter["blur"][param.id] = function(e) {
+                        var ip = _h.getTarget(e);
+                        _formHelper.validateInput(ip, param, afObj);
                     };
-                    //parm.value == 0的情况下，会不显示0
+                    //param.value == 0的情况下，会不显示0
                     param.value != "" && (_valueSetter[param.id] = param.value);//使用dom赋值，而不使用字符串拼接方式，避免单引号、双引号等字符转义出问题
                     html.push(listHtml);
 
@@ -944,8 +1070,9 @@
                     html.push(param.attrName);
                     html.push(">" + param.value + "</textarea>");
 
-                    _onchangeSetter[param.id] = function() {
-                        _formHelper.onValueChange(this, param)
+                    _eventSetter["blur"][param.id] = function(e) {
+                        var ip = _h.getTarget(e);
+                        _formHelper.validateInput(ip, param, afObj);
                     };
 
                     break;
@@ -966,6 +1093,11 @@
                     html.push(" id='" + param.id + "' ");
                     html.push(param.attrName);
                     html.push(">");
+
+                    _eventSetter["blur"][param.id] = function(e) {
+                        var ip = _h.getTarget(e);
+                        _formHelper.validateInput(ip, param, afObj);
+                    };
 
                     var list = param.datalist || [];
                     var len = list.length;
@@ -1007,16 +1139,19 @@
                         if (v == param.value) {
                             hasChecked = true;
                         }
-                        html.push("<label><input data-gen='aform' " + param.attrName + " " + sDisabled +
+                        html.push("<label><input jpath='" + param.jpath + "' data-gen='aform' " + param.attrName + " " +
+                            sDisabled +
                             " type='radio' " + (v == param.value ? "checked" : "") + " value=\"" + v +
                             "\" />" + t + "</label>");
                     }
                     if (param.needOther) {
                         var needChecked = !hasChecked && param.value;//若value未被选中，且不为空
-                        html.push("<label><input class=\"aform-other-radio\" data-gen='aform' " + param.attrName + " " +
+                        html.push("<label><input jpath='" + param.jpath +
+                            "' class=\"aform-other-radio\" data-gen='aform' " + param.attrName + " " +
                             sDisabled +
                             " type='radio' " + (needChecked ? "checked" : "") + " value=\"__other__\" />其他</label>");
-                        html.push("<label><input class=\"aform-other-input " + AForm.Config.extClassName.control +
+                        html.push("<label><input jpath='" + param.jpath + "' class=\"aform-other-input " +
+                            AForm.Config.extClassName.control +
                             "\" data-gen='aform' " + param.attrName + " " + sDisabled +
                             " type='text'  value=\"" + (hasChecked ? "" : param.value) + "\" /></label>");
                     }
@@ -1042,7 +1177,8 @@
                         var v = isO ? list[i].value : list[i];
                         var t = isO ? list[i].text : list[i];
                         var c = isO ? list[i].custom : "";
-                        html.push("<label><input data-gen='aform' " + param.attrName + " " + sDisabled +
+                        html.push("<label><input jpath='" + param.jpath + "' data-gen='aform' " + param.attrName + " " +
+                            sDisabled +
                             " type='checkbox' " + (_formHelper.isInArray(_s(v), valueArr) ? "checked" : "") +
                             " value=\"" + _s(v) + "\" data-custom=\"" + _s(c) + "\" /> " + _s(t) + "</label>");
                     }
@@ -1110,35 +1246,8 @@
             if (param.fieldConfig.ctrlAttr) {
                 attrHtml.push(_formHelper.obj2str(param.fieldConfig.ctrlAttr, " "));
             }
-            if (param.fieldConfig.required) {
-                attrHtml.push("required");
-            }
-            if (param.fieldConfig.readonly) {
-                attrHtml.push("readonly");
-            }
-            if (param.fieldConfig.disabled) {
-                attrHtml.push("disabled");
-            }
-            if (param.fieldConfig.maxlength) {
-                attrHtml.push("maxlength='" + param.fieldConfig.maxlength + "'");
-            }
             if (param.fieldConfig.ctrlCssText) {
                 attrHtml.push("style='" + param.fieldConfig.ctrlCssText + "'");
-            }
-            if (param.fieldConfig.pattern) {
-                attrHtml.push("pattern='" + param.fieldConfig.pattern + "'");
-            }
-            if (param.fieldConfig.size) {
-                attrHtml.push("size='" + param.fieldConfig.size + "'");
-            }
-            if (param.fieldConfig.type == 'select' && param.fieldConfig.multiple) {
-                attrHtml.push("multiple='multiple'");
-            }
-            if (param.fieldConfig.title) {
-                attrHtml.push("title='" + param.fieldConfig.title + "'");
-            }
-            if (param.fieldConfig.placeholder) {
-                attrHtml.push("placeholder='" + param.fieldConfig.placeholder + "'");
             }
 
             attrHtml.push("class='json-field-input " + AForm.Config.extClassName.control + " " +
@@ -1168,6 +1277,7 @@
                     arg.attrHtml = attrHtml;
                     arg.attrName = strAttrName;
                     arg.value = param.inputData;
+                    arg.afObj = param.afObj;
                     html.push(_FormElementFactory.generateInputHtml(arg));
                     if (AForm.Config.tags.controlContainer) {
                         html.push("</" + AForm.Config.tags.controlContainer + ">");
@@ -1238,11 +1348,18 @@
             return false;
         }
 
+        AForm.formCount++;
+        if (!this.container.id) {
+            this.container.id = "aform_" + AForm.formCount + "_" + parseInt(Math.random() * 10000);
+        }
+        aformInstance[this.container.id] = this;
         this.eventArr = {
             "renderComplete": [],//渲染完后 的回调队列，可以通过on('renderComplete',function) 加入回调队列
             "enter": [],
+            "change": [],//表单有输入项修改时
             "beforeExeCmd": [],
             "afterExeCmd": [],
+            "valid": [],//字段通过校验时
             "invalid": [],//字段未通过校验时
             "globalInvalid": [],//完整表单数据未通过校验时
             "empty": [] //字段必填但为空时
@@ -1260,7 +1377,8 @@
             showArrayNO: true,//是否显示数组元素序号，从1开始
             hideCollapser: false,//隐藏折叠器
             restrict: false,//是否严格模式
-            className: "",//容器样式名
+            className: "",//容器样式名,
+            lazyRenderInterval: 50,//延迟渲染的间隔
             requireAtBegin: false,//必填星号是否在label的前面
             validators: false,//全局验证器
             noValidate: false,//默认开启验证
@@ -1277,6 +1395,7 @@
         //合并配置项
         if (typeof config == "object") {
             for (var p in config) {
+                //事件处理器
                 if (p.substr(0, 2) == "on" && typeof config[p] == "function") {
                     var ep = p.replace(/^on([A-Z])/, function(all, $1) {
                         return $1.toLowerCase()
@@ -1294,38 +1413,66 @@
         _h.addClass(this.container, "aform");
         _h.addClass(this.container, this.config.className);
 
+        this.config.watch = _computeWatch(this.config.watch);
         this.config.validators = _computeValidator(this.config.validators);
         this.config.valueAdapter = _computeAdapter(this.config.valueAdapter);
 
-        //设置name属性
-        for (var p in this.config.fields) {
-            this.config.fields[p].name = p;
-        }
-
         //初始化事件
-        for(var evt in validateEvt){
+        for (var evt in validateEvt) {
             this.on(evt, validateEvt[evt]);
         }
 
-        this.on("empty", function(input, conf){
+        this.on("empty", function(input, conf) {
             this.errors.push({
                 "errorType": "empty",
                 "errorMsg": "请输入" + conf.label,
                 "invalidControl": input
             });
         });
-        this.on("invalid", function(input, conf, errorMsg){
+        this.on("invalid", function(input, conf, errorMsg) {
             this.errors.push({
                 "errorType": "invalid",
                 "errorMsg": errorMsg,
                 "invalidControl": input
             });
         });
-        this.on("globalInvalid", function(msg,input){
+        this.on("globalInvalid", function(msg, input) {
             this.errors.push({
                 "errorType": "globalInvalid",
                 "errorMsg": msg,
                 "invalidControl": input
+            });
+        });
+
+        //忙指示器
+        this.busy = 0;
+
+        //值监听器
+        this.on("change", function(jpath, cv, input) {
+            _debug(jpath + " changed to : " + cv);
+            var obs = this.config.watch[jpath];
+            if (!obs) {
+                return;
+            }
+            if (_h.getObjType(obs) != "Array") {
+                _debug("watch of " + jpath + " is not array");
+                return;
+            }
+
+            _h.each(obs, function(fn) {
+                fn(cv, input);
+            })
+        });
+        var me = this;
+        this.on("renderComplete", function() {
+            var d = this.originData;
+            for (var jp in this.config.watch) {
+                var cv = eval("(d" + jp + ")");
+                this.emit("change", [jp , cv]);
+            }
+
+            attachMonitor(this.container, function(jpath, cv, input) {
+                me.emit("change", [jpath , cv , input]);
             });
         });
     }
@@ -1368,7 +1515,7 @@
     //发射一个事件
     AForm.prototype.emit = function(evtName, data) {
         _joinFunction(this.eventArr[evtName], this, data);
-        if(evtName in validateEvt && this.config.breakOnError){
+        if (evtName in validateEvt && evtName != "valid" && this.config.breakOnError) {
             _debug(data);
             throw new Error("invalid data ,reason is " + evtName);
         }
@@ -1385,7 +1532,23 @@
         if (!this.container) {
             return false;
         }
-        if (input == undefined || input == null) {
+
+        //计算属性
+        for (var p in this.config.fields) {
+            this.config.fields[p].name = p;//设置name属性
+            _computeProp(this.config.fields[p], this);
+        }
+        var me = this;
+
+        if (this.busy > 0) {
+            setTimeout(function() {
+                me.render(input);
+            }, this.config.lazyRenderInterval);
+            _debug("aform is busy,will rerender after some time");
+            return this;
+        }
+
+        if (input === undefined || input === null) {
             this.config.schemaMode = "local";//若不传数据，则强制使用本地schema
             if (this.config.jtype == "Array") {
                 input = [
@@ -1457,8 +1620,10 @@
         }
 
         _valueSetter = {};//渲染前reset
-        _onchangeSetter = {};
-        _onclickSetter = {};
+        _eventSetter = {
+            click: {},
+            blur: {}
+        };
 
         this.originData = input;//最后一次渲染的原始数据
         this.container.innerHTML = this.renderData(this.originData);
@@ -1469,18 +1634,12 @@
                 _formHelper.$(id).value = _valueSetter[id];
             }
         }
-        //事件onchange赋值器
-        for (var id in _onchangeSetter) {
-            if (id && _formHelper.$(id)) {
-                _formHelper.$(id).onchange = _onchangeSetter[id];
-            }
-        }
-        //事件onclick赋值器
-        for (var id in _onclickSetter) {
-            if (id && _formHelper.$(id)) {
-                _formHelper.$(id).onclick = _onclickSetter[id];
-            }
-        }
+        //事件赋值器
+        _h.objEach(_eventSetter, function(evtName, idObj) {
+            _h.objEach(idObj, function(id, fn) {
+                _h.addEvent(_h.$(id), evtName, fn);
+            });
+        });
 
         //渲染标题
         var rootEle = this.container.childNodes[0];
@@ -1506,7 +1665,6 @@
         this.emit("renderComplete");
 
         if (this.eventArr.enter.length > 0) {
-            var me = this;
             this.container.onkeyup = function(evt) {
                 evt = evt || window.event;
                 if (evt.keyCode == 13) {
@@ -1667,7 +1825,7 @@
             var nodes = domEle.childNodes;
             var i = nodes.length;
             while (i--) {
-                if (_h.hasClass(nodes[i], "json-field-plugin")) {
+                if (_h.hasClass(nodes[i], "json-field-plugin") && !_h.isIgnore(nodes[i])) {
                     var guid = nodes[i].getAttribute("guid");
                     var pluginInstance = controlInstance[guid];
 
@@ -1863,6 +2021,12 @@
         return validators;
     }
 
+    //处理监听器
+    function _computeWatch(w) {
+        w = w || {};
+        return w;
+    }
+
     //处理适配器
     function _computeAdapter(adpt) {
         //全局验证器加工
@@ -1871,6 +2035,70 @@
         }
 
         return adpt;
+    }
+
+    //校验输入项
+    function validateInput(af, input, tmpValue, conf, firstInput) {
+        //若不需验证，直接返回
+        if (af.config.noValidate) {
+            return true;
+        }
+
+        var invalid = false;
+        firstInput = firstInput || input;//当有多个选项时，为空时聚焦到第一个选项
+        if (!af.config.noValidate && conf.required && (tmpValue == "")) {
+            invalid = true;
+            af.emit("empty", [firstInput, conf]);
+        }
+        //处理非法情形
+        if (!af.config.noValidate && tmpValue != "" && conf.pattern &&
+            !new RegExp("^" + conf.pattern + "$", "i").test(tmpValue)) {
+            invalid = true;
+            af.emit("invalid", [input, conf, conf.patternErrorMsg || ""]);
+        }
+        //处理规则校验
+        if (!af.config.noValidate && tmpValue != "" && conf.validators) {
+            _h.each(conf.validators, function(item, i) {
+                if (typeof item.rule == "function" && item.rule(tmpValue, input) !== true) {
+                    if (item.errorMsg !== false) {
+                        invalid = true;
+                        af.emit("invalid", [input, conf, item.errorMsg]);
+                    }
+                }
+            });
+        }
+
+        if (!invalid) {
+            af.emit("valid", [input]);
+        }
+    }
+
+    //处理自定义属性
+    function _computeProp(fd, af) {
+        if (!fd || typeof fd !== "object") {//防止重复计算
+            return;
+        }
+        for (var prop in fd) {
+
+            if (!(prop in AForm.Plugin.prop)) {
+                continue;
+            }
+
+            fd.ctrlAttr = fd.ctrlAttr || {};
+            fd.validators = fd.validators || [];
+            fd.attr = fd.attr || {};
+            fd.style = fd.style || {};
+            fd.ctrlStyle = fd.ctrlStyle || {};
+
+            var propObj = AForm.Plugin.prop[prop];
+            propObj.beforeRender && propObj.beforeRender(fd[prop], prop, fd, af);
+        }
+        //递归
+        if (fd.fields) {
+            for (var p in fd.fields) {
+                _computeProp(fd.fields[p], af);
+            }
+        }
     }
 
     //执行函数队列
@@ -1914,13 +2142,58 @@
         return html;
     }
 
+    //监听表单所有字段的的修改事件
+    function attachMonitor(container, fn) {
+        //监听radio、checkbox的点击事件
+        _h.addEvent(container, "click", function(e) {
+            var target = _h.getTarget(e);
+            //若不是表单字段，则忽略
+            var jpath = target.getAttribute("jpath");
+            if ((target.type !== "radio" && target.type !== "checkbox") || !jpath) {
+                return;//不能return false，因在ie低版本下会禁止浏览器默认事件
+            }
+
+            fn(jpath, target.value, target);
+        });
+
+        //监听onchange事件
+        var ie = _h.isIE();
+        var ips = [];
+        if (ie && ie < 9) {
+            ips = _h.getInput(container, false);
+        } else {
+            //当通过冒泡绑定时，避免重复绑定
+            if (!(container.getAttribute("data-monitor"))) {
+                ips = [container];
+            }
+        }
+
+        _h.each(ips, function(ipt) {
+            if (ipt.type && !(ipt.getAttribute("jpath"))) {
+                return;
+            }
+            ipt.setAttribute("data-monitor", true);
+            _h.addEvent(ipt, "change", function(e) {
+                var target = _h.getTarget(e);
+                //若不是表单字段，则忽略
+                var jpath = target.getAttribute("jpath");
+                if (!jpath) {
+                    return false;
+                }
+
+                fn(jpath, target.value, target);
+            });
+        });
+
+    }
+
     //输出
     function _debug(msg) {
-        if (typeof console == "undefined") {
+        if (typeof console == "undefined" || typeof console.log == "undefined") {
             return false;
         }
         else {
-            console.log.apply(console, arguments);
+            console.log(msg);
         }
     }
 
@@ -1948,4 +2221,3 @@
         window.AForm = AForm;
     }
 })();
-
