@@ -8,7 +8,7 @@
 * baseName：父控件名字
 * obj：控件的实现
 
-输入控件的实现至少需包含两个方法：
+一个完整的输入控件需包含如下几个方法：
 
 * `render(k, v, conf, i, af,jpath)`用于渲染控件，返回渲染后的html
     * k，当前数据的key，应当赋值给input的name属性，以供取值时拿到key
@@ -17,8 +17,19 @@
     * i，aform当前渲染控件数（永远自增且多个aform实例共享），通常可作为控件id的组成部分以确保控件id的唯一性
     * af，当前aform实例
     * jpath，当前字段在json中的路径，如".a.b"、"[0].a.b[1].x"
+* `renderComplete(rootElement)`用于渲染控件，返回渲染后的html
+    * rootElement，当前数据的key，应当赋值给input的name属性，以供取值时拿到key
 * `getJsonPartString(ele)` 返回控件的键值对字符串
     * ele，当前自定义输入控件渲染内容的父节点
+
+### 组件的属性
+
+注册输入控件事实上是创建了一个类，一旦任意一个aform使用了该控件，则创建了该控件的一个实例，控件实例有这么一些属性，可在组件的任何方法中使用`this`调用：
+
+`this.config` 当前输入控件的配置，即aform针对该字段的配置信息
+`this.name` 当前字段的name或index
+`this.aform` 当前控件所在的aform实例
+`this.rootElement` 当前控件渲染后的包裹器dom元素
 
 （**注意getJsonPartString返回的是键值对字符串，而不仅仅是值**）
 
