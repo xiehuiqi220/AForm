@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1453174653494">
+    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1453862987504">
     
 
 <div class="book-summary">
@@ -659,7 +659,7 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_25">
+                    <section class="normal" id="section-gitbook_24">
                     
                         <h1 id="">自定义输入控件</h1>
 <p>若html自带的输入控件，如text、select等都无法满足你的需求时，可以编写自定义输入控件，如多级联动下拉列表、ip地址输入框，此时，仅需定义控件的渲染html和取值规则即可。</p>
@@ -681,7 +681,7 @@
 </ul>
 </li>
 <li><code>renderComplete(rootElement)</code>用于渲染控件，返回渲染后的html<ul>
-<li>rootElement，当前数据的key，应当赋值给input的name属性，以供取值时拿到key</li>
+<li>rootElement，当前组件渲染后所在的容器dom元素</li>
 </ul>
 </li>
 <li><code>getJsonPartString(ele)</code> 返回控件的键值对字符串<ul>
@@ -691,10 +691,12 @@
 </ul>
 <h3 id="">组件的属性</h3>
 <p>注册输入控件事实上是创建了一个类，一旦任意一个aform使用了该控件，则创建了该控件的一个实例，控件实例有这么一些属性，可在组件的任何方法中使用<code>this</code>调用：</p>
-<p><code>this.config</code> 当前输入控件的配置，即aform针对该字段的配置信息
-<code>this.name</code> 当前字段的name或index
-<code>this.aform</code> 当前控件所在的aform实例
-<code>this.rootElement</code> 当前控件渲染后的包裹器dom元素</p>
+<ul>
+<li><code>this.config</code> 当前输入控件的配置，即aform针对该字段的配置信息</li>
+<li><code>this.name</code> 当前字段的name或index</li>
+<li><code>this.aform</code> 当前控件所在的aform实例</li>
+<li><code>this.rootElement</code> 当前控件渲染后的包裹器dom元素</li>
+</ul>
 <p>（<strong>注意getJsonPartString返回的是键值对字符串，而不仅仅是值</strong>）</p>
 <p>使用控件非常简单，设置字段的<code>type</code>为你注册的控件名即可，如<code>type:&quot;myControlName&quot;</code>，aform会自动寻找已注册的控件并调用它相关的方法渲染和取值。</p>
 <h2 id="">注册一个输入控件</h2>
