@@ -33,7 +33,7 @@
 
 
         
-    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1453862987504">
+    <div class="book"  data-level="3.1" data-basepath=".." data-revision="1453863465980">
     
 
 <div class="book-summary">
@@ -659,7 +659,7 @@
                 <div class="page-inner">
                 
                 
-                    <section class="normal" id="section-gitbook_24">
+                    <section class="normal" id="section-gitbook_23">
                     
                         <h1 id="">自定义输入控件</h1>
 <p>若html自带的输入控件，如text、select等都无法满足你的需求时，可以编写自定义输入控件，如多级联动下拉列表、ip地址输入框，此时，仅需定义控件的渲染html和取值规则即可。</p>
@@ -774,7 +774,7 @@ AForm.registerControl(<span class="hljs-string">"select"</span>, <span class="hl
 AForm.registerControl(<span class="hljs-string">"textarea"</span>, <span class="hljs-string">"__AFORM_BASIC_PLUGIN__"</span>, {...});
 </code></pre>
 <h2 id="dom">在自定义输入控件中绑定dom事件</h2>
-<p>由于<code>render</code>方法返回的是html，因此为html中的dom绑定事件需在整个表单渲染结束后，可以捕获aform的<code>renderComplete</code>事件并为dom绑定事件，这里的关键是需要为必要的dom元素设置合适的id或选择器，以便在处理函数中获取到响应的dom。</p>
+<p>使用renderComplete函数即可绑定事件。</p>
 <p>范例（注册一个日期选择器）：</p>
 <pre><code class="lang-javascript"><span class="hljs-comment">//继承aform基本输入控件，避免重写取值函数</span>
 AForm.registerControl(<span class="hljs-string">"datetime"</span>, <span class="hljs-string">"__AFORM_BASIC_PLUGIN__"</span>, {
@@ -793,6 +793,7 @@ AForm.registerControl(<span class="hljs-string">"datetime"</span>, <span class="
             attrHtml.push(<span class="hljs-string">"disabled"</span>);
         }
         <span class="hljs-keyword">var</span> id = <span class="hljs-string">'ele-date-'</span> + i;
+        <span class="hljs-keyword">this</span>.id = id;
         attrHtml.push(<span class="hljs-string">"name='"</span> + k +<span class="hljs-string">"'"</span>);
         attrHtml.push(<span class="hljs-string">"jpath='"</span> + jpath +<span class="hljs-string">"'"</span>);
         attrHtml.push(<span class="hljs-string">"value='"</span> + v +<span class="hljs-string">"'"</span>);
@@ -802,20 +803,18 @@ AForm.registerControl(<span class="hljs-string">"datetime"</span>, <span class="
 
         <span class="hljs-keyword">var</span> html = <span class="hljs-string">"&lt;input "</span> + attrHtml + <span class="hljs-string">" /&gt;"</span>;
 
-        <span class="hljs-comment">//注意这里使用one绑定事件，而不是使用on</span>
-        af.one(<span class="hljs-string">"renderComplete"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-            <span class="hljs-keyword">var</span> dp = <span class="hljs-keyword">new</span> Datepicker({
-                target: <span class="hljs-string">"#"</span> + id
-            });
-            dp.on(<span class="hljs-string">"select"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(o)</span> </span>{
-                $(<span class="hljs-string">'#'</span> + id).val(dateUtil.format(o.date, <span class="hljs-string">'yyyy-MM-dd'</span>));
-            })
-        });
         <span class="hljs-keyword">return</span> html;
+    },
+    renderComplete:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(rootElement)</span></span>{
+        <span class="hljs-keyword">var</span> dp = <span class="hljs-keyword">new</span> Datepicker({
+            target: <span class="hljs-string">"#"</span> + <span class="hljs-keyword">this</span>.id
+        });
+        dp.on(<span class="hljs-string">"select"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(o)</span> </span>{
+            $(<span class="hljs-string">'#'</span> + <span class="hljs-keyword">this</span>.id).val(dateUtil.format(o.date, <span class="hljs-string">'yyyy-MM-dd'</span>));
+        })
     }
 });
 </code></pre>
-<p><strong> 注意，在<code>render</code>中绑定事件尽量使用<code>one</code>而不是使用<code>on</code>， 以确保注册的事件处理程序仅执行一次，若使用<code>on</code>，则表单如果多次<code>render</code>会触发多次监听器处理程序，而由于aform每次渲染dom会发生变化，此前注册的监听器处理程序可能会因为无法找到dom节点而运行报错</strong></p>
 <h2 id="">取数异常处理</h2>
 <p>在<code>getJsonPartString</code>中若字段未通过验证，仅需使用<code>emit</code>发送相应事件以通知业务方即可，其他的逻辑就交给aform处理吧，阅读<a href="../mannual/validate.html">表单验证</a>获取更多详情。</p>
 <p>实例：</p>

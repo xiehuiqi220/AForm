@@ -129,7 +129,7 @@ AForm.registerControl("textarea", "__AFORM_BASIC_PLUGIN__", {...});
 
 ## 在自定义输入控件中绑定dom事件
 
-由于`render`方法返回的是html，因此为html中的dom绑定事件需在整个表单渲染结束后，可以捕获aform的`renderComplete`事件并为dom绑定事件，这里的关键是需要为必要的dom元素设置合适的id或选择器，以便在处理函数中获取到响应的dom。
+使用renderComplete函数即可绑定事件。
 
 范例（注册一个日期选择器）：
 
@@ -152,6 +152,7 @@ AForm.registerControl("datetime", "__AFORM_BASIC_PLUGIN__", {
             attrHtml.push("disabled");
         }
         var id = 'ele-date-' + i;
+		this.id = id;
         attrHtml.push("name='" + k +"'");
         attrHtml.push("jpath='" + jpath +"'");
         attrHtml.push("value='" + v +"'");
@@ -161,22 +162,19 @@ AForm.registerControl("datetime", "__AFORM_BASIC_PLUGIN__", {
 
         var html = "<input " + attrHtml + " />";
 
-        //注意这里使用one绑定事件，而不是使用on
-        af.one("renderComplete", function() {
-            var dp = new Datepicker({
-                target: "#" + id
-            });
-            dp.on("select", function(o) {
-                $('#' + id).val(dateUtil.format(o.date, 'yyyy-MM-dd'));
-            })
-        });
         return html;
-    }
+    },
+	renderComplete:function(rootElement){
+		var dp = new Datepicker({
+			target: "#" + this.id
+		});
+		dp.on("select", function(o) {
+			$('#' + this.id).val(dateUtil.format(o.date, 'yyyy-MM-dd'));
+		})
+	}
 });
 
 ```
-** 注意，在`render`中绑定事件尽量使用`one`而不是使用`on`， 以确保注册的事件处理程序仅执行一次，若使用`on`，则表单如果多次`render`会触发多次监听器处理程序，而由于aform每次渲染dom会发生变化，此前注册的监听器处理程序可能会因为无法找到dom节点而运行报错**
-
 
 ## 取数异常处理
 
