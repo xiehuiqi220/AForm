@@ -14,10 +14,11 @@ AForm 是工业级的表单解决方案，它基于声明式编程和模型驱�
 
 ### 安装或引用
 
-**1)** 直接 clone 本仓库 ```git clone https://github.com/xiehuiqi220/AForm.git```
-**2)** 使用 bower ```bower install aform --save```
-**3)** 使用 npm ```npm install aform --save```
-**4)** 直接下载js源文件 [aform.js](https://raw.githubusercontent.com/xiehuiqi220/AForm/master/aform.js)
+- 直接 clone 本仓库 ```git clone https://github.com/xiehuiqi220/AForm.git``` 
+- 使用 bower ```bower install aform --save``` 
+- 使用 npm ```npm install aform --save``` 
+- 直接下载 js源文件 [aform.js](https://raw.githubusercontent.com/xiehuiqi220/AForm/master/aform.js)
+
 
 ### 使用例子
 
