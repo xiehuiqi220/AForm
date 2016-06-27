@@ -91,6 +91,7 @@ console.log(af.getJson());//将输出与渲染数据一致的json结构
 1. [demo](http://xiehuiqi220.github.io/AForm/)
 2. [文档](http://xiehuiqi220.github.io/AForm/doc/book/)，持续完善中
 3. [单元测试](http://xiehuiqi220.github.io/AForm/unit-test/)
+4. 交流qq群：123488698
 
 ### 联系
 
