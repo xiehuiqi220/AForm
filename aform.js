@@ -1294,12 +1294,12 @@
                 (param.fieldConfig.labelCssText || "") + ";display:" +
                 ((strAttrName == "" || param.hideLabel || param.fieldConfig.hideLabel) ? "none" : "") + "' for='" +
                 elementId + "'>";
-            if (param.fieldConfig.required && param.globalConfig.requireAtBegin) {
+            if (param.fieldConfig.required && param.globalConfig.requiredAtBegin) {
                 labelHtml += "<span class='json-form-required'>*</span>";
             }
             labelHtml += this.getLabelText(param.fieldConfig, param.nameOrIndex);
             labelHtml += param.fieldConfig.hideColon ? "" : AForm.Config.wording.labelColon;
-            if (param.fieldConfig.required && !param.globalConfig.requireAtBegin) {
+            if (param.fieldConfig.required && !param.globalConfig.requiredAtBegin) {
                 labelHtml += " <span class='json-form-required'>*</span>";
             }
             labelHtml += "</" + AForm.Config.tags.label + ">";
@@ -1448,7 +1448,7 @@
             restrict: false,//是否严格模式
             className: "",//容器样式名,
             lazyRenderInterval: 50,//延迟渲染的间隔
-            requireAtBegin: false,//必填星号是否在label的前面
+            requiredAtBegin: false,//必填星号是否在label的前面
             validators: false,//全局验证器
             noValidate: false,//默认开启验证
             breakOnError: true,//当单个字段出错时，中断程序执行流
