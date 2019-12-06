@@ -35,7 +35,7 @@ AForm.Config.extClassName = {
 };
 //模板
 AForm.Config.tpl = {
-	"tips" : '&nbsp;<a title="{tips}" href="#nolink">[?]</a>',
+	"tips" : "&nbsp;<a title='{tips}' href='#nolink'>[?]</a>",
 	"thTips" : "<sup title='{tips}'>[?]</sup>"
 };
 //术语
