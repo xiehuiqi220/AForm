@@ -61,7 +61,8 @@ console.log(af.getJson());//将输出与渲染数据一致的json结构
 
 ### 联系
 
-任何问题，请联系我：xiehuiqi220@gmail.com，我会尽快回复
+任何问题，请联系我：xiehuiqi220@gmail.com，我会尽快回复，欢迎关注我公众号。
+![](https://gw.alicdn.com/tfs/TB1k1wHukY2gK0jSZFgXXc5OFXa-430-430.jpg)
 
 ### 协议
 [MIT license]
